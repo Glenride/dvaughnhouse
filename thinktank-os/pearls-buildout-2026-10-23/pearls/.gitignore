@@ -4,5 +4,8 @@ out/
 broadcast/
 
 # Env (never commit keys — testnet keys included)
-.env
+.env*
+*.key
+.secret*
 __pycache__/
+

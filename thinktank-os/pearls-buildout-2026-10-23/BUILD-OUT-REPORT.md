@@ -280,5 +280,37 @@ Implemented 16 attacker-perspective tests on the Base Sepolia fork in [`test/Pea
 - **Token-List Tests**: **3 passed, 0 failed**
 - **Language Check**: **Passed** (0 banned words)
 
+---
+
+## 7. Phase 3 Continuation: Base Sepolia Rehearsal & Verification (2026-11-01)
+
+### 7.1 Phase 2 Addendum (H-2 Triage Correction & Re-Verification)
+- **H-2 Fix**: In accordance with `PEARLS-WORK-ORDER-PHASE2-ADDENDUM-H2-2026-10-29.md` and `TRESS-COLUMN-WORK-ORDER-PHASE3-CONTINUATION-2026-11-01.md`, `LaunchLocker.sol` has been updated to inherit OpenZeppelin's `ReentrancyGuard`, and `deposit(address,uint256)` is explicitly decorated with the `nonReentrant` modifier. State variable assignments strictly follow the view check (`IERC721.ownerOf(tokenId) != address(this)`).
+- **Toolchain Verification**:
+  - `forge build`: Clean compilation with Solc 0.8.24 via IR.
+  - `forge test`: **75 passed, 0 failed, 0 skipped** (45 unit/fuzz + 30 Base Sepolia fork).
+  - `halmos`: **11 invariant proofs passed** (2.83s).
+  - `aderyn`: Rescanned (`docs/aderyn-2026-11-01.md`), H-2 confirmed mitigated in code with `nonReentrant`.
+  - `slither`: Rescanned (`docs/slither-2026-11-01.txt`), **0 High, 0 Medium**.
+  - `test_token_list.py`: **3 passed, 0 failed**.
+  - `check-language.sh`: **Passed** (0 banned terms).
+
+### 7.2 Phase 3 Prerequisites Gate & Proposed Throwaway Set
+Per Task 1 of the Phase 3 Continuation work order, the fully throwaway testnet rehearsal set is proposed below, and deployment execution is **STOPPED** pending D'Vaughn's approval of the proposed Safe address prior to any deploy transaction:
+1. **Fresh Testnet Deployer Address**: `0xE33906173fD81b4b8aB6B6C78Cd2262B15BFEE20`
+   - Generated fresh on iMac for this rehearsal only (never a personal wallet key, never a mainnet key).
+   - Key is stored exclusively locally on this iMac in a 0600-permissioned, gitignored local file (`.secret-deployer.json`).
+   - Current Base Sepolia Balance: `0 ETH` (requires funding with Base Sepolia testnet ETH).
+2. **Proposed Throwaway Test Safe Treasury Address**: `0x2683bc585BEd0cAc0B232bbEd0e3127757EDc74B`
+   - **GATED**: Treasury address is immutable in `LaunchFactory` once deployed. Awaiting D'Vaughn's explicit approval of this proposed Safe address.
+3. **RPC Endpoint**: `https://sepolia.base.org` (verified responding with Chain ID `84532`).
+4. **Deploy Script Gate**: `script/Deploy.s.sol` verified strictly hard-gated to Base Sepolia (84532) and local Anvil (31337).
+
+### 7.3 Status of Subsequent Phase 3 Tasks
+- **Task 2 (Deploy Factory + Hook to Base Sepolia)**: **HELD** at Prerequisites Gate (awaiting D'Vaughn's Safe approval + deployer testnet ETH funding).
+- **Task 3 (First Tress Column Launch — Sepolia Dummy)**: **HELD** pending Task 2 completion.
+- **Task 4 (End-to-End Proof: Certificate, Locker, Trust Panel)**: **HELD** pending Task 3 execution.
+
+
 
 

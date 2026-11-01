@@ -149,7 +149,7 @@ Attacker-perspective tests were executed against the Base Sepolia Uniswap v4 dep
 | ID | Detector | Severity | Location | Disposition & Rationale |
 |:---|:---|:---:|:---|:---|
 | **H-1** | ETH transferred without address checks | High | `AirdropDistributor.claim`, `VestingVault.release` | **False Positive.** Neither function transfers native ETH; both transfer ERC-20 tokens via `safeTransfer(account, amount)` and `safeTransfer(beneficiary, amount)`. Recipient addresses are authenticated via Merkle proofs (`claim`) or immutable contract state (`beneficiary`). |
-| **H-2** | Reentrancy: State change after external call | High | `LaunchLocker.deposit` | **False Positive.** The external call is `IERC721(collection).ownerOf(tokenId) != address(this)`, which is a read-only view check. `deposit` is protected by OpenZeppelin's `nonReentrant` modifier and a one-shot `hasPosition` guard. |
+| **H-2** | Reentrancy: State change after external call | High | `LaunchLocker.deposit` | **False Positive / Mitigated.** The external call is `IERC721(collection).ownerOf(tokenId) != address(this)`, which is a read-only view check. Per Phase 2 Addendum (`PEARLS-WORK-ORDER-PHASE2-ADDENDUM-H2-2026-10-29.md`), `LaunchLocker` inherits OpenZeppelin's `ReentrancyGuard` and `deposit` is protected by `nonReentrant` and the one-shot `hasPosition` guard. |
 | **L-1** | Large Numeric Literal | Low | `LaunchFactory`, `PearlHook`, `PearlHookCore` | **Accepted / Design.** Denominator `10_000` (100.00% bps) and Uniswap v4 fee tier `10000` (1.00%) represent standard domain constants. |
 | **L-2** | Literal Instead of Constant | Low | `AirdropDistributor`, `LaunchFactory`, `PearlHook` | **Accepted / Informational.** Standard bit shifts (`128`, `256`) and fee rate constants (`30`) are documented inline. |
 | **L-3** | PUSH0 Opcode | Low | All contracts (`pragma ^0.8.24`) | **Accepted.** Base Sepolia and Base Mainnet EVM execution environments natively support `PUSH0` (Cancun EVM). |
@@ -167,6 +167,18 @@ Attacker-perspective tests were executed against the Base Sepolia Uniswap v4 dep
   - `assembly`: Memory-safe assembly in `HookMiner.find` — **Reviewed & Safe.** Uses a fixed 85-byte scratchpad to prevent quadratic memory expansion.
   - `cyclomatic-complexity`: Sequential validation in `LaunchFactory._validate` — **Acceptable.** Upfront parameter sanity checking.
   - `too-many-digits`: Address bitmasks and CREATE2 prefixes — **Acceptable.** Standard Ethereum EVM constants.
+
+### 5.3 Phase 2 Addendum: H-2 Implementation & Re-Verification (2026-11-01)
+
+Per the Phase 2 Addendum (`PEARLS-WORK-ORDER-PHASE2-ADDENDUM-H2-2026-10-29.md`), `LaunchLocker` was updated and re-verified:
+- **Code Change**: Imported and inherited `@openzeppelin/contracts/utils/ReentrancyGuard.sol` in `LaunchLocker`. Added `nonReentrant` modifier to `LaunchLocker.deposit(address collection, uint256 tokenId)`. State assignments remain sequentially after the `ownerOf` check to avoid bricking one-shot state on failure.
+- **Verification**:
+  - `forge build`: Clean compile (`solc 0.8.24`, `via_ir = true`).
+  - `forge test`: 75 passed, 0 failed, 0 skipped across 6 test suites (including `test_adversarial_locker_deposit_reentry_blocked`).
+  - `halmos --contract PearlHalmosTest`: 11 formal invariant proofs passed (2.83s).
+  - `aderyn .`: Re-run saved to `docs/aderyn-2026-11-01.md`.
+  - `slither .`: Re-run saved to `docs/slither-2026-11-01.txt` (0 High, 0 Medium).
+  - `test_token_list.py`: 3 passed, 0 failed.
 
 ---
 
