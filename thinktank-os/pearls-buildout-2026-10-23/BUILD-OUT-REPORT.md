@@ -295,21 +295,31 @@ Implemented 16 attacker-perspective tests on the Base Sepolia fork in [`test/Pea
   - `test_token_list.py`: **3 passed, 0 failed**.
   - `check-language.sh`: **Passed** (0 banned terms).
 
-### 7.2 Phase 3 Prerequisites Gate & Proposed Throwaway Set
-Per Task 1 of the Phase 3 Continuation work order, the fully throwaway testnet rehearsal set is proposed below, and deployment execution is **STOPPED** pending D'Vaughn's approval of the proposed Safe address prior to any deploy transaction:
+### 7.2 Phase 3 Prerequisites Gate & Safe Approval Record
+Per Task 1 of the Phase 3 Continuation work order, the throwaway rehearsal set was proposed and acted upon:
 1. **Fresh Testnet Deployer Address**: `0xE33906173fD81b4b8aB6B6C78Cd2262B15BFEE20`
    - Generated fresh on iMac for this rehearsal only (never a personal wallet key, never a mainnet key).
    - Key is stored exclusively locally on this iMac in a 0600-permissioned, gitignored local file (`.secret-deployer.json`).
-   - Current Base Sepolia Balance: `0 ETH` (requires funding with Base Sepolia testnet ETH).
-2. **Proposed Throwaway Test Safe Treasury Address**: `0x2683bc585BEd0cAc0B232bbEd0e3127757EDc74B`
-   - **GATED**: Treasury address is immutable in `LaunchFactory` once deployed. Awaiting D'Vaughn's explicit approval of this proposed Safe address.
+   - Current Base Sepolia Balance: `0 ETH` (**BLOCKING**: requires funding with ~0.02-0.05 Base Sepolia testnet ETH for gas).
+2. **Throwaway Test Safe Treasury Address**: `0x2683bc585BEd0cAc0B232bbEd0e3127757EDc74B`
+   - **APPROVED**: Explicitly approved by D'Vaughn on 2026-11-01 at 19:18 ET ("i approve").
 3. **RPC Endpoint**: `https://sepolia.base.org` (verified responding with Chain ID `84532`).
 4. **Deploy Script Gate**: `script/Deploy.s.sol` verified strictly hard-gated to Base Sepolia (84532) and local Anvil (31337).
 
-### 7.3 Status of Subsequent Phase 3 Tasks
-- **Task 2 (Deploy Factory + Hook to Base Sepolia)**: **HELD** at Prerequisites Gate (awaiting D'Vaughn's Safe approval + deployer testnet ETH funding).
-- **Task 3 (First Tress Column Launch — Sepolia Dummy)**: **HELD** pending Task 2 completion.
+### 7.3 Simulation Findings & Blocking Gates
+Dry-run simulation against Base Sepolia RPC via `forge script script/Deploy.s.sol:Deploy --rpc-url https://sepolia.base.org` surfaced two blocking gates:
+1. **Gas Funding Gate**: Deployer balance is `0 ETH` (`transaction validation error: lack of funds (0) for max fee`).
+2. **EIP-170 Runtime Code Size Limit**:
+   - `forge build --sizes` reports `LaunchFactory` runtime size is **27,495 bytes**, exceeding the Spurious Dragon / EIP-170 maximum contract code size of **24,576 bytes** by 2,919 bytes.
+   - Root Cause: `LaunchFactory` embeds the complete creation bytecodes of `LaunchToken`, `LaunchLocker`, `VestingVault`, `AirdropDistributor`, and `PearlHook` (including `HookMiner.find` taking `type(PearlHook).creationCode`).
+   - EVM broadcast simulation fails with: `Error: Unknown0 is above the contract size limit (27495 > 24576)`.
+   - Per locked rules ("no redesign, no behavior change, report findings; do not soften them"), this structural finding is reported directly to D'Vaughn without unauthorized architectural modifications.
+
+### 7.4 Status of Subsequent Phase 3 Tasks
+- **Task 2 (Deploy Factory + Hook to Base Sepolia)**: **STOPPED / HELD** at Gas Funding and EIP-170 Size Gates.
+- **Task 3 (First Tress Column Launch — Sepolia Dummy)**: **HELD** pending Task 2 resolution.
 - **Task 4 (End-to-End Proof: Certificate, Locker, Trust Panel)**: **HELD** pending Task 3 execution.
+
 
 
 
