@@ -6,6 +6,12 @@
  * shows a "not yet online" state instead of silently dropping messages.
  *
  * Spam defenses: honeypot field, per-IP rate limiting, strict validation.
+ *
+ * CORS: the Links site (links.dvaughnhouse.com + its Pages preview) and the
+ * Links artifact share URL post here from the browser. Only those origins
+ * are allowlisted; anything else can still POST (e.g. curl) but a browser
+ * from another origin cannot read the response. The endpoint itself stays
+ * public, rate-limited, and honeypot-protected.
  */
 
 const TOPICS = ["partnership", "research", "press", "speaking", "other"];
@@ -13,10 +19,27 @@ const RATE_LIMIT_MAX = 5; // submissions per IP per hour
 const NOTIFY_TO = "dvaughnhouse@gmail.com";
 const NOTIFY_FROM = "contact@dvaughnhouse.com";
 
-function json(data, status = 200) {
+const ALLOWED_ORIGINS = new Set([
+  "https://links-d-vaughn-house.pages.dev",
+  "https://links.dvaughnhouse.com",
+  "https://muse.ai",
+]);
+
+function corsHeaders(request) {
+  const origin = request.headers.get("Origin");
+  if (origin && ALLOWED_ORIGINS.has(origin)) {
+    return {
+      "Access-Control-Allow-Origin": origin,
+      Vary: "Origin",
+    };
+  }
+  return {};
+}
+
+function json(data, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...extraHeaders },
   });
 }
 
@@ -25,21 +48,23 @@ function isValidEmail(email) {
 }
 
 export async function onRequestPost({ request, env }) {
+  const cors = corsHeaders(request);
+
   // Storage not wired yet — fail loudly, never silently.
   if (!env.DB) {
-    return json({ ok: false, error: "storage_not_configured" }, 503);
+    return json({ ok: false, error: "storage_not_configured" }, 503, cors);
   }
 
   let body;
   try {
     body = await request.json();
   } catch {
-    return json({ ok: false, error: "invalid_json" }, 400);
+    return json({ ok: false, error: "invalid_json" }, 400, cors);
   }
 
   // Honeypot: bots fill it, humans don't. Pretend success either way.
   if (body.company && String(body.company).trim() !== "") {
-    return json({ ok: true });
+    return json({ ok: true }, 200, cors);
   }
 
   const name = String(body.name || "").trim();
@@ -48,16 +73,16 @@ export async function onRequestPost({ request, env }) {
   const message = String(body.message || "").trim();
 
   if (name.length < 1 || name.length > 100) {
-    return json({ ok: false, error: "invalid_name" }, 400);
+    return json({ ok: false, error: "invalid_name" }, 400, cors);
   }
   if (!isValidEmail(email) || email.length > 254) {
-    return json({ ok: false, error: "invalid_email" }, 400);
+    return json({ ok: false, error: "invalid_email" }, 400, cors);
   }
   if (!TOPICS.includes(topic)) {
-    return json({ ok: false, error: "invalid_topic" }, 400);
+    return json({ ok: false, error: "invalid_topic" }, 400, cors);
   }
   if (message.length < 1 || message.length > 2000) {
-    return json({ ok: false, error: "invalid_message" }, 400);
+    return json({ ok: false, error: "invalid_message" }, 400, cors);
   }
 
   const ip =
@@ -73,7 +98,7 @@ export async function onRequestPost({ request, env }) {
   ).bind(ip).first();
 
   if (rl && rl.window_start > windowStart && rl.count >= RATE_LIMIT_MAX) {
-    return json({ ok: false, error: "rate_limited" }, 429);
+    return json({ ok: false, error: "rate_limited" }, 429, cors);
   }
   if (rl && rl.window_start > windowStart) {
     await env.DB.prepare(
@@ -117,13 +142,23 @@ export async function onRequestPost({ request, env }) {
     }
   }
 
-  return json({ ok: true });
+  return json({ ok: true }, 200, cors);
 }
 
 // Anything other than POST: method not allowed.
+// OPTIONS is the CORS preflight: answer it so allowed origins can POST.
 export async function onRequest({ request }) {
-  if (request.method !== "POST") {
-    return json({ ok: false, error: "method_not_allowed" }, 405);
+  const cors = corsHeaders(request);
+  if (request.method === "OPTIONS") {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        ...cors,
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Max-Age": "86400",
+      },
+    });
   }
-  return json({ ok: false, error: "method_not_allowed" }, 405);
+  return json({ ok: false, error: "method_not_allowed" }, 405, cors);
 }

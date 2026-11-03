@@ -7,6 +7,8 @@ import workAi from "./assets/work-ai-systems.webp";
 import workAdvisory from "./assets/work-advisory.webp";
 import workStore from "./assets/work-store.webp";
 import glenrideLogo from "./assets/glenride-logo.png";
+import brandLogo from "./assets/dvaughn-house-logo.png";
+import { CursorTrail, Parallax, useRevealOnScroll } from "./motion.jsx";
 
 const ORG_URL = import.meta.env.VITE_ORG_URL || (import.meta.env.DEV ? 'http://127.0.0.1:8085' : 'https://dvaughnhouse.org');
 
@@ -49,15 +51,10 @@ function Header({ base = "" }) {
   // Absolute paths (e.g. /about) must not be prefixed with base, or "/" + "/about" becomes "//about" (a hostname, not a page).
   const navHref = (href) => (href.startsWith("/") ? href : `${base}${href}`);
   return (
-    <header className="sticky top-0 z-50 border-b border-line bg-paper/95 dark:border-line-dark dark:bg-night/95">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6 lg:px-8">
-        <a href={homeHref} className="leading-none">
-          <span className="block font-display text-lg font-extrabold tracking-tight text-ink dark:text-cream">
-            D&rsquo;Vaughn House
-          </span>
-          <span className="mt-1 hidden text-[11px] font-medium tracking-wide text-ink-soft sm:block dark:text-cream-soft">
-            Independent AI Orchestrator
-          </span>
+    <header className="fixed inset-x-0 top-4 z-50 px-4 sm:px-6">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between rounded-full border border-line bg-paper/95 px-6 shadow-lg shadow-ink/10 backdrop-blur dark:border-line-dark dark:bg-night/95 lg:px-8">
+        <a href={homeHref} className="leading-none" aria-label="D'Vaughn House — home">
+          <img src={brandLogo} alt="D'Vaughn House — Build your way out." className="h-10 w-auto" />
         </a>
         <nav className="hidden items-center gap-8 md:flex" aria-label="Primary">
           {NAV.map((item) => (
@@ -108,7 +105,7 @@ function Header({ base = "" }) {
         </button>
       </div>
       {open && (
-        <nav className="border-t border-line px-6 py-4 md:hidden dark:border-line-dark" aria-label="Mobile">
+        <nav className="mx-auto mt-2 max-w-6xl rounded-3xl border border-line bg-paper/95 px-6 py-4 shadow-lg shadow-ink/10 backdrop-blur md:hidden dark:border-line-dark dark:bg-night/95" aria-label="Mobile">
           <ul className="space-y-3">
             {NAV.map((item) => (
               <li key={item.href}>
@@ -158,7 +155,7 @@ function Header({ base = "" }) {
         </nav>
       )}
       {authError && AUTH_ERROR_TEXT[authError] && (
-        <div className="border-t border-line px-6 py-2 text-center text-sm text-ink-soft dark:border-line-dark dark:text-cream-soft">
+        <div className="mx-auto mt-2 max-w-6xl rounded-full border border-line bg-paper/95 px-6 py-2 text-center text-sm text-ink-soft shadow-lg dark:border-line-dark dark:bg-night/95 dark:text-cream-soft">
           {AUTH_ERROR_TEXT[authError]}
         </div>
       )}
@@ -187,26 +184,28 @@ function Hero() {
   return (
     <>
       <section aria-label="Introduction" className="relative isolate overflow-hidden bg-night text-cream">
-        <img
-          src={heroBanner}
-          alt="A diverse group of professionals collaborating around a table in a bright, grand conservatory"
-          className="absolute inset-0 h-full w-full object-cover"
-          loading="eager"
-        />
+        <Parallax className="absolute inset-0" speed={0.18}>
+          <img
+            src={heroBanner}
+            alt="A diverse group of professionals collaborating around a table in a bright, grand conservatory"
+            className="h-full w-full object-cover animate-kenburns"
+            loading="eager"
+          />
+        </Parallax>
         <div aria-hidden="true" className="absolute inset-0 bg-ink/65" />
         <div className="relative mx-auto flex min-h-[88vh] max-w-6xl flex-col justify-center px-6 py-24 lg:px-8">
           <div className="max-w-3xl">
-            <h1 className="font-display text-5xl font-extrabold leading-[1.02] tracking-[-0.02em] text-cream sm:text-6xl lg:text-7xl">
+            <h1 className="hero-enter hero-enter-1 font-display text-5xl font-extrabold leading-[1.02] tracking-[-0.02em] text-cream sm:text-6xl lg:text-7xl">
               Understand the system.
               <span className="block">Build your way out.</span>
             </h1>
-            <p className="mt-8 max-w-3xl text-[1.0625rem] leading-[1.7] text-cream/85">
+            <p className="hero-enter hero-enter-2 mt-8 max-w-3xl text-[1.0625rem] leading-[1.7] text-cream/85">
               You don&rsquo;t need another lecture about AI. You need less
               busywork, straight facts on drug shortages, and plain talk on where
               things are headed — from someone who spent fifteen years inside
               the system.
             </p>
-            <div className="mt-10 flex flex-wrap gap-4">
+            <div className="hero-enter hero-enter-3 mt-10 flex flex-wrap gap-4">
               <a
                 href="#work"
                 className="inline-flex items-center rounded-full bg-sienna px-6 py-3 text-sm font-semibold text-ink transition-colors hover:bg-sienna-deep hover:text-paper"
@@ -235,7 +234,7 @@ function Hero() {
       </section>
       <section aria-label="What you get" className="bg-paper dark:bg-night">
         <div className="mx-auto max-w-6xl px-6 py-14 lg:px-8">
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
+          <div className="reveal grid grid-cols-1 gap-5 sm:grid-cols-3">
             {benefits.map((b) => (
               <div
                 key={b.n}
@@ -402,7 +401,7 @@ function AboutPage() {
         </p>
       </div>
 
-      <div className="mt-14 flex flex-col gap-8 rounded-2xl border border-line bg-paper p-8 sm:p-10 sm:flex-row sm:items-center dark:border-line-dark dark:bg-night-card">
+      <div className="reveal mt-14 flex flex-col gap-8 rounded-2xl border border-line bg-paper p-8 sm:p-10 sm:flex-row sm:items-center dark:border-line-dark dark:bg-night-card">
         <img
           src={glenrideLogo}
           alt="Glenride think tank logo"
@@ -427,7 +426,7 @@ function AboutPage() {
       <h2 className="mt-14 font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
         The five pillars
       </h2>
-      <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="reveal mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {PILLARS.map((p) => (
           <div
             key={p.title}
@@ -491,7 +490,7 @@ function System() {
           <p className="mt-6 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
             The AI chief-of-staff OS does the work &mdash; directed, logged, verified. Glenride attests it &mdash; signed proof that it happened as claimed. SpinWave publishes the best of it &mdash; a library where knowledge isn&rsquo;t just free, it&rsquo;s proven. Every attestation makes the next one stronger.
           </p>
-          <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div className="reveal mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
             {steps.map((s) => (
               <div key={s.n} className="rounded-2xl border border-line bg-paper p-7 dark:border-line-dark dark:bg-night-card">
                 <p className="font-mono text-xs font-bold tracking-widest text-sienna-deep dark:text-sienna">{s.n}</p>
@@ -511,7 +510,7 @@ function System() {
           <h2 className="font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
             What Glenride&rsquo;s working on now.
           </h2>
-          <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div className="reveal mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
             {areas.map((a) => (
               <div key={a.title} className="rounded-2xl border border-line bg-paper p-7 dark:border-line-dark dark:bg-night-card">
                 <h3 className="font-display text-lg font-bold tracking-tight text-ink dark:text-cream">{a.title}</h3>
@@ -585,7 +584,7 @@ function Work() {
         <h2 className="font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
           What I&rsquo;m building
         </h2>
-        <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3 lg:gap-8">
+        <div className="reveal mt-10 grid grid-cols-1 gap-6 md:grid-cols-3 lg:gap-8">
           {cards.map((card) => (
             <a
               key={card.title}
@@ -767,12 +766,14 @@ function DonatePage() {
   return (
     <div>
       <section aria-label="Support the mission" className="relative isolate overflow-hidden bg-night text-cream">
-        <img
-          src={heroDonate}
-          alt="A speaker on stage before a packed grand hall — carrying the mission to the people"
-          className="absolute inset-0 h-full w-full object-cover"
-          loading="eager"
-        />
+        <Parallax className="absolute inset-0" speed={0.18}>
+          <img
+            src={heroDonate}
+            alt="A speaker on stage before a packed grand hall — carrying the mission to the people"
+            className="h-full w-full object-cover animate-kenburns"
+            loading="eager"
+          />
+        </Parallax>
         <div aria-hidden="true" className="absolute inset-0 bg-ink/60" />
         <div className="relative mx-auto flex min-h-[72vh] max-w-6xl flex-col justify-center px-6 py-24 lg:px-8">
           <div className="max-w-2xl">
@@ -805,7 +806,7 @@ function DonatePage() {
         </p>
       </div>
 
-      <div className="mt-10 space-y-12 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
+      <div className="reveal mt-10 space-y-12 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
         <section>
           <h2 className="font-display text-3xl font-bold tracking-tight text-ink dark:text-cream">
             Where does my donation go?
@@ -1041,7 +1042,7 @@ function PatronPage() {
       </section>
 
       <div className="mx-auto max-w-6xl px-6 py-14 sm:py-16 lg:px-8">
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="reveal grid gap-6 md:grid-cols-3">
           {PATRON_TIERS.map((tier) => (
             <div
               key={tier.id}
@@ -1246,7 +1247,7 @@ function LegalPage({ doc }) {
         Last updated: {doc.updated}
       </p>
       <p className="mt-6 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">{doc.intro}</p>
-      <div className="mt-10 space-y-8">
+      <div className="reveal mt-10 space-y-8">
         {doc.sections.map((s) => (
           <section key={s.heading}>
             <h2 className="font-display text-2xl font-bold text-ink dark:text-cream">
@@ -1317,7 +1318,7 @@ function FirstBuildPage() {
       <h2 className="mt-16 font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
         What happens in the week
       </h2>
-      <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-3">
+      <div className="reveal mt-8 grid grid-cols-1 gap-6 md:grid-cols-3">
         {steps.map((s) => (
           <div key={s.n} className="rounded-2xl border border-line bg-paper p-7 dark:border-line-dark dark:bg-night-card">
             <p className="font-mono text-xs font-bold tracking-widest text-sienna-deep dark:text-sienna">{s.n}</p>
@@ -1416,9 +1417,7 @@ function Footer({ base = "" }) {
     <footer className="border-t border-line bg-paper dark:border-line-dark dark:bg-night">
       <div className="mx-auto max-w-6xl px-6 py-10 lg:px-8">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-          <p className="font-display text-sm font-bold tracking-tight text-ink dark:text-cream">
-            D&rsquo;Vaughn House
-          </p>
+          <img src={brandLogo} alt="D'Vaughn House — Build your way out." className="h-8 w-auto" />
           <nav className="flex flex-wrap gap-x-6 gap-y-2" aria-label="Footer">
             {NAV.map((item) => (
               <a
@@ -1477,6 +1476,7 @@ function Footer({ base = "" }) {
 export default function App({ path: propPath } = {}) {
   const path =
     propPath ?? (typeof window !== "undefined" ? window.location.pathname : "/");
+  useRevealOnScroll();
   const isDonate = path.startsWith("/donate");
   const isPatron = path.startsWith("/patron");
   const isAbout = path.startsWith("/about");
@@ -1486,6 +1486,7 @@ export default function App({ path: propPath } = {}) {
   if (isDonate) {
     return (
       <div className="min-h-screen bg-paper font-serif text-ink antialiased dark:bg-night dark:text-cream">
+        <CursorTrail />
         <Header base="/" />
         <main>
           <DonatePage />
@@ -1497,8 +1498,9 @@ export default function App({ path: propPath } = {}) {
   if (isPatron) {
     return (
       <div className="min-h-screen bg-paper font-serif text-ink antialiased dark:bg-night dark:text-cream">
+        <CursorTrail />
         <Header base="/" />
-        <main>
+        <main className="pt-24">
           <PatronPage />
         </main>
         <Footer base="/" />
@@ -1508,8 +1510,9 @@ export default function App({ path: propPath } = {}) {
   if (isAbout) {
     return (
       <div className="min-h-screen bg-paper font-serif text-ink antialiased dark:bg-night dark:text-cream">
+        <CursorTrail />
         <Header base="/" />
-        <main>
+        <main className="pt-24">
           <AboutPage />
         </main>
         <Footer base="/" />
@@ -1519,8 +1522,9 @@ export default function App({ path: propPath } = {}) {
   if (isFirstBuild) {
     return (
       <div className="min-h-screen bg-paper font-serif text-ink antialiased dark:bg-night dark:text-cream">
+        <CursorTrail />
         <Header base="/" />
-        <main>
+        <main className="pt-24">
           <FirstBuildPage />
         </main>
         <Footer base="/" />
@@ -1530,8 +1534,9 @@ export default function App({ path: propPath } = {}) {
   if (isTerms || isPrivacy) {
     return (
       <div className="min-h-screen bg-paper font-serif text-ink antialiased dark:bg-night dark:text-cream">
+        <CursorTrail />
         <Header base="/" />
-        <main>
+        <main className="pt-24">
           <LegalPage doc={isTerms ? LEGAL_DOCS.terms : LEGAL_DOCS.privacy} />
         </main>
         <Footer base="/" />
@@ -1540,6 +1545,7 @@ export default function App({ path: propPath } = {}) {
   }
   return (
     <div id="top" className="min-h-screen bg-paper font-serif text-ink antialiased dark:bg-night dark:text-cream">
+      <CursorTrail />
       <Header />
       <main>
         <Hero />

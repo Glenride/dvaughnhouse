@@ -37,3 +37,104 @@
     }
   }
 }
+
+/* Portfolio refresh — full motion layer (Nov 2, 2026 decision).
+   Staged entrances, Ken Burns hero zoom, parallax, cursor trail.
+   All of it switches off under prefers-reduced-motion. */
+@layer components {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  section[id],
+  div[id="top"] {
+    scroll-margin-top: 6.5rem;
+  }
+
+  .js-motion .reveal {
+    opacity: 0;
+    transform: translateY(22px);
+    transition:
+      opacity 0.8s ease,
+      transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .reveal-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @keyframes kenburns {
+    from {
+      transform: scale(1) translateY(0);
+    }
+    to {
+      transform: scale(1.09) translateY(-1.5%);
+    }
+  }
+
+  .animate-kenburns {
+    animation: kenburns 26s ease-in-out infinite alternate;
+  }
+
+  @keyframes hero-enter {
+    from {
+      opacity: 0;
+      transform: translateY(28px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .hero-enter {
+    animation: hero-enter 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .hero-enter-1 {
+    animation-delay: 0.1s;
+  }
+
+  .hero-enter-2 {
+    animation-delay: 0.25s;
+  }
+
+  .hero-enter-3 {
+    animation-delay: 0.4s;
+  }
+
+  .cursor-trail {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .cursor-trail-dot {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 9999px;
+    background-color: #e97451;
+    transition: opacity 0.65s ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .js-motion .reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+
+    .animate-kenburns,
+    .hero-enter {
+      animation: none;
+    }
+
+    .cursor-trail {
+      display: none;
+    }
+  }
+}
