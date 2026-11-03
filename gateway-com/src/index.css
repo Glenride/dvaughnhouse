@@ -527,13 +527,16 @@
   .ph-room-top > * { min-width: 0; }
   .ph-room-copy { min-width: 0; }
   .ph-room-icon { min-width: 0; }
-  /* Titles fit on one line: 28px is sized from the longest card name
-     ("The Free-Will Machine", 292.7px at 28px in Bricolage Grotesque 700)
-     against the 320px mobile card content width at 390px viewport — one
+  /* Titles are a modest header scale on mobile, still one line each:
+     22px is sized from the longest card name ("The Free-Will Machine",
+     292.7px at 28px in Bricolage Grotesque 700, so ~230px at 22px)
+     against the 320px mobile card content width at 390px viewport —
+     and it also fits the ~250px content width at 320px viewport. One
      fixed size for every card, no wrapping, no per-card shrinking.
+     Smaller words, more air, per the owner's standing direction.
      !important is required: homepage rooms set --ph-title inline
      (56–84px), which beats any plain stylesheet rule. */
-  .ph-room-card h2 { font-size: 28px !important; }
+  .ph-room-card h2 { font-size: 22px !important; }
   .ph-room-btn { max-width: 100%; overflow-wrap: anywhere; }
   .ph-room-btn svg { flex: none; }
   .ph-registry { min-width: 0; }
