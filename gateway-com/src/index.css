@@ -806,3 +806,27 @@ html.has-cursor button { cursor: none; }
   .ph-cursor-dot,
   .ph-cursor-ring { display: none !important; }
 }
+
+/* --- Phone responsiveness (Nov 2, 2026): room cards must size to content ---
+   Desktop rooms are deliberately near-full-screen (92vh) and mostly empty;
+   on a phone that reads as broken: tall blank cards, a 180–340px gap before
+   the rooms, and a nowrap hero name that can widen the whole page past the
+   viewport and shift every card. Mobile-only: cards size to their content,
+   the rooms gap shrinks, the hero name may wrap, and horizontal overflow
+   is clipped so no single element can push the page wider than the phone. */
+html,
+body {
+  overflow-x: clip;
+}
+@media (max-width: 640px) {
+  .ph-room-card {
+    min-height: 0;
+  }
+  .ph-work-gap {
+    padding-top: 48px;
+  }
+  .ph-hero-name {
+    white-space: normal;
+    font-size: clamp(40px, 12vw, 56px);
+  }
+}
