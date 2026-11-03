@@ -2,7 +2,7 @@
 //
 // One edit here propagates to every render site: the homepage rooms,
 // the /projects cards, the bio parenthetical, the /thoughts Elsewhere
-// entries, and the footer "Store — The Den" link. A rename, URL change,
+// entries, and the footer "The Den" link. A rename, URL change,
 // or status flip is a one-field edit in this file — never a site-wide hunt.
 //
 // Fields: id, label (exact display name), href (exact URL), status
@@ -136,7 +136,7 @@ const RAW_PROJECTS = [
   },
   {
     id: "den",
-    label: "Store — The Den",
+    label: "The Den",
     href: "https://den.dvaughnhouse.com",
     status: "Pre-launch",
     state: "pre-launch",

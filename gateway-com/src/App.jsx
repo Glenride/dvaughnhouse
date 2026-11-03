@@ -796,7 +796,7 @@ function Footer() {
               href={projectById("den").href}
               className="text-sm text-ink-soft underline-offset-4 transition-colors hover:text-ink hover:underline dark:text-cream-soft dark:hover:text-cream"
             >
-              Store — The Den
+              The Den
             </a>
             <a
               href="/donate"
