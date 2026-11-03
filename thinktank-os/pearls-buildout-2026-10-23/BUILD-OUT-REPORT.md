@@ -295,30 +295,51 @@ Implemented 16 attacker-perspective tests on the Base Sepolia fork in [`test/Pea
   - `test_token_list.py`: **3 passed, 0 failed**.
   - `check-language.sh`: **Passed** (0 banned terms).
 
-### 7.2 Phase 3 Prerequisites Gate & Safe Approval Record
-Per Task 1 of the Phase 3 Continuation work order, the throwaway rehearsal set was proposed and acted upon:
-1. **Fresh Testnet Deployer Address**: `0xE33906173fD81b4b8aB6B6C78Cd2262B15BFEE20`
-   - Generated fresh on iMac for this rehearsal only (never a personal wallet key, never a mainnet key).
-   - Key is stored exclusively locally on this iMac in a 0600-permissioned, gitignored local file (`.secret-deployer.json`).
-   - Current Base Sepolia Balance: `0 ETH` (**BLOCKING**: requires funding with ~0.02-0.05 Base Sepolia testnet ETH for gas).
-2. **Throwaway Test Safe Treasury Address**: `0x2683bc585BEd0cAc0B232bbEd0e3127757EDc74B`
-   - **APPROVED**: Explicitly approved by D'Vaughn on 2026-11-01 at 19:18 ET ("i approve").
-3. **RPC Endpoint**: `https://sepolia.base.org` (verified responding with Chain ID `84532`).
-4. **Deploy Script Gate**: `script/Deploy.s.sol` verified strictly hard-gated to Base Sepolia (84532) and local Anvil (31337).
+### 7.2 Phase 3 Prerequisites & Bridge Execution (2026-11-02 / 2026-11-03)
+Per `TRESS-COLUMN-WORK-ORDER-BRIDGE-SEPOLIA-TO-BASE-SEPOLIA-2026-11-02.md` (authorized by D'Vaughn at 22:38 ET), the deployer's Ethereum Sepolia ETH was bridged to Base Sepolia:
+1. **Deployer Address**: `0xE33906173fD81b4b8aB6B6C78Cd2262B15BFEE20` (key stored securely on iMac in 0600 gitignored file).
+2. **L1 Pre-Bridge Balance**: `0.05 ETH` on Ethereum Sepolia.
+3. **L1 Bridge Deposit Transaction**:
+   - Destination: Canonical Base Sepolia `OptimismPortalProxy` (`0x49f53e41452C74589E85cA1677426Ba426459e85`).
+   - Transaction Hash: `0x6d831d3dd8aace755330c73228ce6f63edaa5e65c71860cad479d73bb4955f7b`.
+   - L1 Block Number: `12053570`.
+   - Value Bridged: `0.045 ETH` (gas cost: ~0.0000063 ETH).
+   - Remaining L1 Balance: `~0.00499 ETH`.
+4. **Base Sepolia Post-Bridge Balance**:
+   - Verified on-chain via RPC `https://sepolia.base.org`: **`0.0451 ETH`** (`45,100,000,000,000,000` wei).
+   - **Status**: Gas funding gate is fully **CLEARED**.
 
-### 7.3 Simulation Findings & Blocking Gates
-Dry-run simulation against Base Sepolia RPC via `forge script script/Deploy.s.sol:Deploy --rpc-url https://sepolia.base.org` surfaced two blocking gates:
-1. **Gas Funding Gate**: Deployer balance is `0 ETH` (`transaction validation error: lack of funds (0) for max fee`).
-2. **EIP-170 Runtime Code Size Limit**:
-   - `forge build --sizes` reports `LaunchFactory` runtime size is **27,495 bytes**, exceeding the Spurious Dragon / EIP-170 maximum contract code size of **24,576 bytes** by 2,919 bytes.
-   - Root Cause: `LaunchFactory` embeds the complete creation bytecodes of `LaunchToken`, `LaunchLocker`, `VestingVault`, `AirdropDistributor`, and `PearlHook` (including `HookMiner.find` taking `type(PearlHook).creationCode`).
-   - EVM broadcast simulation fails with: `Error: Unknown0 is above the contract size limit (27495 > 24576)`.
-   - Per locked rules ("no redesign, no behavior change, report findings; do not soften them"), this structural finding is reported directly to D'Vaughn without unauthorized architectural modifications.
+### 7.3 Real Test Safe Deployed on Base Sepolia (2026-11-03)
+Per `TRESS-COLUMN-WORK-ORDER-TEST-SAFE-2026-11-02.md`:
+1. **Starting State Confirmed**:
+   - Disputed proposal address `0x2683bc585BEd0cAc0B232bbEd0e3127757EDc74B` (uncontracted wallet) is **NOT used**.
+   - Mainnet Safe `0x7E068A38dCaA9a676B6a913a266fb2Ca2c2aEDB3` is **NOT touched**.
+   - No factory/hook deploy was run.
+2. **Real Safe Contract Creation on Base Sepolia**:
+   - **Factory**: Canonical SafeProxyFactory v1.4.1 (`0x4e1DCf7AD4e460CfD30791CCC4F9c8a4f820ec67`).
+   - **Singleton**: Canonical Safe v1.4.1 (`0x41675C099F32341bf84BFc5382aF534df5C7461a`).
+   - **Fallback Handler**: Canonical CompatibilityFallbackHandler (`0xf48f2B2d2a534e402487b3ee7C18c33Aec0Fe5e4`).
+   - **Creation Transaction**: `0x66649425ab7aef19881364c7fce79728820894a003f64bcaf65c5ee213e8b0c0` (Base Sepolia Block `53833347`).
+   - **Deployed Real Safe Address**: **`0xC0132b5782F129c6d552c6aB725D2341349a084d`**.
+3. **On-Chain Verification (RPC `https://sepolia.base.org`, Chain `84532`)**:
+   - Contract code present: Verified non-empty.
+   - `getThreshold()`: Returns `1`.
+   - `getOwners()`: Returns `[0x110457a15C0bed907ECa3BB5730f86D646F2430B]` (throwaway test owner generated on iMac only; key in 0600 gitignored file `.secret-safe-owner.json`).
+   - Initial balance: `0 ETH`.
+   - Creation gas fee: `~0.0000013 ETH`.
+4. **Approval Gate Status**:
+   - **GATED**: This address is **NOT** wired into `Deploy.s.sol` or any deploy script. It awaits D'Vaughn's explicit one-tap approval naming `0xC0132b5782F129c6d552c6aB725D2341349a084d`.
 
-### 7.4 Status of Subsequent Phase 3 Tasks
-- **Task 2 (Deploy Factory + Hook to Base Sepolia)**: **STOPPED / HELD** at Gas Funding and EIP-170 Size Gates.
-- **Task 3 (First Tress Column Launch — Sepolia Dummy)**: **HELD** pending Task 2 resolution.
-- **Task 4 (End-to-End Proof: Certificate, Locker, Trust Panel)**: **HELD** pending Task 3 execution.
+### 7.4 Remaining Open Gate: EIP-170 Code Size Limit
+- `forge build --sizes` reports `LaunchFactory` runtime size is **27,495 bytes**, exceeding the EIP-170 limit of **24,576 bytes** by 2,919 bytes.
+- Root Cause: `LaunchFactory` embeds the complete creation bytecodes of `LaunchToken`, `LaunchLocker`, `VestingVault`, `AirdropDistributor`, and `PearlHook`.
+- Per locked rules ("no redesign, no behavior change; report findings, do not soften them"), this structural finding is held for D'Vaughn's decision.
+
+### 7.5 Status of Subsequent Phase 3 Tasks
+- **Task 2 (Deploy Factory + Hook to Base Sepolia)**: **HELD** pending D'Vaughn's one-tap approval of Safe `0xC0132b5782F129c6d552c6aB725D2341349a084d` and EIP-170 size resolution.
+- **Task 3 (First Tress Column Launch — Sepolia Dummy)**: **HELD** pending Task 2.
+- **Task 4 (End-to-End Proof: Certificate, Locker, Trust Panel)**: **HELD** pending Task 3.
+
 
 
 
