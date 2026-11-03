@@ -186,10 +186,10 @@ export function Motto() {
   return (
     <section className="ph-motto" aria-label="Introduction">
       <div className="ph-wrap">
-        <h2 className="ph-motto-text reveal">
+        <h2 className="ph-motto-text reveal reveal-replay">
           Understand the system. <em>Build your way out.</em>
         </h2>
-        <p className="ph-motto-role reveal reveal-delay">Independent AI Orchestrator &middot; Cincinnati, Ohio</p>
+        <p className="ph-motto-role reveal reveal-delay reveal-replay">Independent AI Orchestrator &middot; Cincinnati, Ohio</p>
       </div>
     </section>
   );

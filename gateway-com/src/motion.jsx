@@ -15,6 +15,12 @@ function reducedMotion() {
 // Global reveal observer: any element with class "reveal" fades in when it
 // scrolls into view. The hiding CSS only applies once JS adds the
 // js-motion class, so no-JS renders stay fully visible.
+// Elements marked "reveal-replay" (the motto) re-play on EVERY entry:
+// the class is removed when they leave view, so the entrance beat is
+// observable whenever the section scrolls into view — not just the first
+// time. A plain reveal fires once and then stays static forever, which is
+// why a fast phone fling (or a restored scroll position) could leave the
+// motto looking motionless on every later look.
 export function useRevealOnScroll() {
   useEffect(() => {
     if (typeof document === "undefined") return undefined;
@@ -30,7 +36,11 @@ export function useRevealOnScroll() {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add("reveal-visible");
-            observer.unobserve(entry.target);
+            if (!entry.target.classList.contains("reveal-replay")) {
+              observer.unobserve(entry.target);
+            }
+          } else if (entry.target.classList.contains("reveal-replay")) {
+            entry.target.classList.remove("reveal-visible");
           }
         });
       },
