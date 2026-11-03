@@ -280,5 +280,110 @@ Implemented 16 attacker-perspective tests on the Base Sepolia fork in [`test/Pea
 - **Token-List Tests**: **3 passed, 0 failed**
 - **Language Check**: **Passed** (0 banned words)
 
+---
+
+## 7. Phase 3 Continuation: Base Sepolia Rehearsal & Verification (2026-11-01)
+
+### 7.1 Phase 2 Addendum (H-2 Triage Correction & Re-Verification)
+- **H-2 Fix**: In accordance with `PEARLS-WORK-ORDER-PHASE2-ADDENDUM-H2-2026-10-29.md` and `TRESS-COLUMN-WORK-ORDER-PHASE3-CONTINUATION-2026-11-01.md`, `LaunchLocker.sol` has been updated to inherit OpenZeppelin's `ReentrancyGuard`, and `deposit(address,uint256)` is explicitly decorated with the `nonReentrant` modifier. State variable assignments strictly follow the view check (`IERC721.ownerOf(tokenId) != address(this)`).
+- **Toolchain Verification**:
+  - `forge build`: Clean compilation with Solc 0.8.24 via IR.
+  - `forge test`: **75 passed, 0 failed, 0 skipped** (45 unit/fuzz + 30 Base Sepolia fork).
+  - `halmos`: **11 invariant proofs passed** (2.83s).
+  - `aderyn`: Rescanned (`docs/aderyn-2026-11-01.md`), H-2 confirmed mitigated in code with `nonReentrant`.
+  - `slither`: Rescanned (`docs/slither-2026-11-01.txt`), **0 High, 0 Medium**.
+  - `test_token_list.py`: **3 passed, 0 failed**.
+  - `check-language.sh`: **Passed** (0 banned terms).
+
+### 7.2 Phase 3 Prerequisites & Bridge Execution (2026-11-02 / 2026-11-03)
+Per `TRESS-COLUMN-WORK-ORDER-BRIDGE-SEPOLIA-TO-BASE-SEPOLIA-2026-11-02.md` (authorized by D'Vaughn at 22:38 ET), the deployer's Ethereum Sepolia ETH was bridged to Base Sepolia:
+1. **Deployer Address**: `0xE33906173fD81b4b8aB6B6C78Cd2262B15BFEE20` (key stored securely on iMac in 0600 gitignored file).
+2. **L1 Pre-Bridge Balance**: `0.05 ETH` on Ethereum Sepolia.
+3. **L1 Bridge Deposit Transaction**:
+   - Destination: Canonical Base Sepolia `OptimismPortalProxy` (`0x49f53e41452C74589E85cA1677426Ba426459e85`).
+   - Transaction Hash: `0x6d831d3dd8aace755330c73228ce6f63edaa5e65c71860cad479d73bb4955f7b`.
+   - L1 Block Number: `12053570`.
+   - Value Bridged: `0.045 ETH` (gas cost: ~0.0000063 ETH).
+   - Remaining L1 Balance: `~0.00499 ETH`.
+4. **Base Sepolia Post-Bridge Balance**:
+   - Verified on-chain via RPC `https://sepolia.base.org`: **`0.0451 ETH`** (`45,100,000,000,000,000` wei).
+   - **Status**: Gas funding gate is fully **CLEARED**.
+
+### 7.3 Real Test Safe Deployed on Base Sepolia (2026-11-03)
+Per `TRESS-COLUMN-WORK-ORDER-TEST-SAFE-2026-11-02.md`:
+1. **Starting State Confirmed**:
+   - Disputed proposal address `0x2683bc585BEd0cAc0B232bbEd0e3127757EDc74B` (uncontracted wallet) is **NOT used**.
+   - Mainnet Safe `0x7E068A38dCaA9a676B6a913a266fb2Ca2c2aEDB3` is **NOT touched**.
+   - No factory/hook deploy was run.
+2. **Real Safe Contract Creation on Base Sepolia**:
+   - **Factory**: Canonical SafeProxyFactory v1.4.1 (`0x4e1DCf7AD4e460CfD30791CCC4F9c8a4f820ec67`).
+   - **Singleton**: Canonical Safe v1.4.1 (`0x41675C099F32341bf84BFc5382aF534df5C7461a`).
+   - **Fallback Handler**: Canonical CompatibilityFallbackHandler (`0xf48f2B2d2a534e402487b3ee7C18c33Aec0Fe5e4`).
+   - **Creation Transaction**: `0x66649425ab7aef19881364c7fce79728820894a003f64bcaf65c5ee213e8b0c0` (Base Sepolia Block `53833347`).
+   - **Deployed Real Safe Address**: **`0xC0132b5782F129c6d552c6aB725D2341349a084d`**.
+3. **On-Chain Verification (RPC `https://sepolia.base.org`, Chain `84532`)**:
+   - Contract code present: Verified non-empty.
+   - `getThreshold()`: Returns `1`.
+   - `getOwners()`: Returns `[0x110457a15C0bed907ECa3BB5730f86D646F2430B]` (throwaway test owner generated on iMac only; key in 0600 gitignored file `.secret-safe-owner.json`).
+   - Initial balance: `0 ETH`.
+   - Creation gas fee: `~0.0000013 ETH`.
+4. **Approval Gate Status**:
+   - **GATED**: This address is **NOT** wired into `Deploy.s.sol` or any deploy script. It awaits D'Vaughn's explicit one-tap approval naming `0xC0132b5782F129c6d552c6aB725D2341349a084d`.
+
+### 7.4 Remaining Open Gate: EIP-170 Code Size Limit
+- `forge build --sizes` reports `LaunchFactory` runtime size is **27,495 bytes**, exceeding the EIP-170 limit of **24,576 bytes** by 2,919 bytes.
+- Root Cause: `LaunchFactory` embeds the complete creation bytecodes of `LaunchToken`, `LaunchLocker`, `VestingVault`, `AirdropDistributor`, and `PearlHook`.
+- Per locked rules ("no redesign, no behavior change; report findings, do not soften them"), this structural finding is held for D'Vaughn's decision.
+
+### 7.5 Status of Subsequent Phase 3 Tasks
+- **Task 2 (Deploy Factory + Hook to Base Sepolia)**: **HELD** pending D'Vaughn's one-tap approval of Safe `0xC0132b5782F129c6d552c6aB725D2341349a084d` and EIP-170 size resolution.
+- **Task 3 (First Tress Column Launch — Sepolia Dummy)**: **HELD** pending Task 2.
+- **Task 4 (End-to-End Proof: Certificate, Locker, Trust Panel)**: **HELD** pending Task 3.
+
+---
+
+## 8. Three Mutually Exclusive, Yet Interlocking Applications Architecture (2026-11-03)
+
+In accordance with D'Vaughn's directive ("Tress Column, back office ops console, and trading terminal must be three mutually exclusive, yet interlocking apps"), the frontend and operational layer has been partitioned into three distinct applications sharing design tokens, canonical contract constants, and architectural invariants.
+
+### 8.1 Architecture Matrix
+
+| Dimension | App 1: Tress Column Launchpad | App 2: Trading Terminal | App 3: Back Office Ops Console |
+| :--- | :--- | :--- | :--- |
+| **Domain** | `tc.dvaughnhouse.com` | `trade.tc.dvaughnhouse.com` | `ops.tc.dvaughnhouse.com` |
+| **Staging Route** | `/staging/tress-column` | `/staging/terminal` | `/staging/ops-console` |
+| **Primary Audience** | Public Creators & Launchers | Public Traders & Liquidity Providers | Staff Operators (Internal Operations) |
+| **Core Functions** | Fair launch deployment wizard, certificate generator, locker verification | Non-custodial DEX routing (Uniswap v4 + PearlHook), candlestick chart, volume gate tracker | Plus+ subscription tiers, airdrop campaign tracking, telemetry, fee reconciliation |
+| **Routing Markup Switch** | N/A | Hardcoded OFF / Disabled (0% routing fee) | Monitored (zero custodial take) |
+| **Treasury & Custody** | Non-custodial | Non-custodial | Strict accounting to on-chain Safe `0xC0132b5782F129c6d552c6aB725D2341349a084d` |
+| **Hard Negatives** | No privileged admin keys | No wallet custody, no proprietary execution desk | Zero custody, zero withdrawal approvals, no user freezing, no admin keys |
+
+### 8.2 Shared Design System & Constants
+- **Tailwind Tokens**: Registered in `tailwind.config.js`:
+  - `pearls-white`: `#FFFFFF`
+  - `nacre-cream`: `#FAF8F5`
+  - `abyssal-gold`: `#D4AF37` (Primary brand accent)
+  - `signal-orange`: `#FF5500` (Gate/warning accent)
+  - `abyssal-black`: `#0A0A0A` (Background depth)
+  - `abyssal-card`: `#121212` (Card surfaces)
+  - `abyssal-line`: `#1F1F1F` (Borders and separators)
+- **Canonical Constants** (`resources/js/TressColumn/contracts.js`):
+  - Base Sepolia PoolManager: `0x05E73354cFDd6745C338b50BcFDfA3Aa6fA03408`
+  - Deployed Real Safe: `0xC0132b5782F129c6d552c6aB725D2341349a084d`
+  - Canonical Volume Gate: `$10,000,000` (10M quote currency)
+  - Canonical Fee: `30 bps` (0.30% quote currency post-gate; 0 bps pre-gate)
+  - Plus+ Subscription Tiers: Sapphire ($7/mo), Emerald ($27/mo), Ruby ($97/mo)
+  - Airdrop Campaign Fee: `0.0194 ETH`
+
+### 8.3 Implementation & Verification
+- **Vite Build**: Successfully compiled 100% cleanly in 1.04s (`npm run build`).
+- **Route Tests**: 2/2 tests passed (6 assertions) via `tests/Feature/TressColumnThreeAppsTest.php`.
+- **Pre-Commit Language Check**: `check-language.sh` passed with 0 banned words.
+- **Architectural Specification**: Saved in `file:///home/housedv/.gemini/antigravity/brain/6a736636-5ef6-4b54-b24b-2e9663c5ee7b/tress_column_three_app_architecture.md`.
+
+
+
+
+
 
 

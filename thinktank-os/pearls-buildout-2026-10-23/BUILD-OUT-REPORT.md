@@ -340,6 +340,48 @@ Per `TRESS-COLUMN-WORK-ORDER-TEST-SAFE-2026-11-02.md`:
 - **Task 3 (First Tress Column Launch — Sepolia Dummy)**: **HELD** pending Task 2.
 - **Task 4 (End-to-End Proof: Certificate, Locker, Trust Panel)**: **HELD** pending Task 3.
 
+---
+
+## 8. Three Mutually Exclusive, Yet Interlocking Applications Architecture (2026-11-03)
+
+In accordance with D'Vaughn's directive ("Tress Column, back office ops console, and trading terminal must be three mutually exclusive, yet interlocking apps"), the frontend and operational layer has been partitioned into three distinct applications sharing design tokens, canonical contract constants, and architectural invariants.
+
+### 8.1 Architecture Matrix
+
+| Dimension | App 1: Tress Column Launchpad | App 2: Trading Terminal | App 3: Back Office Ops Console |
+| :--- | :--- | :--- | :--- |
+| **Domain** | `tc.dvaughnhouse.com` | `trade.tc.dvaughnhouse.com` | `ops.tc.dvaughnhouse.com` |
+| **Staging Route** | `/staging/tress-column` | `/staging/terminal` | `/staging/ops-console` |
+| **Primary Audience** | Public Creators & Launchers | Public Traders & Liquidity Providers | Staff Operators (Internal Operations) |
+| **Core Functions** | Fair launch deployment wizard, certificate generator, locker verification | Non-custodial DEX routing (Uniswap v4 + PearlHook), candlestick chart, volume gate tracker | Plus+ subscription tiers, airdrop campaign tracking, telemetry, fee reconciliation |
+| **Routing Markup Switch** | N/A | Hardcoded OFF / Disabled (0% routing fee) | Monitored (zero custodial take) |
+| **Treasury & Custody** | Non-custodial | Non-custodial | Strict accounting to on-chain Safe `0xC0132b5782F129c6d552c6aB725D2341349a084d` |
+| **Hard Negatives** | No privileged admin keys | No wallet custody, no proprietary execution desk | Zero custody, zero withdrawal approvals, no user freezing, no admin keys |
+
+### 8.2 Shared Design System & Constants
+- **Tailwind Tokens**: Registered in `tailwind.config.js`:
+  - `pearls-white`: `#FFFFFF`
+  - `nacre-cream`: `#FAF8F5`
+  - `abyssal-gold`: `#D4AF37` (Primary brand accent)
+  - `signal-orange`: `#FF5500` (Gate/warning accent)
+  - `abyssal-black`: `#0A0A0A` (Background depth)
+  - `abyssal-card`: `#121212` (Card surfaces)
+  - `abyssal-line`: `#1F1F1F` (Borders and separators)
+- **Canonical Constants** (`resources/js/TressColumn/contracts.js`):
+  - Base Sepolia PoolManager: `0x05E73354cFDd6745C338b50BcFDfA3Aa6fA03408`
+  - Deployed Real Safe: `0xC0132b5782F129c6d552c6aB725D2341349a084d`
+  - Canonical Volume Gate: `$10,000,000` (10M quote currency)
+  - Canonical Fee: `30 bps` (0.30% quote currency post-gate; 0 bps pre-gate)
+  - Plus+ Subscription Tiers: Sapphire ($7/mo), Emerald ($27/mo), Ruby ($97/mo)
+  - Airdrop Campaign Fee: `0.0194 ETH`
+
+### 8.3 Implementation & Verification
+- **Vite Build**: Successfully compiled 100% cleanly in 1.04s (`npm run build`).
+- **Route Tests**: 2/2 tests passed (6 assertions) via `tests/Feature/TressColumnThreeAppsTest.php`.
+- **Pre-Commit Language Check**: `check-language.sh` passed with 0 banned words.
+- **Architectural Specification**: Saved in `file:///home/housedv/.gemini/antigravity/brain/6a736636-5ef6-4b54-b24b-2e9663c5ee7b/tress_column_three_app_architecture.md`.
+
+
 
 
 
