@@ -26,6 +26,21 @@
     <priority>0.3</priority>
   </url>
   <url>
+    <loc>https://dvaughnhouse.com/first-build</loc>
+    <lastmod>2026-11-02</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://dvaughnhouse.com/thoughts</loc>
+    <lastmod>2026-11-02</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://dvaughnhouse.com/projects</loc>
+    <lastmod>2026-11-02</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://dvaughnhouse.com/terms</loc>
     <lastmod>2026-10-21</lastmod>
     <priority>0.3</priority>

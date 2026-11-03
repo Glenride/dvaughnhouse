@@ -1,359 +1,23 @@
 import { useEffect, useState } from "react";
-import heroBanner from "./assets/hero-collab.jpg";
 import heroDonate from "./assets/hero-donate.jpg";
-import heroSupplyNetwork from "./assets/hero-supply-network.webp";
-import workResearch from "./assets/work-research.webp";
-import workAi from "./assets/work-ai-systems.webp";
-import workAdvisory from "./assets/work-advisory.webp";
-import workStore from "./assets/work-store.webp";
 import glenrideLogo from "./assets/glenride-logo.png";
 import brandLogo from "./assets/dvaughn-house-logo.png";
 import { CursorTrail, Parallax, useRevealOnScroll } from "./motion.jsx";
+import { SiteNav } from "./nav.jsx";
+import { ThoughtsPage } from "./thoughts.jsx";
+import { ProjectsPage } from "./projects.jsx";
+import {
+  CloseSection,
+  CustomCursor,
+  Motto,
+  PinnedBio,
+  PortfolioFooter,
+  PortfolioHero,
+  WorkRooms,
+} from "./home.jsx";
 
-const ORG_URL = import.meta.env.VITE_ORG_URL || (import.meta.env.DEV ? 'http://127.0.0.1:8085' : 'https://dvaughnhouse.org');
-
-// Donation destination: the House Donation Treasury Safe on Base (1-of-1, his wallet).
 const DONATION_ADDRESS = "0xa6eab535043EB98De32e5791b0E83ab47f88C430";
 const DONATION_NETWORK = "Base";
-
-const NAV = [
-  { label: "About", href: "/about" },
-  { label: "Work", href: "#work" },
-  { label: "Contact", href: "#contact" },
-];
-
-const AUTH_ERROR_TEXT = {
-  workos_rejected: "The sign-in was declined. Try again.",
-  invalid_state: "The sign-in expired before it finished. Try again.",
-  not_owner: "That account isn't on the owner list. Sign in with dvaughnhouse@gmail.com.",
-  workos_unreachable: "The sign-in service couldn't be reached. Try again.",
-  not_configured: "Sign-in isn't configured right now. Try again in a bit.",
-};
-
-function Header({ base = "" }) {
-  const [open, setOpen] = useState(false);
-  const [sessionEmail, setSessionEmail] = useState(null);
-  const [authError, setAuthError] = useState(null);
-  useEffect(() => {
-    fetch("/api/me")
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (data && data.email) setSessionEmail(data.email);
-      })
-      .catch(() => {});
-    const match = window.location.hash.match(/^#auth_error=([^&]+)/);
-    if (match) {
-      setAuthError(decodeURIComponent(match[1]));
-      window.history.replaceState(null, "", window.location.pathname + window.location.search);
-    }
-  }, []);
-  const homeHref = base === "/" ? "/" : "#top";
-  // Absolute paths (e.g. /about) must not be prefixed with base, or "/" + "/about" becomes "//about" (a hostname, not a page).
-  const navHref = (href) => (href.startsWith("/") ? href : `${base}${href}`);
-  return (
-    <header className="fixed inset-x-0 top-4 z-50 px-4 sm:px-6">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between rounded-full border border-line bg-paper/95 px-6 shadow-lg shadow-ink/10 backdrop-blur dark:border-line-dark dark:bg-night/95 lg:px-8">
-        <a href={homeHref} className="leading-none" aria-label="D'Vaughn House — home">
-          <img src={brandLogo} alt="D'Vaughn House — Build your way out." className="h-10 w-auto" />
-        </a>
-        <nav className="hidden items-center gap-8 md:flex" aria-label="Primary">
-          {NAV.map((item) => (
-            <a
-              key={item.href}
-              href={navHref(item.href)}
-              className="text-sm font-medium text-ink-soft underline-offset-4 transition-colors hover:text-ink hover:underline dark:text-cream-soft dark:hover:text-cream"
-            >
-              {item.label}
-            </a>
-          ))}
-          <a
-            href="/donate"
-            className="rounded-full bg-sienna px-5 py-2.5 text-sm font-semibold text-ink transition-colors hover:bg-sienna-deep hover:text-paper"
-          >
-            Donate
-          </a>
-          {sessionEmail ? (
-            <>
-              <span className="text-sm font-medium text-ink-soft dark:text-cream-soft">
-                Signed in
-              </span>
-              <a
-                href="/auth/logout"
-                className="text-sm font-medium text-ink-soft underline-offset-4 transition-colors hover:text-ink hover:underline dark:text-cream-soft dark:hover:text-cream"
-              >
-                Sign out
-              </a>
-            </>
-          ) : (
-            <a
-              href="/auth/login"
-              className="text-sm font-medium text-ink-soft underline-offset-4 transition-colors hover:text-ink hover:underline dark:text-cream-soft dark:hover:text-cream"
-            >
-              Sign in
-            </a>
-          )}
-        </nav>
-        <button
-          className="rounded-full p-2 text-ink transition-colors hover:bg-paper-deep md:hidden dark:text-cream dark:hover:bg-night-card"
-          onClick={() => setOpen((v) => !v)}
-          aria-expanded={open}
-          aria-label="Toggle navigation menu"
-        >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            {open ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
-          </svg>
-        </button>
-      </div>
-      {open && (
-        <nav className="mx-auto mt-2 max-w-6xl rounded-3xl border border-line bg-paper/95 px-6 py-4 shadow-lg shadow-ink/10 backdrop-blur md:hidden dark:border-line-dark dark:bg-night/95" aria-label="Mobile">
-          <ul className="space-y-3">
-            {NAV.map((item) => (
-              <li key={item.href}>
-                <a
-                  href={navHref(item.href)}
-                  onClick={() => setOpen(false)}
-                  className="block text-base font-medium text-ink dark:text-cream"
-                >
-                  {item.label}
-                </a>
-              </li>
-            ))}
-            <li>
-              <a
-                href="/donate"
-                onClick={() => setOpen(false)}
-                className="inline-block rounded-full bg-sienna px-5 py-2.5 text-sm font-semibold text-ink transition-colors hover:bg-sienna-deep hover:text-paper"
-              >
-                Donate
-              </a>
-            </li>
-            <li>
-              {sessionEmail ? (
-                <>
-                  <span className="block text-base font-medium text-ink dark:text-cream">
-                    Signed in
-                  </span>
-                  <a
-                    href="/auth/logout"
-                    onClick={() => setOpen(false)}
-                    className="mt-1 block text-base font-medium text-ink dark:text-cream"
-                  >
-                    Sign out
-                  </a>
-                </>
-              ) : (
-                <a
-                  href="/auth/login"
-                  onClick={() => setOpen(false)}
-                  className="block text-base font-medium text-ink dark:text-cream"
-                >
-                  Sign in
-                </a>
-              )}
-            </li>
-          </ul>
-        </nav>
-      )}
-      {authError && AUTH_ERROR_TEXT[authError] && (
-        <div className="mx-auto mt-2 max-w-6xl rounded-full border border-line bg-paper/95 px-6 py-2 text-center text-sm text-ink-soft shadow-lg dark:border-line-dark dark:bg-night/95 dark:text-cream-soft">
-          {AUTH_ERROR_TEXT[authError]}
-        </div>
-      )}
-    </header>
-  );
-}
-
-function Hero() {
-  const benefits = [
-    {
-      n: "01",
-      title: "Cut the busywork",
-      body: "AI tools that handle the tedious work for you — built right, no shortcuts.",
-    },
-    {
-      n: "02",
-      title: "Get the evidence",
-      body: "What's really behind drug shortages, in plain English. Free to read.",
-    },
-    {
-      n: "03",
-      title: "Don't get left behind",
-      body: "Plain talk on the AI shift — and what you can actually do about it.",
-    },
-  ];
-  return (
-    <>
-      <section aria-label="Introduction" className="relative isolate overflow-hidden bg-night text-cream">
-        <Parallax className="absolute inset-0" speed={0.18}>
-          <img
-            src={heroBanner}
-            alt="A diverse group of professionals collaborating around a table in a bright, grand conservatory"
-            className="h-full w-full object-cover animate-kenburns"
-            loading="eager"
-          />
-        </Parallax>
-        <div aria-hidden="true" className="absolute inset-0 bg-ink/65" />
-        <div className="relative mx-auto flex min-h-[88vh] max-w-6xl flex-col justify-center px-6 py-24 lg:px-8">
-          <div className="max-w-3xl">
-            <h1 className="hero-enter hero-enter-1 font-display text-5xl font-extrabold leading-[1.02] tracking-[-0.02em] text-cream sm:text-6xl lg:text-7xl">
-              Understand the system.
-              <span className="block">Build your way out.</span>
-            </h1>
-            <p className="hero-enter hero-enter-2 mt-8 max-w-3xl text-[1.0625rem] leading-[1.7] text-cream/85">
-              You don&rsquo;t need another lecture about AI. You need less
-              busywork, straight facts on drug shortages, and plain talk on where
-              things are headed — from someone who spent fifteen years inside
-              the system.
-            </p>
-            <div className="hero-enter hero-enter-3 mt-10 flex flex-wrap gap-4">
-              <a
-                href="#work"
-                className="inline-flex items-center rounded-full bg-sienna px-6 py-3 text-sm font-semibold text-ink transition-colors hover:bg-sienna-deep hover:text-paper"
-              >
-                See the work
-              </a>
-              <a
-                href="#contact"
-                className="inline-flex items-center rounded-full border border-cream px-6 py-3 text-sm font-semibold text-cream transition-colors hover:bg-cream hover:text-ink"
-              >
-                Start a conversation
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-      <section aria-label="The principle" className="bg-paper dark:bg-night">
-        <div className="mx-auto max-w-3xl px-6 py-16 sm:py-20 lg:px-8">
-          <h2 className="font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl dark:text-cream">
-            Everything here runs on one principle: proof, not promises.
-          </h2>
-          <p className="mt-6 text-lg leading-[1.75] text-ink-soft dark:text-cream-soft">
-            This site is the gateway to my work as an independent AI orchestrator — one door into Glenride&rsquo;s investigations, the SpinWave scholarly commons, and the store. It&rsquo;s for anyone who wants proof, not promises: plain-language research and AI systems built in the open, verified before asserted.
-          </p>
-        </div>
-      </section>
-      <section aria-label="What you get" className="bg-paper dark:bg-night">
-        <div className="mx-auto max-w-6xl px-6 py-14 lg:px-8">
-          <div className="reveal grid grid-cols-1 gap-5 sm:grid-cols-3">
-            {benefits.map((b) => (
-              <div
-                key={b.n}
-                className="rounded-2xl border border-line bg-paper-deep p-6 dark:border-line-dark dark:bg-night-card"
-              >
-                <h2 className="font-display text-lg font-bold tracking-tight text-ink dark:text-cream">
-                  {b.title}
-                </h2>
-                <p className="mt-2 text-sm leading-relaxed text-ink-soft dark:text-cream-soft">
-                  {b.body}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-    </>
-  );
-}
-
-function OrchestratorQA() {
-  return (
-    <section aria-label="What an independent AI orchestrator does" className="border-t border-line bg-paper-deep dark:border-line-dark dark:bg-night-deep">
-      <div className="mx-auto max-w-6xl px-6 py-24 lg:px-8">
-        <h2 className="font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
-          What does an independent AI orchestrator do?
-        </h2>
-        <p className="mt-6 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-          An independent AI orchestrator designs, runs, and verifies AI systems outside big institutions — choosing the models, wiring the agents, and proving the work happened as claimed. I build on hardware I own, keep human judgment at the top of every system, and publish the receipts. If you want less busywork, straight facts on systems like drug supply chains, and plain talk on the AI shift without a sales pitch, that&rsquo;s what this site is for.
-        </p>
-      </div>
-    </section>
-  );
-}
-
-function Stats() {
-  const stats = [
-    {
-      value: "227",
-      label: "U.S. drugs in shortage, as of Q2 2026 — rising for the third straight quarter",
-      source: "ASHP, Q2 2026",
-    },
-    {
-      value: "78%",
-      label: "of drug-ingredient factories are outside the U.S., as of the FDA's latest published data",
-      source: "FDA",
-    },
-    {
-      value: "~90%",
-      label: "of the world's most advanced chips are made in Taiwan, as of 2026",
-      source: "Industry analyses, 2026",
-    },
-    {
-      value: "85%",
-      label: "of rare-earth refining happens in China, as of 2025",
-      source: "IEA, 2025",
-    },
-    {
-      value: "$2.6B",
-      label: "average cost to develop one new drug, per the latest Tufts CSDD estimate",
-      source: "Tufts CSDD",
-    },
-    {
-      value: "~12%",
-      label: "of drugs that enter trials ever get approved, per the latest Tufts CSDD estimate",
-      source: "Tufts CSDD",
-    },
-  ];
-  return (
-    <section aria-label="By the numbers" className="border-t border-line bg-paper dark:border-line-dark dark:bg-night">
-      <div className="mx-auto max-w-6xl px-6 py-24 lg:px-8">
-        <h2 className="font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
-          The problem, in numbers
-        </h2>
-        <div className="mt-12 border-b border-line dark:border-line-dark">
-          {stats.map((s) => (
-            <div
-              key={s.value + s.label}
-              className="grid gap-2 border-t border-line py-7 sm:grid-cols-[12rem_1fr] sm:gap-8 dark:border-line-dark"
-            >
-              <p className="font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
-                {s.value}
-              </p>
-              <div>
-                <p className="text-[1.0625rem] leading-[1.7] text-ink dark:text-cream">
-                  {s.label}
-                </p>
-                <p className="mt-2 font-mono text-[11px] uppercase tracking-wider text-ink-soft dark:text-cream-soft">
-                  Source: {s.source}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function About() {
-  return (
-    <section id="about" aria-label="About" className="border-t border-line bg-paper-deep dark:border-line-dark dark:bg-night-deep">
-      <div className="mx-auto max-w-6xl px-6 py-24 lg:px-8">
-        <h2 className="font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
-          Built in regulated rooms. Building outside them now.
-        </h2>
-        <p className="mt-6 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-          Twelve years in clinical research, now operating as an independent AI orchestrator.
-        </p>
-        <a
-          href="/about"
-          className="mt-8 inline-flex items-center text-sm font-semibold tracking-wide text-ink underline-offset-4 transition-colors hover:underline dark:text-cream dark:hover:text-sienna"
-        >
-          Read the full story <span className="ml-2">&rarr;</span>
-        </a>
-      </div>
-    </section>
-  );
-}
 
 const PILLARS = [
   {
@@ -445,306 +109,6 @@ function AboutPage() {
   );
 }
 
-function System() {
-  const steps = [
-    {
-      n: "Stage 01",
-      title: "The Factory",
-      sub: "AI chief-of-staff OS",
-      body: "The way I run AI: persistent memory, an audit log of every action, standing protocols. The work gets done here — and the trail it leaves is the evidence.",
-    },
-    {
-      n: "Stage 02",
-      title: "The Issuer",
-      sub: "Glenride",
-      body: "The think tank doesn't just publish research — it stamps it. Claim, evidence, verifier, timestamp. Other institutions sell reputation. Glenride sells receipts.",
-    },
-    {
-      n: "Stage 03",
-      title: "The Proven Library",
-      sub: "SpinWave",
-      body: "Scholars earn for verified manuscripts and datasets; readers license knowledge they can trust. Set knowledge free — then prove it.",
-    },
-  ];
-  const areas = [
-    {
-      title: "Supply-chain resilience",
-      body: "Where the systems that move medicine and goods break — and who gets hurt when they do.",
-    },
-    {
-      title: "Pharmaceutical data",
-      body: "Drug shortages in plain English: what's really behind them, and what you can do about it.",
-    },
-    {
-      title: "Applied AI",
-      body: "How AI actually gets directed and verified in real operations — the proof layer, built in the open.",
-    },
-  ];
-  return (
-    <>
-      <section id="system" aria-label="The system" className="border-t border-line bg-paper dark:border-line-dark dark:bg-night">
-        <div className="mx-auto max-w-6xl px-6 py-24 lg:px-8">
-          <h2 className="font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
-            Three stages, one loop.
-          </h2>
-          <p className="mt-6 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-            The AI chief-of-staff OS does the work &mdash; directed, logged, verified. Glenride attests it &mdash; signed proof that it happened as claimed. SpinWave publishes the best of it &mdash; a library where knowledge isn&rsquo;t just free, it&rsquo;s proven. Every attestation makes the next one stronger.
-          </p>
-          <div className="reveal mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
-            {steps.map((s) => (
-              <div key={s.n} className="rounded-2xl border border-line bg-paper p-7 dark:border-line-dark dark:bg-night-card">
-                <p className="font-mono text-xs font-bold tracking-widest text-sienna-deep dark:text-sienna">{s.n}</p>
-                <h3 className="mt-3 font-display text-lg font-bold tracking-tight text-ink dark:text-cream">{s.title}</h3>
-                <p className="mt-1 text-sm font-semibold text-sienna-deep dark:text-sienna">{s.sub}</p>
-                <p className="mt-3 text-sm leading-relaxed text-ink-soft dark:text-cream-soft">{s.body}</p>
-              </div>
-            ))}
-          </div>
-          <p className="mt-10 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-            In a world where every agent claims and nobody verifies, this is the proof layer. Witnessed by Glenride.
-          </p>
-        </div>
-      </section>
-      <section id="research" aria-label="Research areas" className="border-t border-line bg-paper-deep dark:border-line-dark dark:bg-night-deep">
-        <div className="mx-auto max-w-6xl px-6 py-24 lg:px-8">
-          <h2 className="font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
-            What Glenride&rsquo;s working on now.
-          </h2>
-          <div className="reveal mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
-            {areas.map((a) => (
-              <div key={a.title} className="rounded-2xl border border-line bg-paper p-7 dark:border-line-dark dark:bg-night-card">
-                <h3 className="font-display text-lg font-bold tracking-tight text-ink dark:text-cream">{a.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-ink-soft dark:text-cream-soft">{a.body}</p>
-              </div>
-            ))}
-          </div>
-          <p className="mt-10 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-            All published free, in plain language.
-          </p>
-        </div>
-      </section>
-    </>
-  );
-}
-
-function Work() {
-  const cards = [
-    {
-      title: "Glenride",
-      img: workResearch,
-      imgAlt: "Glowing laboratory flask dissolving into data points",
-      body: "Glenride is an independent, AI-native think tank. We find where critical systems break before the break becomes harm — and we publish a record anyone can check.",
-      link: ORG_URL,
-      cta: "Visit Glenride",
-    },
-    {
-      title: "SpinWave",
-      img: workAi,
-      imgAlt: "Interlocking AI circuit nodes with flowing amber data pathways",
-      body: "A utility token for the scholarly commons — scholars earn for verified manuscripts and datasets, readers license knowledge they can trust. On Base. No hype, no profit promises; the trust center carries the receipts, and Glenride attestation carries the proof.",
-      link: "https://spinwave.pages.dev",
-      cta: "See SpinWave",
-    },
-    {
-      title: "Store",
-      img: workStore,
-      imgAlt: "Dark storefront with a glowing amber doorway and circuit pathways leading in",
-      body: "Everything for sale lives in one store — the Den. Field guides that get you outside and stronger, trail gear and apparel, plus the wider house's tools, digests, and briefings. One shelf, one checkout, nothing scattered.",
-      link: "https://den.dvaughnhouse.com",
-      cta: "Visit the store",
-    },
-    {
-      title: "Dispatch",
-      img: heroSupplyNetwork,
-      imgAlt: "Dark world map lit by glowing amber supply routes",
-      body: "The blog. Plain-language investigations — drug shortages, supply chains, the systems that seek to harm you. Published free, verified before asserted.",
-      link: "https://blog.dvaughnhouse.com",
-      cta: "Read Dispatch",
-    },
-    {
-      title: "Bot HQ",
-      img: workAi,
-      imgAlt: "Interlocking AI circuit nodes with flowing amber data pathways",
-      body: "The bot team, live. A public status board for the bots that run the work — what they're doing, what they've done, and the receipts.",
-      link: "https://bots.dvaughnhouse.com/public",
-      cta: "See the bots",
-    },
-    {
-      title: "ThinkTank OS",
-      img: workResearch,
-      imgAlt: "Glowing laboratory flask dissolving into data points",
-      body: "The operating system for the think tank — the public library, the attestation registry, and the scholar commons. Proof, not promises.",
-      link: ORG_URL,
-      cta: "Visit ThinkTank OS",
-    },
-  ];
-  return (
-    <section id="work" aria-label="Work" className="border-t border-line bg-paper dark:border-line-dark dark:bg-night">
-      <div className="mx-auto max-w-6xl px-6 py-24 lg:px-8">
-        <h2 className="font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
-          What I&rsquo;m building
-        </h2>
-        <div className="reveal mt-10 grid grid-cols-1 gap-6 md:grid-cols-3 lg:gap-8">
-          {cards.map((card) => (
-            <a
-              key={card.title}
-              href={card.link}
-              className="group block overflow-hidden rounded-2xl border border-line bg-paper transition-colors hover:border-sienna-deep dark:border-line-dark dark:bg-night-card dark:hover:border-sienna"
-            >
-              <img
-                src={card.img}
-                alt={card.imgAlt}
-                className="h-48 w-full object-cover"
-                loading="lazy"
-              />
-              <div className="p-8 sm:p-10">
-                <h3 className="font-display text-2xl font-bold tracking-tight text-ink transition-colors group-hover:text-sienna-deep dark:text-cream dark:group-hover:text-sienna">
-                  {card.title}
-                </h3>
-                <p className="mt-4 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-                  {card.body}
-                </p>
-                <span className="mt-8 inline-flex items-center text-sm font-semibold tracking-wide text-ink transition-colors group-hover:text-sienna-deep dark:text-cream dark:group-hover:text-sienna">
-                  {card.cta} <span className="ml-2">→</span>
-                </span>
-              </div>
-            </a>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function Contact() {
-  const [form, setForm] = useState({ name: "", email: "", topic: "partnership", message: "", company: "" });
-  const [status, setStatus] = useState({ state: "idle", message: "" });
-
-  const set = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }));
-
-  async function submit(e) {
-    e.preventDefault();
-    setStatus({ state: "sending", message: "" });
-    try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (res.ok && data.ok) {
-        setStatus({ state: "success", message: "Received. I'll read it personally — thank you." });
-        setForm({ name: "", email: "", topic: "partnership", message: "", company: "" });
-      } else if (data.error === "storage_not_configured") {
-        setStatus({ state: "error", message: "The contact form isn't online yet — check back soon." });
-      } else if (data.error === "rate_limited") {
-        setStatus({ state: "error", message: "Too many messages in a short time — try again in an hour." });
-      } else {
-        setStatus({ state: "error", message: "Something didn't validate — check the fields and try again." });
-      }
-    } catch {
-      setStatus({ state: "error", message: "Couldn't send — check your connection and try again." });
-    }
-  }
-
-  const inputCls =
-    "w-full rounded-xl border border-ink/20 bg-paper px-4 py-3 text-sm text-ink placeholder:text-ink-soft/70 focus:border-sienna-deep dark:border-cream/20 dark:bg-night-card dark:text-cream dark:placeholder:text-cream-soft/70 dark:focus:border-sienna";
-
-  return (
-    <section id="contact" aria-label="Contact" className="border-t border-line bg-paper-deep dark:border-line-dark dark:bg-night-deep">
-      <div className="mx-auto max-w-6xl px-6 py-24 lg:px-8">
-        <h2 className="font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
-          Start a conversation
-        </h2>
-        <p className="mt-6 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-          Partnerships, research collaboration, press, or just a sharp question
-          about independent AI infrastructure. Your message goes directly to me —
-          I read everything myself. No list, no resale, no sharing.
-        </p>
-        <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_360px] lg:items-start">
-          <form onSubmit={submit} className="max-w-2xl space-y-5">
-          <div className="grid gap-5 sm:grid-cols-2">
-            <div>
-              <label htmlFor="contact-name" className="mb-2 block text-sm font-medium text-ink dark:text-cream">
-                Name
-              </label>
-              <input
-                id="contact-name" type="text" required maxLength={100}
-                value={form.name} onChange={set("name")} className={inputCls}
-                placeholder="Your name" autoComplete="name"
-              />
-            </div>
-            <div>
-              <label htmlFor="contact-email" className="mb-2 block text-sm font-medium text-ink dark:text-cream">
-                Email
-              </label>
-              <input
-                id="contact-email" type="email" required maxLength={254}
-                value={form.email} onChange={set("email")} className={inputCls}
-                placeholder="you@example.com" autoComplete="email"
-              />
-            </div>
-          </div>
-          <div>
-            <label htmlFor="contact-topic" className="mb-2 block text-sm font-medium text-ink dark:text-cream">
-              Topic
-            </label>
-            <select id="contact-topic" value={form.topic} onChange={set("topic")} className={inputCls}>
-              <option value="partnership">Partnership</option>
-              <option value="research">Research collaboration</option>
-              <option value="press">Press</option>
-              <option value="speaking">Speaking</option>
-              <option value="other">Something else</option>
-            </select>
-          </div>
-          <div>
-            <label htmlFor="contact-message" className="mb-2 block text-sm font-medium text-ink dark:text-cream">
-              Message
-            </label>
-            <textarea
-              id="contact-message" required maxLength={2000} rows={5}
-              value={form.message} onChange={set("message")} className={inputCls}
-              placeholder="What's on your mind?"
-            />
-          </div>
-          {/* Honeypot: invisible to humans, irresistible to bots */}
-          <input
-            type="text" name="company" value={form.company} onChange={set("company")}
-            tabIndex={-1} autoComplete="off" aria-hidden="true"
-            style={{ position: "absolute", left: "-9999px", opacity: 0, height: 0 }}
-          />
-          <div>
-            <button
-              type="submit"
-              disabled={status.state === "sending"}
-              className="inline-flex items-center rounded-full bg-sienna px-6 py-3 text-sm font-semibold text-ink transition-colors hover:bg-sienna-deep hover:text-paper disabled:opacity-60"
-            >
-              {status.state === "sending" ? "Sending…" : "Send message"}
-            </button>
-          </div>
-          {status.state === "success" && (
-            <p role="status" className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
-              {status.message}
-            </p>
-          )}
-          {status.state === "error" && (
-            <p role="alert" className="text-sm font-medium text-red-700 dark:text-red-400">
-              {status.message}
-            </p>
-          )}
-        </form>
-          <img
-            src={workAdvisory}
-            alt="Glowing compass over architectural blueprints — finding direction through complex systems"
-            className="hidden w-full rounded-2xl border border-line object-cover lg:block dark:border-line-dark"
-            loading="lazy"
-          />
-        </div>
-      </div>
-    </section>
-  );
-}
-
 function DonatePage() {
   const [copied, setCopied] = useState(false);
 
@@ -820,7 +184,7 @@ function DonatePage() {
           <h2 className="font-display text-3xl font-bold tracking-tight text-ink dark:text-cream">
             Sponsor the findings. Never the conclusions.
           </h2>
-          <div className="mt-8 grid gap-8 md:grid-cols-[1fr_260px] md:items-start">
+          <div className="mt-8">
             <ul className="space-y-6">
               <li>
                 <strong className="font-semibold text-ink dark:text-cream">Evidence nobody bought.</strong>{" "}
@@ -839,12 +203,6 @@ function DonatePage() {
                 investigation into why is a public good you personally benefit from.
               </li>
             </ul>
-            <img
-              src={workResearch}
-              alt="Glowing laboratory flask dissolving into data points — independent research, verified before asserted"
-              className="w-full rounded-2xl border border-line object-cover dark:border-line-dark"
-              loading="lazy"
-            />
           </div>
         </section>
 
@@ -920,7 +278,7 @@ function DonatePage() {
           <p className="mt-3">
             If you&rsquo;d rather support the work commercially, reach out
             through the{" "}
-            <a href="#contact" className="font-semibold text-sienna-deep underline underline-offset-4 transition-colors hover:text-ink dark:text-sienna dark:hover:text-cream">
+            <a href="/#contact" className="font-semibold text-sienna-deep underline underline-offset-4 transition-colors hover:text-ink dark:text-sienna dark:hover:text-cream">
               contact form
             </a>
             .
@@ -1411,18 +769,23 @@ function FirstBuildPage() {
   );
 }
 
-function Footer({ base = "" }) {
-  const navHref = (href) => (href.startsWith("/") ? href : `${base}${href}`);
+function Footer() {
   return (
     <footer className="border-t border-line bg-paper dark:border-line-dark dark:bg-night">
       <div className="mx-auto max-w-6xl px-6 py-10 lg:px-8">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <img src={brandLogo} alt="D'Vaughn House — Build your way out." className="h-8 w-auto" />
           <nav className="flex flex-wrap gap-x-6 gap-y-2" aria-label="Footer">
-            {NAV.map((item) => (
+            {[
+              { label: "Home", href: "/" },
+              { label: "Projects", href: "/projects" },
+              { label: "Thoughts", href: "/thoughts" },
+              { label: "About", href: "/about" },
+              { label: "Contact", href: "/#contact" },
+            ].map((item) => (
               <a
                 key={item.href}
-                href={navHref(item.href)}
+                href={item.href}
                 className="text-sm text-ink-soft underline-offset-4 transition-colors hover:text-ink hover:underline dark:text-cream-soft dark:hover:text-cream"
               >
                 {item.label}
@@ -1483,11 +846,13 @@ export default function App({ path: propPath } = {}) {
   const isFirstBuild = path.startsWith("/first-build");
   const isTerms = path.startsWith("/terms");
   const isPrivacy = path.startsWith("/privacy");
+  const isThoughts = path.startsWith("/thoughts");
+  const isProjects = path.startsWith("/projects");
   if (isDonate) {
     return (
       <div className="min-h-screen bg-paper font-serif text-ink antialiased dark:bg-night dark:text-cream">
         <CursorTrail />
-        <Header base="/" />
+        <SiteNav base="/" />
         <main>
           <DonatePage />
         </main>
@@ -1499,7 +864,7 @@ export default function App({ path: propPath } = {}) {
     return (
       <div className="min-h-screen bg-paper font-serif text-ink antialiased dark:bg-night dark:text-cream">
         <CursorTrail />
-        <Header base="/" />
+        <SiteNav base="/" />
         <main className="pt-24">
           <PatronPage />
         </main>
@@ -1511,7 +876,7 @@ export default function App({ path: propPath } = {}) {
     return (
       <div className="min-h-screen bg-paper font-serif text-ink antialiased dark:bg-night dark:text-cream">
         <CursorTrail />
-        <Header base="/" />
+        <SiteNav base="/" />
         <main className="pt-24">
           <AboutPage />
         </main>
@@ -1523,9 +888,33 @@ export default function App({ path: propPath } = {}) {
     return (
       <div className="min-h-screen bg-paper font-serif text-ink antialiased dark:bg-night dark:text-cream">
         <CursorTrail />
-        <Header base="/" />
+        <SiteNav base="/" />
         <main className="pt-24">
           <FirstBuildPage />
+        </main>
+        <Footer base="/" />
+      </div>
+    );
+  }
+  if (isThoughts) {
+    return (
+      <div className="min-h-screen bg-paper font-serif text-ink antialiased dark:bg-night dark:text-cream">
+        <CursorTrail />
+        <SiteNav base="/" />
+        <main className="pt-24">
+          <ThoughtsPage />
+        </main>
+        <Footer base="/" />
+      </div>
+    );
+  }
+  if (isProjects) {
+    return (
+      <div className="min-h-screen bg-paper font-serif text-ink antialiased dark:bg-night dark:text-cream">
+        <CursorTrail />
+        <SiteNav base="/" />
+        <main className="pt-24">
+          <ProjectsPage />
         </main>
         <Footer base="/" />
       </div>
@@ -1535,7 +924,7 @@ export default function App({ path: propPath } = {}) {
     return (
       <div className="min-h-screen bg-paper font-serif text-ink antialiased dark:bg-night dark:text-cream">
         <CursorTrail />
-        <Header base="/" />
+        <SiteNav base="/" />
         <main className="pt-24">
           <LegalPage doc={isTerms ? LEGAL_DOCS.terms : LEGAL_DOCS.privacy} />
         </main>
@@ -1545,18 +934,16 @@ export default function App({ path: propPath } = {}) {
   }
   return (
     <div id="top" className="min-h-screen bg-paper font-serif text-ink antialiased dark:bg-night dark:text-cream">
-      <CursorTrail />
-      <Header />
+      <CustomCursor />
+      <SiteNav />
       <main>
-        <Hero />
-        <OrchestratorQA />
-        <Stats />
-        <About />
-        <System />
-        <Work />
-        <Contact />
+        <PortfolioHero />
+        <Motto />
+        <PinnedBio />
+        <WorkRooms />
+        <CloseSection />
       </main>
-      <Footer />
+      <PortfolioFooter />
     </div>
   );
 }
