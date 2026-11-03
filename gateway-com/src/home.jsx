@@ -502,6 +502,36 @@ export function WorkRooms() {
 }
 
 export function CloseSection() {
+  const [form, setForm] = useState({ name: "", email: "", topic: "partnership", message: "", company: "" });
+  const [status, setStatus] = useState({ state: "idle", message: "" });
+
+  const set = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }));
+
+  async function submit(e) {
+    e.preventDefault();
+    setStatus({ state: "sending", message: "" });
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.ok) {
+        setStatus({ state: "success", message: "Received. I'll read it personally — thank you." });
+        setForm({ name: "", email: "", topic: "partnership", message: "", company: "" });
+      } else if (data.error === "storage_not_configured") {
+        setStatus({ state: "error", message: "The contact form isn't online yet — check back soon." });
+      } else if (data.error === "rate_limited") {
+        setStatus({ state: "error", message: "Too many messages in a short time — try again in an hour." });
+      } else {
+        setStatus({ state: "error", message: "Something didn't validate — check the fields and try again." });
+      }
+    } catch {
+      setStatus({ state: "error", message: "Couldn't send — check your connection and try again." });
+    }
+  }
+
   return (
     <section className="ph-close" id="contact" aria-label="Closing">
       <div className="ph-wrap-narrow reveal">
@@ -511,9 +541,69 @@ export function CloseSection() {
           feels, stays Human. If a system of yours needs building or proving, start with one
           conversation.
         </p>
-        <a className="ph-email-pill" href="mailto:dvaughn@dvaughnhouse.com">
-          dvaughn@dvaughnhouse.com
-        </a>
+        <span className="ph-email-pill">dvaughn@dvaughnhouse.com</span>
+        <form className="ph-contact-form" onSubmit={submit}>
+          <div className="ph-form-row">
+            <div className="ph-form-field">
+              <label htmlFor="contact-name">Name</label>
+              <input
+                id="contact-name" type="text" required maxLength={100}
+                value={form.name} onChange={set("name")}
+                placeholder="Your name" autoComplete="name"
+              />
+            </div>
+            <div className="ph-form-field">
+              <label htmlFor="contact-email">Email</label>
+              <input
+                id="contact-email" type="email" required maxLength={254}
+                value={form.email} onChange={set("email")}
+                placeholder="you@example.com" autoComplete="email"
+              />
+            </div>
+          </div>
+          <div className="ph-form-field">
+            <label htmlFor="contact-topic">Topic</label>
+            <select id="contact-topic" value={form.topic} onChange={set("topic")}>
+              <option value="partnership">Partnership</option>
+              <option value="research">Research collaboration</option>
+              <option value="press">Press</option>
+              <option value="speaking">Speaking</option>
+              <option value="other">Something else</option>
+            </select>
+          </div>
+          <div className="ph-form-field">
+            <label htmlFor="contact-message">Message</label>
+            <textarea
+              id="contact-message" required maxLength={2000} rows={5}
+              value={form.message} onChange={set("message")}
+              placeholder="What's on your mind?"
+            />
+          </div>
+          {/* Honeypot: invisible to humans, irresistible to bots */}
+          <input
+            className="ph-honeypot" type="text" name="company"
+            value={form.company} onChange={set("company")}
+            tabIndex={-1} autoComplete="off" aria-hidden="true"
+          />
+          <div>
+            <button
+              className="ph-form-submit" type="submit"
+              disabled={status.state === "sending"}
+            >
+              {status.state === "sending" ? "Sending…" : "Send message"}
+            </button>
+          </div>
+          {status.state === "success" && (
+            <p className="ph-form-status ph-form-status-success" role="status">
+              {status.message}
+            </p>
+          )}
+          {status.state === "error" && (
+            <p className="ph-form-status ph-form-status-error" role="alert">
+              {status.message}
+            </p>
+          )}
+        </form>
       </div>
     </section>
   );
