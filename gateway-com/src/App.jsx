@@ -774,7 +774,7 @@ function Footer() {
     <footer className="border-t border-line bg-paper dark:border-line-dark dark:bg-night">
       <div className="mx-auto max-w-6xl px-6 py-10 lg:px-8">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-          <img src={brandLogo} alt="D'Vaughn House — Build your way out." className="h-8 w-auto" />
+          <img src={brandLogo} alt="D'Vaughn House — Build your way out." className="h-8 w-auto self-start" />
           <nav className="flex flex-wrap gap-x-6 gap-y-2" aria-label="Footer">
             {[
               { label: "Home", href: "/" },

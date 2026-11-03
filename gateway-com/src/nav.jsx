@@ -57,7 +57,7 @@ export function SiteNav({ base = "" }) {
   const donateCls =
     "rounded-full bg-sienna px-5 py-2.5 text-sm font-semibold text-ink transition-colors hover:bg-sienna-deep hover:text-paper";
   return (
-    <header className="fixed inset-x-0 top-4 z-50 px-4 sm:px-6">
+    <header className="site-nav fixed inset-x-0 top-4 z-50 px-4 sm:px-6">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between rounded-full border border-line bg-paper/95 px-6 shadow-lg shadow-ink/10 backdrop-blur dark:border-line-dark dark:bg-night/95 lg:px-8">
         <a href={homeHref} className="leading-none" aria-label="D'Vaughn House — home">
           <img src={houseMark} alt="D'Vaughn House — home" className="h-[26px] w-[26px] rounded-full" />

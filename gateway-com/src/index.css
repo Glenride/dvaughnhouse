@@ -418,6 +418,14 @@
    words, so when scrolling stops the illumination stops at once instead of
    drifting on after the last scroll event. */
 .ph-bio-on .ph-word { transition: none; }
+/* Pinned bio clearance: while the bio is pinned, the fixed pill retracts
+   above the viewport so no bio line ever sits behind it. The pill returns
+   when the pin releases. Reduced-motion keeps the switch instant. */
+.site-nav { transition: transform 0.35s ease; }
+.ph-bio-pinned .site-nav { transform: translateY(calc(-100% - 2rem)); }
+@media (prefers-reduced-motion: reduce) {
+  .site-nav { transition: none; }
+}
 @media (max-width: 900px) {
   .ph-bio-on .ph-bio-stack { grid-template-columns: 1fr; }
   .ph-bio-on .ph-mani-block { grid-column: 1; grid-row: 1; justify-self: center; }

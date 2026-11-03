@@ -278,6 +278,41 @@ export function PinnedBio() {
     };
   }, []);
 
+  // While the bio is pinned, retract the fixed pill above the viewport so
+  // no bio line ever sits behind it — the centered bio text is taller than
+  // the pill clearance on phone viewports, and shorter viewports make it
+  // worse. The pill returns the moment the pin releases (at release the
+  // visible paragraph sits well below the pill). No-JS / reduced-motion
+  // never pins, so the class never applies there.
+  useEffect(() => {
+    if (!active || !pinRef.current) return undefined;
+    const update = () => {
+      const pin = pinRef.current;
+      if (!pin) return;
+      const r = pin.getBoundingClientRect();
+      const pinned = r.top <= 160 && r.bottom > window.innerHeight;
+      document.documentElement.classList.toggle("ph-bio-pinned", pinned);
+    };
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(() => {
+          ticking = false;
+          update();
+        });
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", update);
+    update();
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", update);
+      document.documentElement.classList.remove("ph-bio-pinned");
+    };
+  }, [active]);
+
   return (
     <section className={`ph-bio${active ? " ph-bio-on" : ""}`} id="bio" aria-label="About">
       <div
