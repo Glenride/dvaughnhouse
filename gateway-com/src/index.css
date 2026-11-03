@@ -64,6 +64,12 @@
     transform: translateY(0);
   }
 
+  /* Staged reveal: a delayed element animates in after its sibling, so
+     the motto headline rises first and the role line follows. */
+  .js-motion .reveal-delay {
+    transition-delay: 0.16s;
+  }
+
   @keyframes kenburns {
     from {
       transform: scale(1) translateY(0);
@@ -408,6 +414,10 @@
 }
 .ph-bio-on .ph-word { opacity: 0.15; }
 .ph-bio-on .ph-word.ph-lit { opacity: 1; }
+/* Pinned bio illumination is strictly scroll-coupled: no transition on the
+   words, so when scrolling stops the illumination stops at once instead of
+   drifting on after the last scroll event. */
+.ph-bio-on .ph-word { transition: none; }
 @media (max-width: 900px) {
   .ph-bio-on .ph-bio-stack { grid-template-columns: 1fr; }
   .ph-bio-on .ph-mani-block { grid-column: 1; grid-row: 1; justify-self: center; }
@@ -490,6 +500,31 @@
 .ph-work-gap > section:nth-of-type(3) .ph-room-card { padding: clamp(66px, 7.4vw, 104px); }
 .ph-work-gap > section:nth-of-type(4) .ph-room-card { padding: clamp(70px, 7.8vw, 108px); }
 .ph-work-gap > section:nth-of-type(5) .ph-room-card { padding: clamp(74px, 8.2vw, 112px); }
+/* --- Mobile room fit: room cards must sit inside narrow viewports ---
+   Root cause: the single-column room grid's automatic minimum size let
+   long unbroken titles ("InspireWrite" at 77px) force the grid track
+   wider than the card, pushing cards up to 168px past the viewport edge.
+   Mobile-only (desktop 900–1220px room growth untouched): shrink the
+   card/room padding, let grid items shrink below content size, cap the
+   title, and let buttons and registry values wrap instead of forcing
+   the card wider. */
+@media (max-width: 640px) {
+  .ph-room { padding: 8px 12px; }
+  .ph-room-card,
+  .ph-work-gap > section:nth-of-type(2) .ph-room-card,
+  .ph-work-gap > section:nth-of-type(3) .ph-room-card,
+  .ph-work-gap > section:nth-of-type(4) .ph-room-card,
+  .ph-work-gap > section:nth-of-type(5) .ph-room-card { padding: 40px 22px; }
+  .ph-room-top { min-width: 0; }
+  .ph-room-top > * { min-width: 0; }
+  .ph-room-copy { min-width: 0; }
+  .ph-room-icon { min-width: 0; }
+  .ph-room-card h2 { font-size: clamp(36px, 11vw, 56px); overflow-wrap: anywhere; }
+  .ph-room-btn { max-width: 100%; overflow-wrap: anywhere; }
+  .ph-room-btn svg { flex: none; }
+  .ph-registry { min-width: 0; }
+  .ph-rv { overflow-wrap: anywhere; }
+}
 .ph-room-top {
   display: grid;
   grid-template-columns: 1.12fr 0.88fr;
