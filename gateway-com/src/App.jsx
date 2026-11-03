@@ -15,6 +15,7 @@ import {
   PortfolioHero,
   WorkRooms,
 } from "./home.jsx";
+import { projectById } from "./data/projects.js";
 
 const DONATION_ADDRESS = "0xa6eab535043EB98De32e5791b0E83ab47f88C430";
 const DONATION_NETWORK = "Base";
@@ -792,7 +793,7 @@ function Footer() {
               </a>
             ))}
             <a
-              href="https://den.dvaughnhouse.com"
+              href={projectById("den").href}
               className="text-sm text-ink-soft underline-offset-4 transition-colors hover:text-ink hover:underline dark:text-cream-soft dark:hover:text-cream"
             >
               Store — The Den

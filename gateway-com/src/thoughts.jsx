@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { projectById } from "./data/projects.js";
 
 // Thoughts: the old homepage's expository copy, reorganized onto its own
 // routed page. Every line below is verbatim from the predecessor homepage
@@ -91,23 +92,26 @@ const AREAS = [
   },
 ];
 
+// Elsewhere titles + links (and Dispatch / Bot HQ bodies, which are verbatim
+// the card lines) come from the central project module; the Den body stays
+// local because the Den has no card line. CTAs stay local.
 const ELSEWHERE = [
   {
-    title: "Dispatch",
-    body: "The blog. Plain-language investigations — drug shortages, supply chains, the systems that seek to harm you. Published free, verified before asserted.",
-    link: "https://blog.dvaughnhouse.com",
+    title: projectById("dispatch").label,
+    body: projectById("dispatch").line,
+    link: projectById("dispatch").href,
     cta: "Read Dispatch",
   },
   {
-    title: "Bot HQ",
-    body: "The bot team, live. A public status board for the bots that run the work — what they're doing, what they've done, and the receipts.",
-    link: "https://bots.dvaughnhouse.com/public",
+    title: projectById("bothq").label,
+    body: projectById("bothq").line,
+    link: projectById("bothq").href,
     cta: "See the bots",
   },
   {
-    title: "Store — The Den",
+    title: projectById("den").label,
     body: "Everything for sale lives in one store — the Den. Field guides that get you outside and stronger, trail gear and apparel, plus the wider house's tools, digests, and briefings. One shelf, one checkout, nothing scattered.",
-    link: "https://den.dvaughnhouse.com",
+    link: projectById("den").href,
     cta: "Visit the store",
   },
 ];

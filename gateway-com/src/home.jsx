@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Parallax } from "./motion.jsx";
+import { ROOM_PROJECTS, bioSystemLabels } from "./data/projects.js";
+import { ARROW, PROJECT_ICONS } from "./data/projectIcons.jsx";
 import heroLight from "./assets/hero-network-light.webp";
 import heroDark from "./assets/hero-network-dark.webp";
 import workThumb from "./assets/work-thumb.webp";
@@ -42,7 +44,7 @@ const FILM = [
 
 const BIO_PARAS = [
   "I spent nearly 15 years running regulated clinical research: data, protocols, proof. Now I build independently: systems, software, and stories, held to the same standard. The machine proposes. The Human decides.",
-  "I\u2019m building Glenride into a company of one that ships real systems (SpinWave, Witness, Pearls) and the media that explains them, so the work outlives the pitch.",
+  `I\u2019m building Glenride into a company of one that ships real systems (${bioSystemLabels().join(", ")}) and the media that explains them, so the work outlives the pitch.`,
   "Because good engineering too often feels sterile, and good media too often lacks rigor. I create where code, evidence, and story lock together.",
 ];
 
@@ -168,7 +170,7 @@ export function PortfolioHero() {
             <span className="ph-wc-label">The Work</span>
             <span className="ph-wc-title">The systems I actually run</span>
             <span className="ph-wc-line">
-              ThinkTank OS, Witness, SpinWave, InspireWrite, D&rsquo;Quizz — built in the open.
+              {`${ROOM_PROJECTS.map((r) => r.label).join(", ")} — built in the open.`}
             </span>
           </span>
           <span className="ph-wc-arrow" aria-hidden="true">
@@ -350,102 +352,10 @@ export function PinnedBio() {
   );
 }
 
-const ARROW = (
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d="M7 17L17 7M9 7h8v8" />
-  </svg>
-);
-
-const ROOMS = [
-  {
-    id: "thinktank",
-    label: "ThinkTank OS",
-    status: "Live / In build",
-    line: "The working surface and the database behind it: manuscripts and data, stored with attestation.",
-    href: "https://dvaughnhouse.org",
-    btn: "dvaughnhouse.org",
-    icon: (
-      <svg viewBox="0 0 200 200" fill="none" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path className="ic-ink" d="M52 64L96 42l46 28-24 34" />
-        <path className="ic-ink" d="M52 64l18 44 22 42 58-10-32-36" />
-        <path className="ic-sienna" d="M96 42l22 62M70 108h48M48 138l22-30 48-4 32 36M48 138l44 12" />
-        <circle className="ic-ink" cx="52" cy="64" r="5" />
-        <circle className="ic-sienna" cx="96" cy="42" r="5" />
-        <circle className="ic-ink" cx="142" cy="70" r="5" />
-        <circle className="ic-sienna" cx="70" cy="108" r="5" />
-        <circle className="ic-fill" cx="118" cy="104" r="5.5" />
-        <circle className="ic-ink" cx="150" cy="140" r="5" />
-        <circle className="ic-sienna" cx="92" cy="150" r="5" />
-        <circle className="ic-ink" cx="48" cy="138" r="5" />
-      </svg>
-    ),
-  },
-  {
-    id: "witness",
-    label: "Witness",
-    status: "Live — V1 shipped",
-    line: "Signed proof that work happened as claimed — its first attestation, GLR-AT-2026-SN6RRF, is issued and open to challenge.",
-    href: "https://dvaughnhouse.org/attestations",
-    btn: "dvaughnhouse.org/attestations",
-    icon: (
-      <svg viewBox="0 0 200 200" fill="none" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <circle className="ic-ink" cx="100" cy="100" r="64" />
-        <circle className="ic-sienna" cx="100" cy="100" r="47" />
-        <path className="ic-ink" d="M76 101l17 17 32-36" />
-        <circle className="ic-fill" cx="100" cy="36" r="3.5" />
-        <circle className="ic-fill" cx="100" cy="164" r="3.5" />
-        <circle className="ic-fill" cx="36" cy="100" r="3.5" />
-        <circle className="ic-fill" cx="164" cy="100" r="3.5" />
-      </svg>
-    ),
-    registry: true,
-  },
-  {
-    id: "spinwave",
-    label: "SpinWave",
-    status: "In build — live status not yet claimed",
-    line: "A manuscript and data repository built on one idea: the Humans who create new knowledge get paid proportionately for it.",
-    href: "https://spinwave.tech",
-    btn: "spinwave.tech",
-    icon: (
-      <svg viewBox="0 0 200 200" fill="none" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <circle className="ic-ink" cx="100" cy="100" r="64" />
-        <path className="ic-sienna" d="M38 100c10-26 20-26 30 0s20 26 30 0 20-26 30 0 20 26 34 0" />
-        <circle className="ic-fill" cx="145" cy="55" r="4" />
-      </svg>
-    ),
-  },
-  {
-    id: "inspirewrite",
-    label: "InspireWrite",
-    status: "Live",
-    line: "InspireWrite by Glenride: scripture reading and private journaling, distraction-free by design.",
-    href: "https://inspirewrite.online",
-    btn: "inspirewrite.online",
-    icon: (
-      <svg viewBox="0 0 200 200" fill="none" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path className="ic-sienna" d="M100 22l3.5 8.5L112 34l-8.5 3.5L100 46l-3.5-8.5L88 34l8.5-3.5z" />
-        <path className="ic-ink" d="M100 70C85 56 60 51 40 57v86c20-6 45-1 60 13 15-14 40-19 60-13V57c-20-6-45-1-60 13z" />
-        <path className="ic-ink" d="M100 70v86" />
-        <path className="ic-sienna" d="M56 82c11-2 24 0 34 6M56 103c11-2 24 0 34 6M110 88c10-6 23-8 34-6M110 109c10-6 23-8 34-6" />
-      </svg>
-    ),
-  },
-  {
-    id: "dquizz",
-    label: "D\u2019Quizz",
-    status: "Live — since October 22, 2026",
-    line: "My most shipped product: a quiz-funnel tool with sign-in and Stripe subscriptions fully wired — plans run Starter $29/mo, Pro $99/mo, Agency $399/mo.",
-    href: "https://app.dvaughnhouse.com",
-    btn: "app.dvaughnhouse.com",
-    lockup: true,
-  },
-];
-
 export function WorkRooms() {
   return (
     <div className="ph-work-gap" id="work">
-      {ROOMS.map((room, i) => (
+      {ROOM_PROJECTS.map((room, i) => (
         <section className="ph-room" key={room.id} id={room.id} aria-label={room.label}>
           <div
             className="ph-room-card reveal"
@@ -466,7 +376,7 @@ export function WorkRooms() {
                 </div>
               </div>
               <div className={`ph-room-icon${room.lockup ? " ph-room-lockup" : ""}`} aria-hidden="true">
-                {room.lockup ? <img src={dquizzLockup} alt="" loading="lazy" /> : room.icon}
+                {room.lockup ? <img src={dquizzLockup} alt="" loading="lazy" /> : PROJECT_ICONS[room.id]}
               </div>
             </div>
             {room.registry && (
