@@ -9,7 +9,7 @@ const HERO_SLIDES = [
     {
         image: '/images/heroes/hero-port-sunset.jpg',
         headline: 'Supply chains, seen clearly.',
-        line: 'Glenride tracks how critical supply chains fail, where they bend, and what keeps them running.',
+        line: 'For operators and decision-makers: Glenride tracks how critical supply chains fail, where they bend, and what keeps them running — before the break reaches you.',
         ctaLabel: 'Enter the Vanguard Library',
         ctaHref: route('library.index'),
     },
@@ -334,6 +334,31 @@ export default function Landing({
                                 Commercial work and executive salons →
                             </span>
                         </Link>
+                        <div className="border-b border-line py-6 dark:border-line-dark">
+                            <p className="font-display text-xl font-bold text-ink dark:text-cream">
+                                The record, before you reach out
+                            </p>
+                            <ul className="mt-3 space-y-2 text-sm leading-relaxed text-ink-soft dark:text-cream-soft">
+                                <li>
+                                    Published daily — The Dispatch, triple-checked
+                                    before it posts.
+                                </li>
+                                <li>
+                                    Every Monday — a public U.S. drug-shortage
+                                    digest.
+                                </li>
+                                <li>
+                                    Attested — every record in the public registry
+                                    carries its evidence, verifier, and timestamp.{' '}
+                                    <Link
+                                        href={route('attestations.index')}
+                                        className="font-semibold text-sienna-deep transition hover:text-ink dark:text-sienna dark:hover:text-cream"
+                                    >
+                                        Browse the registry →
+                                    </Link>
+                                </li>
+                            </ul>
+                        </div>
                         <a
                             href="https://dvaughnhouse.com/#contact"
                             className="group flex flex-wrap items-baseline justify-between gap-2 border-b border-line py-6 transition dark:border-line-dark"
