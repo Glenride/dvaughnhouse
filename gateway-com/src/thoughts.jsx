@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import flashSaleAudit from "./assets/flash-sale-audit.webp";
 import { projectById } from "./data/projects.js";
 import { AREAS, BENEFITS, STAGES, STATS } from "./data/thoughts-content.js";
 
@@ -50,6 +51,48 @@ export function ThoughtsPage() {
         things are headed — from someone who spent fifteen years inside
         the system.
       </p>
+
+      {/* Flash sale, added November 5, 2026 — dated offer, not predecessor-homepage copy. */}
+      <section aria-label="Flash sale" className="mt-20">
+        <div className="overflow-hidden rounded-2xl border border-line bg-paper dark:border-line-dark dark:bg-night-card">
+          <div className="grid gap-0 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+            <img
+              src={flashSaleAudit}
+              alt="AI Workflow Audit — $350, two slots, book by Friday"
+              className="h-full w-full object-cover"
+            />
+            <div className="p-7 sm:p-10">
+              <p className="font-mono text-xs uppercase tracking-widest text-sienna-deep dark:text-sienna">
+                Flash sale — book by Friday night
+              </p>
+              <h2 className="mt-3 font-display text-3xl font-bold tracking-tight text-ink dark:text-cream">
+                Two audit slots open — $350 each.
+              </h2>
+              <p className="mt-4 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
+                I spend two hours on your most repetitive task: I map how it
+                runs today, and hand you the written map plus the first
+                automation to build. You keep the decision; the machine does
+                the repetition.
+              </p>
+              <p className="mt-4 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
+                Pay by Friday night to lock a slot, and we do the two hours
+                next week at a time that works. First come, first served.
+              </p>
+              <p className="mt-6">
+                <a
+                  href="/audit"
+                  className="inline-flex items-center rounded-full bg-sienna px-6 py-3 text-sm font-semibold text-ink transition-colors hover:bg-sienna-deep hover:text-paper"
+                >
+                  Claim a slot →
+                </a>
+              </p>
+              <p className="mt-6 text-xs text-ink-soft dark:text-cream-soft">
+                All images on this page are illustrations generated for this article unless otherwise credited.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <section aria-label="The principle" className="mt-20">
         <h2 className="font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl dark:text-cream">

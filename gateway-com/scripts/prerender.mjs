@@ -22,6 +22,7 @@ const titles = {
   "/terms": "Terms of Service — D'Vaughn House",
   "/privacy": "Privacy Policy — D'Vaughn House",
   "/testimonials": "Share your experience — D'Vaughn House",
+  "/audit": "Claim an audit slot — D'Vaughn House",
   "/thoughts": "Thoughts — D'Vaughn House",
   "/projects": "Projects — D'Vaughn House",
 };

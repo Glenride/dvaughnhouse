@@ -144,6 +144,21 @@ export function CustomCursor() {
   );
 }
 
+export function FlashSaleBanner() {
+  return (
+    <div className="bg-sienna-deep text-paper">
+      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-4 gap-y-1 px-6 py-3 text-center sm:justify-between sm:text-left lg:px-8">
+        <p className="text-sm font-semibold">
+          Flash sale — two AI workflow audit slots, $350 each. Book by Friday night.
+        </p>
+        <a href="/audit" className="text-sm font-bold underline underline-offset-4 hover:text-cream">
+          Claim a slot →
+        </a>
+      </div>
+    </div>
+  );
+}
+
 export function PortfolioHero() {
   return (
     <header className="ph-hero" id="top">

@@ -7,9 +7,11 @@ import { SiteNav } from "./nav.jsx";
 import { ThoughtsPage } from "./thoughts.jsx";
 import { ProjectsPage } from "./projects.jsx";
 import { TestimonialsPage } from "./testimonials.jsx";
+import { AuditPage } from "./audit.jsx";
 import {
   CloseSection,
   CustomCursor,
+  FlashSaleBanner,
   Motto,
   PinnedBio,
   PortfolioFooter,
@@ -709,6 +711,7 @@ export default function App({ path: propPath } = {}) {
   const isThoughts = path.startsWith("/thoughts");
   const isProjects = path.startsWith("/projects");
   const isTestimonials = path.startsWith("/testimonials");
+  const isAudit = path.startsWith("/audit");
   if (isDonate) {
     return (
       <div className="min-h-screen bg-paper font-serif text-ink antialiased dark:bg-night dark:text-cream">
@@ -793,6 +796,18 @@ export default function App({ path: propPath } = {}) {
       </div>
     );
   }
+  if (isAudit) {
+    return (
+      <div className="min-h-screen bg-paper font-serif text-ink antialiased dark:bg-night dark:text-cream">
+        <CursorTrail />
+        <SiteNav base="/" />
+        <main className="pt-24">
+          <AuditPage />
+        </main>
+        <Footer base="/" />
+      </div>
+    );
+  }
   if (isTerms || isPrivacy) {
     return (
       <div className="min-h-screen bg-paper font-serif text-ink antialiased dark:bg-night dark:text-cream">
@@ -810,6 +825,7 @@ export default function App({ path: propPath } = {}) {
       <CustomCursor />
       <SiteNav />
       <main>
+        <FlashSaleBanner />
         <PortfolioHero />
         <Motto />
         <PinnedBio />

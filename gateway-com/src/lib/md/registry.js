@@ -70,6 +70,10 @@ const RELATED = {
     { label: "The First Build", href: absUrl("/first-build") },
     { label: "Home", href: absUrl("/") },
   ],
+  audit: [
+    { label: "The First Build", href: absUrl("/first-build") },
+    { label: "Home", href: absUrl("/") },
+  ],
 };
 
 function homeBody() {
@@ -263,6 +267,12 @@ function thoughtsBody() {
   return [
     "You don't need another lecture about AI. You need less busywork, straight facts on drug shortages, and plain talk on where things are headed — from someone who spent fifteen years inside the system.",
     "",
+    "## Flash sale — two audit slots, $350 each (book by Friday night, November 2026)",
+    "",
+    "I spend two hours on your most repetitive task: I map how it runs today, and hand you the written map plus the first automation to build. You keep the decision; the machine does the repetition. Pay by Friday night to lock a slot, and we do the two hours next week at a time that works. First come, first served.",
+    "",
+    "Claim a slot on the [audit page](https://dvaughnhouse.com/audit).",
+    "",
     "## Everything here runs on one principle: proof, not promises",
     "",
     "This site is the gateway to my work as an independent AI orchestrator — one door into Glenride's investigations, the SpinWave scholarly commons, and the store. It's for anyone who wants proof, not promises: plain-language research and AI systems built in the open, verified before asserted.",
@@ -334,6 +344,18 @@ function testimonialsBody() {
     "- DesignRush",
     "",
     `The submission form is on the [testimonials page](${absUrl("/testimonials")}). Nothing goes live until it has been reviewed.`,
+  ].join("\n");
+}
+
+function auditBody() {
+  return [
+    "Two slots open — $350 each. Book by Friday night. I spend two hours on your most repetitive task: I map how it runs today, and hand you the written map plus the first automation to build. You keep the decision; the machine does the repetition.",
+    "",
+    "Pay by Friday night to lock a slot, and we do the two hours next week at a time that works. First come, first served. If it's not a fit, I'll tell you that on a quick call — no charge, no pitch.",
+    "",
+    "The full version of this is the First Build: one week, one workflow, $1,500 at the founding rate. This is the two-hour door into it.",
+    "",
+    `Claim a slot on the [audit page](${absUrl("/audit")}) — name, email, business, your most repetitive task, and your preferred day next week. Your slot is locked once the $350 is paid by Friday night.`,
   ].join("\n");
 }
 
@@ -421,7 +443,7 @@ export const ROUTES = [
       "Thoughts: the principle is proof, not promises. It covers what an independent AI orchestrator does, third-party figures on drug shortages and supply chains, and the three-stage loop of chief-of-staff OS, Glenride attestation, and SpinWave.",
     description:
       "Thoughts: proof, not promises — drug shortages, supply chains, and the AI shift in plain language.",
-    updated: "2026-11-02",
+    updated: "2026-11-05",
     section: "core",
     render: thoughtsBody,
   },
@@ -449,6 +471,20 @@ export const ROUTES = [
     updated: "2026-11-05",
     section: "core",
     render: testimonialsBody,
+  },
+  {
+    path: "/audit",
+    mdPath: "/audit.md",
+    title: "Claim an audit slot — D'Vaughn House",
+    summary:
+      "Two AI workflow audit slots at $350 each: two hours on your most repetitive task, with a written map and the first automation to build. Book by Friday night; the audit happens next week.",
+    aiSummary:
+      "Claim an audit slot: two $350 AI workflow audit slots, book by Friday night, audit next week. Two hours on the buyer's most repetitive task, delivering a written map and the first automation to build. First come, first served; the slot is locked once the $350 is paid.",
+    description:
+      "Claim one of two $350 AI workflow audit slots — book by Friday night, audit next week.",
+    updated: "2026-11-05",
+    section: "core",
+    render: auditBody,
   },
   {
     path: "/terms",
