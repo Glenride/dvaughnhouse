@@ -10,11 +10,11 @@ import {Currency} from "@uniswap/v4-core/src/types/Currency.sol";
 import {IHooks} from "@uniswap/v4-core/src/interfaces/IHooks.sol";
 import {PoolModifyLiquidityTest} from "@uniswap/v4-core/src/test/PoolModifyLiquidityTest.sol";
 
-import {PearlHook} from "../src/PearlHook.sol";
-import {PearlHookCore} from "../src/PearlHookCore.sol";
+import {TCHook} from "../src/TCHook.sol";
+import {TCCore} from "../src/TCCore.sol";
 import {HookMiner} from "../src/HookMiner.sol";
-import {PEARL_HOOK_FLAGS, BASE_SEPOLIA_POOL_MANAGER} from "../src/PearlsConstants.sol";
-import {ForkTestERC20} from "./PearlHook.t.sol";
+import {TC_HOOK_FLAGS, BASE_SEPOLIA_POOL_MANAGER} from "../src/PearlsConstants.sol";
+import {ForkTestERC20} from "./TCHook.t.sol";
 
 interface IV4Quoter {
     struct QuoteExactSingleParams {
@@ -43,7 +43,7 @@ interface IPermit2 {
 
 /// @notice Router-path fork test suite: proves quotability and swap execution
 ///         through official Uniswap v4 Quoter and Universal Router on Base Sepolia.
-contract PearlHookRouterForkTest is Test {
+contract TCHookRouterForkTest is Test {
     IV4Quoter constant QUOTER = IV4Quoter(0x4A6513c898fe1B2d0E78d3b0e0A4a151589B1cBa);
     IUniversalRouter constant UNIVERSAL_ROUTER = IUniversalRouter(0x8702463e73f74d0b6765aBceb314Ef07aCb92650);
     address constant PERMIT2 = 0x000000000022D473030F116dDEE9F6B43aC78BA3;
@@ -81,8 +81,8 @@ contract PearlHookRouterForkTest is Test {
     struct RouterPoolEnv {
         ForkTestERC20 token;
         ForkTestERC20 quote;
-        PearlHook hook;
-        PearlHookCore core;
+        TCHook hook;
+        TCCore core;
         PoolKey key;
     }
 
@@ -112,8 +112,8 @@ contract PearlHookRouterForkTest is Test {
         bytes memory constructorArgs =
             abi.encode(POOL_MANAGER, treasury, quoteIsCurrency0, threshold, maxSwapQuote, maxSwapBlocks);
         (, bytes32 salt) =
-            HookMiner.find(address(this), PEARL_HOOK_FLAGS, type(PearlHook).creationCode, constructorArgs);
-        env.hook = new PearlHook{salt: salt}(
+            HookMiner.find(address(this), TC_HOOK_FLAGS, type(TCHook).creationCode, constructorArgs);
+        env.hook = new TCHook{salt: salt}(
             POOL_MANAGER, treasury, quoteIsCurrency0, threshold, maxSwapQuote, maxSwapBlocks
         );
         env.core = env.hook.core();

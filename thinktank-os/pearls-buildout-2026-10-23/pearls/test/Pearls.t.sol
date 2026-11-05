@@ -11,7 +11,7 @@ import {LaunchCertificate} from "../src/LaunchCertificate.sol";
 import {LaunchLocker} from "../src/LaunchLocker.sol";
 import {VestingVault} from "../src/VestingVault.sol";
 import {AirdropDistributor} from "../src/AirdropDistributor.sol";
-import {PearlHookCore} from "../src/PearlHookCore.sol";
+import {TCCore} from "../src/TCCore.sol";
 import {PoolKey} from "@uniswap/v4-core/src/types/PoolKey.sol";
 import {PoolId} from "@uniswap/v4-core/src/types/PoolId.sol";
 import {Currency} from "@uniswap/v4-core/src/types/Currency.sol";
@@ -182,7 +182,7 @@ contract PearlsTest is Test {
     function test_factory_hook_pair_wiring() public {
         LaunchFactory.LaunchParams memory p = _baseParams();
         LaunchFactory.LaunchResult memory r = _launch(p, 0.0194 ether);
-        PearlHookCore core = PearlHookCore(r.hookCore);
+        TCCore core = TCCore(r.hookCore);
         assertEq(core.poolReporter(), r.hook, "adapter must be the core's reporter");
         assertEq(core.treasury(), treasury);
         assertEq(core.volumeThresholdQuote(), THRESHOLD);

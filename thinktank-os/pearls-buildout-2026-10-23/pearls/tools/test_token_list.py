@@ -57,7 +57,7 @@ class TestUniswapTokenListGenerator(unittest.TestCase):
             self.assertEqual(ext["hook"], event["hook"])
             self.assertEqual(ext["quoteAsset"], event["quoteAsset"])
 
-            # Verify hook ends with 0x00cc (PEARL_HOOK_FLAGS)
+            # Verify hook ends with 0x00cc (TC_HOOK_FLAGS)
             self.assertTrue(ext["hook"].lower().endswith("00cc"))
 
     def test_single_token_entry_formatting(self):

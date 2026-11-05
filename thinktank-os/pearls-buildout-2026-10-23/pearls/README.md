@@ -15,7 +15,7 @@ Deployment is D'Vaughn's gate (spec §11).
 
 - **`spec.md`** — the full technical specification: architecture, contract
   inventory, configuration surface, fee logic and the $10M gate, certificate
-  and lock design, the PearlHook risk assessment, the zero-cost audit path,
+  and lock design, the TCHook risk assessment, the zero-cost audit path,
   and the Plus+/CoinGuard suite (**designed only, not built**).
 
 ## Layout
@@ -31,14 +31,14 @@ src/
   LaunchLocker.sol       LP position custody: Abyssal (forever) or Timed (>=180d)
   VestingVault.sol       Optional linear vesting + cliff
   AirdropDistributor.sol Merkle airdrops, flat 0.0194 ETH campaign fee
-  PearlHookCore.sol      Volume gate + fee + launch-guard accounting (complete, tested)
-  PearlHook.sol          Uniswap v4 hook adapter (PARTIAL — see spec §7.4)
-  IPearlHook.sol         The guaranteed hook surface
+  TCCore.sol      Volume gate + fee + launch-guard accounting (complete, tested)
+  TCHook.sol          Uniswap v4 hook adapter (PARTIAL — see spec §7.4)
+  ITCHook.sol         The guaranteed hook surface
 script/Deploy.s.sol      Factory deploy — hard-gated to chain 84532 / 31337
-test/                    33 tests: Pearls.t.sol (core), PearlHook.t.sol (hook), Mocks.sol
+test/                    33 tests: Pearls.t.sol (core), TCHook.t.sol (hook), Mocks.sol
 ```
 
-## PearlHook status — read this before quoting it
+## TCHook status — read this before quoting it
 
 The hook's **accounting** (volume tracking, $10M gate, 0.3% quote-side fee,
 max-swap guard) is complete and tested, including the direction-resolution

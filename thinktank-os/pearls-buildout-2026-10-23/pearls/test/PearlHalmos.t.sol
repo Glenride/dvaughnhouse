@@ -4,7 +4,7 @@ pragma solidity ^0.8.24;
 import {Test} from "forge-std/Test.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-import {PearlHookCore} from "../src/PearlHookCore.sol";
+import {TCCore} from "../src/TCCore.sol";
 import {LaunchLocker} from "../src/LaunchLocker.sol";
 import {LaunchCertificate} from "../src/LaunchCertificate.sol";
 import {AirdropDistributor} from "../src/AirdropDistributor.sol";
@@ -35,7 +35,7 @@ contract PearlHalmosTest is Test {
     uint256 abyssalTokenId;
     LaunchLocker timedLocker;
     uint256 timedTokenId;
-    PearlHookCore hookCore;
+    TCCore hookCore;
 
     function setUp() public {
         vm.warp(1_000_000);
@@ -61,7 +61,7 @@ contract PearlHalmosTest is Test {
         timedTokenId = position.mint(address(timedLocker));
         timedLocker.deposit(address(position), timedTokenId);
 
-        hookCore = new PearlHookCore(TREASURY, REPORTER, false, GATE_THRESHOLD, 0, 0);
+        hookCore = new TCCore(TREASURY, REPORTER, false, GATE_THRESHOLD, 0, 0);
     }
 
     // ---------------------------------------------------------------------

@@ -5,7 +5,7 @@
 **Tagline:** "There's power in Pearls."
 
 > **Scope of this document.** This spec covers (a) the on-chain contract core — built in this
-> repo, (b) the PearlHook integration boundary — designed in full, implemented in part, with the
+> repo, (b) the TCHook integration boundary — designed in full, implemented in part, with the
 > gap stated plainly, and (c) the off-chain Plus+ / CoinGuard suite — **designed only, not built**.
 > Nothing in this repo targets mainnet. Deployment anywhere is D'Vaughn's gate, not this spec's.
 
@@ -56,7 +56,7 @@
               │  VestingVault    │  │ AirdropDistributor│     │  pool layer)
               │ linear + cliff   │  │ Merkle, 0.0194   │      │
               │ (optional)       │  │ ETH flat fee     │  ┌───▼──────────────┐
-              └──────────────────┘  └──────────────────┘  │    PearlHook     │
+              └──────────────────┘  └──────────────────┘  │    TCHook     │
                                                           │ v4 hook: volume  │
               Off-chain (DESIGNED ONLY, §10):             │ gate + launch    │
               Indexer · Whale/Unlock Radar · Batch        │ guard + fee      │
@@ -69,7 +69,7 @@ position NFT, and attaching the hook requires the v4 PoolManager / PositionManag
 addresses for the target chain and the `v4-core` / `v4-periphery` libraries. The contract core
 in this repo implements everything on the Pearls side of that boundary — token, distribution,
 certificate, lock custody, vesting, airdrops, and the hook's accounting logic — and defines the
-interfaces the pool layer must satisfy (`IPearlHook`, `ILPPosition`). Pool wiring is the
+interfaces the pool layer must satisfy (`ITCHook`, `ILPPosition`). Pool wiring is the
 integration phase (§7.4) and is **not** faked in the core.
 
 ## 3. Contract inventory
@@ -82,9 +82,9 @@ integration phase (§7.4) and is **not** faked in the core.
 | `LaunchLocker` | ERC-721 custodian | None | Holds the LP position NFT. Abyssal (forever) or Timed (≥180 d). Fee handling per launch choice: Creator Claimable or Dead/Compounded |
 | `VestingVault` | Per-launch | None | Optional creator/team allocation: linear vesting with cliff, all terms immutable |
 | `AirdropDistributor` | Per-campaign | None | Merkle-root airdrop. Flat **0.0194 ETH** fee per campaign, forwarded to the treasury at creation. Trustless claims |
-| `PearlHookCore` | Per-pool accounting | None (immutable treasury, threshold, guard params) | Volume tracking, $10M gate, fee calculation, launch-window max-swap guard — pure, unit-testable logic |
-| `PearlHook` | v4 hook adapter | None | Thin adapter between the v4 PoolManager callbacks and `PearlHookCore`. **Partial — see §7** |
-| `IPearlHook` | Interface | — | The hook surface Pearls guarantees (callbacks + accounting views) |
+| `TCCore` | Per-pool accounting | None (immutable treasury, threshold, guard params) | Volume tracking, $10M gate, fee calculation, launch-window max-swap guard — pure, unit-testable logic |
+| `TCHook` | v4 hook adapter | None | Thin adapter between the v4 PoolManager callbacks and `TCCore`. **Partial — see §7** |
+| `ITCHook` | Interface | — | The hook surface Pearls guarantees (callbacks + accounting views) |
 
 Supporting test doubles (`MockQuoteAsset`, `MockLPPosition`) exist under `test/` only and are
 never deployed by the production script.
@@ -150,7 +150,7 @@ address and the certificate contract address, both set in its constructor.
 
 ### 6.1 How cumulative volume is tracked
 
-* Volume is tracked **per pool, in quote-asset base units**, inside `PearlHookCore`:
+* Volume is tracked **per pool, in quote-asset base units**, inside `TCCore`:
   `cumulativeVolumeQuote` increases by the quote-side absolute amount of every swap the hook
   observes, in both directions (a buy and a sell both count — volume is volume).
 * The accumulator is `uint256` and increases monotonically. It cannot be reset, decremented,
@@ -177,7 +177,7 @@ address and the certificate contract address, both set in its constructor.
 
 ### 6.3 The fee itself
 
-* Rate: **30 bps (0.3%)**, a protocol constant in `PearlHookCore`, not a launch parameter —
+* Rate: **30 bps (0.3%)**, a protocol constant in `TCCore`, not a launch parameter —
   a creator cannot opt into a different rate and Pearls cannot raise it per-pool.
 * Base: the fee is computed **only on the quote-asset side** of the swap.
   `fee = quoteAmount * 30 / 10_000`. Integer division rounds the fee **down** (in the
@@ -205,7 +205,7 @@ address and the certificate contract address, both set in its constructor.
   settled by the portal (§10); the on-chain fee never changes, so the contract stays
   membership-blind. That is deliberate: no subscription state in the money path.
 
-## 7. PearlHook — design, risk centre, implementation status
+## 7. TCHook — design, risk centre, implementation status
 
 ### 7.1 Responsibilities
 
@@ -243,16 +243,16 @@ specified-vs-unspecified currency, exact-in vs exact-out — wrong either revert
 
 ### 7.4 Implementation status in this repo (honest)
 
-* **Built and tested:** `PearlHookCore` — all accounting: volume accumulation, gate check,
+* **Built and tested:** `TCCore` — all accounting: volume accumulation, gate check,
   fee computation, guard-window enforcement, as a standalone immutable contract with a
   `recordSwap(quoteAmount)` entry point gated to a single immutable reporter address (the
   adapter, which deploys the core in its own constructor and names itself — no address
-  prediction, no setters). Plus `IPearlHook`, the guaranteed surface, and the adapter's
+  prediction, no setters). Plus `ITCHook`, the guaranteed surface, and the adapter's
   `resolveQuoteAmount`, which turns a packed v4 BalanceDelta into the quote amount. The
   four direction cases are pinned by unit tests; the core's fee maths is identical for
   all of them.
-* **Partial — adapter skeleton:** `PearlHook.sol` implements the callback signatures
-  mirroring v4's `IHooks` (declared locally in `IPearlHook.sol` so the repo does not depend
+* **Partial — adapter skeleton:** `TCHook.sol` implements the callback signatures
+  mirroring v4's `IHooks` (declared locally in `ITCHook.sol` so the repo does not depend
   on an unpinned v4-core), forwards resolved amounts to the core, and marks with
   `PEARLHOOK-TODO` the exact points where PoolManager `take()` settlement must be wired
   against the pinned v4 deployment. **It compiles; it is not a deployable v4 hook yet.**
@@ -292,7 +292,7 @@ Floor (all runnable at $0, in order — this is the v0.5/v0.6 locked path):
 4. **Halmos** symbolic verification of the load-bearing invariants:
    locker principal cannot leave before `unlockTime`; hook fee is 0 below the gate and
    ≤ 30 bps of quote above it; distributor pays a leaf at most once.
-5. **Adversarial fork tests** (integration phase): PearlHook against the real v4
+5. **Adversarial fork tests** (integration phase): TCHook against the real v4
    PoolManager on a Base Sepolia fork — the §7.3 matrix.
 6. **Public review before mainnet:** publish the full report (all four tools' outputs),
    apply for **Superchain / Base audit grants**, run a community review
@@ -370,7 +370,7 @@ demand evidence).
    Pearl #0. Whether SPINE's manual deploy still feeds the certificate design is his call.
 2. **Treasury Safe address** (Sepolia test Safe now; mainnet Safe signers/threshold before
    any mainnet deploy). Internal signer rotation needs no contract change.
-3. **PearlHook** is the platform's risk centre (§7.3) and its adapter is incomplete (§7.4).
+3. **TCHook** is the platform's risk centre (§7.3) and its adapter is incomplete (§7.4).
    Any timeline that quotes the hook as "done" before the fork-test matrix passes is wrong.
 4. **Revenue realism.** By design the protocol fee pays ~$0 per launch until a launch crosses
    $10M volume; the airdrop fee (~0.0194 ETH/campaign) and subscriptions carry the business,

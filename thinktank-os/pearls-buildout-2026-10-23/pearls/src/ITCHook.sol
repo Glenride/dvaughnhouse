@@ -6,17 +6,17 @@ import {IPoolManager} from "@uniswap/v4-core/src/interfaces/IPoolManager.sol";
 import {BalanceDelta} from "@uniswap/v4-core/src/types/BalanceDelta.sol";
 import {BeforeSwapDelta} from "@uniswap/v4-core/src/types/BeforeSwapDelta.sol";
 
-/// @title IPearlHook — the hook surface Pearls guarantees
+/// @title ITCHook — the hook surface Pearls guarantees
 /// @notice Two layers:
-///  1. The ACCOUNTING surface (`PearlHookCore` implements it fully, and it is
+///  1. The ACCOUNTING surface (`TCCore` implements it fully, and it is
 ///     fully tested): volume accumulation, the $10M gate, the 0.3% quote
 ///     fee, and the launch-window max-swap guard.
-///  2. The V4 CALLBACK surface (`PearlHook` adapter): the canonical Uniswap v4
+///  2. The V4 CALLBACK surface (`TCHook` adapter): the canonical Uniswap v4
 ///     `IHooks` swap callbacks (`beforeSwap` and `afterSwap`) typed against the
 ///     pinned `uniswap/v4-core` v4.0.0 release (spec §7).
-interface IPearlHook {
+interface ITCHook {
     // ---------------------------------------------------------------------
-    // Accounting views (implemented by PearlHookCore and exposed by PearlHook)
+    // Accounting views (implemented by TCCore and exposed by TCHook)
     // ---------------------------------------------------------------------
 
     /// @notice Cumulative quote-asset volume observed by this pool's hook,
@@ -38,7 +38,7 @@ interface IPearlHook {
     function quoteFee(uint256 quoteAmount, bool gateCrossedBefore) external pure returns (uint256);
 
     // ---------------------------------------------------------------------
-    // Canonical Uniswap v4 swap callback surface (implemented by PearlHook)
+    // Canonical Uniswap v4 swap callback surface (implemented by TCHook)
     // ---------------------------------------------------------------------
 
     /// @notice Canonical v4 `IHooks.beforeSwap`. When the quote asset is the
@@ -53,7 +53,7 @@ interface IPearlHook {
     ) external returns (bytes4, BeforeSwapDelta, uint24);
 
     /// @notice Canonical v4 `IHooks.afterSwap`. Resolves the quote-side swap
-    ///         volume, records the swap in `PearlHookCore` (enforcing the
+    ///         volume, records the swap in `TCCore` (enforcing the
     ///         launch-window max-swap guard and computing the fee), and when
     ///         the quote asset is the unspecified currency of the swap and the
     ///         fee is non-zero, takes the quote fee to the treasury via

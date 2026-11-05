@@ -10,12 +10,12 @@ import {PoolKey} from "@uniswap/v4-core/src/types/PoolKey.sol";
 import {BalanceDelta} from "@uniswap/v4-core/src/types/BalanceDelta.sol";
 import {BeforeSwapDelta, BeforeSwapDeltaLibrary, toBeforeSwapDelta} from "@uniswap/v4-core/src/types/BeforeSwapDelta.sol";
 
-import {IPearlHook} from "./IPearlHook.sol";
-import {PearlHookCore} from "./PearlHookCore.sol";
+import {ITCHook} from "./ITCHook.sol";
+import {TCCore} from "./TCCore.sol";
 
-/// @title PearlHook — Uniswap v4 hook adapter
+/// @title TCHook — Uniswap v4 hook adapter
 /// @notice Bridges the canonical Uniswap v4 `PoolManager` swap callbacks to
-///         `PearlHookCore`'s volume gate, launch guard, and 0.3% quote-only
+///         `TCCore`'s volume gate, launch guard, and 0.3% quote-only
 ///         fee accounting, settling fees directly to the platform treasury Safe
 ///         inside the `PoolManager` unlock context.
 ///
@@ -57,7 +57,7 @@ import {PearlHookCore} from "./PearlHookCore.sol";
 ///           the swap filled completely (reverting on a partial fill so a
 ///           trader is never overcharged a fee on an unfilled portion),
 ///           records `specifiedQuote` in `core.recordSwap`, and returns `0`.
-contract PearlHook is IHooks, IPearlHook {
+contract TCHook is IHooks, ITCHook {
     using SafeCast for uint256;
 
     /// @notice Required low-14-bit address flags for CREATE2 deployment.
@@ -69,7 +69,7 @@ contract PearlHook is IHooks, IPearlHook {
     /// @notice The canonical Uniswap v4 PoolManager. Immutable.
     IPoolManager public immutable poolManager;
     /// @notice The accounting core this adapter reports to. Immutable.
-    PearlHookCore public immutable core;
+    TCCore public immutable core;
     /// @notice Whether the quote asset is currency0 in this pool.
     bool public immutable quoteIsCurrency0;
 
@@ -83,7 +83,7 @@ contract PearlHook is IHooks, IPearlHook {
         _;
     }
 
-    /// @dev Deploys its `PearlHookCore` in its own constructor, naming
+    /// @dev Deploys its `TCCore` in its own constructor, naming
     ///      `address(this)` as the core's immutable `poolReporter`, and
     ///      validates that `address(this)` carries the exact low-14-bit
     ///      v4 hook permission flags (`HOOK_FLAGS`).
@@ -99,12 +99,12 @@ contract PearlHook is IHooks, IPearlHook {
         Hooks.validateHookPermissions(IHooks(address(this)), getHookPermissions());
         poolManager = poolManager_;
         quoteIsCurrency0 = quoteIsCurrency0_;
-        core = new PearlHookCore(
+        core = new TCCore(
             treasury, address(this), quoteIsCurrency0_, volumeThresholdQuote_, maxSwapQuoteAmount, maxSwapBlocks
         );
     }
 
-    /// @notice Returns the v4 hook permission flags implemented by `PearlHook`.
+    /// @notice Returns the v4 hook permission flags implemented by `TCHook`.
     function getHookPermissions() public pure returns (Hooks.Permissions memory) {
         return Hooks.Permissions({
             beforeInitialize: false,
@@ -153,30 +153,30 @@ contract PearlHook is IHooks, IPearlHook {
     }
 
     // ---------------------------------------------------------------------
-    // IPearlHook accounting views (delegated to core)
+    // ITCHook accounting views (delegated to core)
     // ---------------------------------------------------------------------
 
-    /// @inheritdoc IPearlHook
+    /// @inheritdoc ITCHook
     function cumulativeVolumeQuote() external view returns (uint256) {
         return core.cumulativeVolumeQuote();
     }
 
-    /// @inheritdoc IPearlHook
+    /// @inheritdoc ITCHook
     function volumeThresholdQuote() external view returns (uint256) {
         return core.volumeThresholdQuote();
     }
 
-    /// @inheritdoc IPearlHook
+    /// @inheritdoc ITCHook
     function feeActive() external view returns (bool) {
         return core.feeActive();
     }
 
-    /// @inheritdoc IPearlHook
+    /// @inheritdoc ITCHook
     function feeBps() external pure returns (uint16) {
         return 30;
     }
 
-    /// @inheritdoc IPearlHook
+    /// @inheritdoc ITCHook
     function quoteFee(uint256 quoteAmount, bool gateCrossedBefore) external pure returns (uint256) {
         return (gateCrossedBefore ? (quoteAmount * 30) / 10_000 : 0);
     }
@@ -191,7 +191,7 @@ contract PearlHook is IHooks, IPearlHook {
         PoolKey calldata key,
         IPoolManager.SwapParams calldata params,
         bytes calldata
-    ) external override(IHooks, IPearlHook) onlyPoolManager returns (bytes4, BeforeSwapDelta, uint24) {
+    ) external override(IHooks, ITCHook) onlyPoolManager returns (bytes4, BeforeSwapDelta, uint24) {
         if (isQuoteSpecified(params) && core.feeActive()) {
             uint256 specifiedQuote = params.amountSpecified < 0
                 ? uint256(-params.amountSpecified)
@@ -213,7 +213,7 @@ contract PearlHook is IHooks, IPearlHook {
         IPoolManager.SwapParams calldata params,
         BalanceDelta delta,
         bytes calldata
-    ) external override(IHooks, IPearlHook) onlyPoolManager returns (bytes4, int128) {
+    ) external override(IHooks, ITCHook) onlyPoolManager returns (bytes4, int128) {
         uint256 poolQuote = resolveQuoteAmount(BalanceDelta.unwrap(delta));
 
         if (isQuoteSpecified(params)) {

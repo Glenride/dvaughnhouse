@@ -17,10 +17,10 @@ import {BeforeSwapDelta, BeforeSwapDeltaLibrary} from "@uniswap/v4-core/src/type
 import {PoolSwapTest} from "@uniswap/v4-core/src/test/PoolSwapTest.sol";
 import {PoolModifyLiquidityTest} from "@uniswap/v4-core/src/test/PoolModifyLiquidityTest.sol";
 
-import {BASE_SEPOLIA_POOL_MANAGER, PEARL_HOOK_FLAGS} from "../src/PearlsConstants.sol";
+import {BASE_SEPOLIA_POOL_MANAGER, TC_HOOK_FLAGS} from "../src/PearlsConstants.sol";
 import {HookMiner} from "../src/HookMiner.sol";
-import {PearlHookCore} from "../src/PearlHookCore.sol";
-import {PearlHook} from "../src/PearlHook.sol";
+import {TCCore} from "../src/TCCore.sol";
+import {TCHook} from "../src/TCHook.sol";
 import {LaunchFactory} from "../src/LaunchFactory.sol";
 import {LaunchCertificate} from "../src/LaunchCertificate.sol";
 import {LaunchToken} from "../src/LaunchToken.sol";
@@ -52,23 +52,23 @@ contract ForkTestERC20 is ERC20 {
 /// @notice Hook unit suite: volume gate, fee maths, launch guard, CREATE2
 ///         permission mining, and adapter direction-resolution table
 ///         (spec §7.3 — all four direction cases pinned explicitly).
-contract PearlHookTest is Test {
+contract TCHookTest is Test {
     address treasury = makeAddr("treasury");
     address reporter = makeAddr("reporter");
     address stranger = makeAddr("stranger");
 
     uint256 constant THRESHOLD = 10_000_000e6; // $10M in 6-dec quote units
 
-    PearlHookCore core;
+    TCCore core;
     MockPoolManagerForUnit mockPm;
 
     function setUp() public {
-        core = new PearlHookCore(treasury, reporter, false, THRESHOLD, 0, 0);
+        core = new TCCore(treasury, reporter, false, THRESHOLD, 0, 0);
         mockPm = new MockPoolManagerForUnit();
     }
 
-    /// @dev Deploy `PearlHook` at a CREATE2-mined address whose low 14 bits
-    ///      match `PEARL_HOOK_FLAGS` (`0x00CC`).
+    /// @dev Deploy `TCHook` at a CREATE2-mined address whose low 14 bits
+    ///      match `TC_HOOK_FLAGS` (`0x00CC`).
     function _deployMinedHook(
         IPoolManager pm,
         address treasury_,
@@ -76,12 +76,12 @@ contract PearlHookTest is Test {
         uint256 threshold,
         uint256 maxSwapQuote,
         uint256 maxSwapBlocks
-    ) internal returns (PearlHook hook) {
+    ) internal returns (TCHook hook) {
         bytes memory constructorArgs =
             abi.encode(pm, treasury_, quoteIsCurrency0, threshold, maxSwapQuote, maxSwapBlocks);
         (address expectedAddr, bytes32 salt) =
-            HookMiner.find(address(this), PEARL_HOOK_FLAGS, type(PearlHook).creationCode, constructorArgs);
-        hook = new PearlHook{salt: salt}(pm, treasury_, quoteIsCurrency0, threshold, maxSwapQuote, maxSwapBlocks);
+            HookMiner.find(address(this), TC_HOOK_FLAGS, type(TCHook).creationCode, constructorArgs);
+        hook = new TCHook{salt: salt}(pm, treasury_, quoteIsCurrency0, threshold, maxSwapQuote, maxSwapBlocks);
         assertEq(address(hook), expectedAddr);
     }
 
@@ -139,7 +139,7 @@ contract PearlHookTest is Test {
 
     function test_recordSwap_only_reporter() public {
         vm.prank(stranger);
-        vm.expectRevert(PearlHookCore.NotReporter.selector);
+        vm.expectRevert(TCCore.NotReporter.selector);
         core.recordSwap(1e6);
     }
 
@@ -166,11 +166,11 @@ contract PearlHookTest is Test {
     // ---------------------------------------------------------------------
 
     function test_max_swap_guard_enforced_then_expires() public {
-        PearlHookCore guarded = new PearlHookCore(treasury, reporter, false, THRESHOLD, 100_000e6, 5);
+        TCCore guarded = new TCCore(treasury, reporter, false, THRESHOLD, 100_000e6, 5);
         vm.prank(reporter);
         guarded.recordSwap(100_000e6); // at the cap: ok
         vm.prank(reporter);
-        vm.expectRevert(abi.encodeWithSelector(PearlHookCore.SwapTooLarge.selector, 100_001e6, 100_000e6));
+        vm.expectRevert(abi.encodeWithSelector(TCCore.SwapTooLarge.selector, 100_001e6, 100_000e6));
         guarded.recordSwap(100_001e6);
 
         vm.roll(block.number + 6); // window over
@@ -183,26 +183,26 @@ contract PearlHookTest is Test {
     // ---------------------------------------------------------------------
 
     function test_hookMiner_mines_valid_permissions_and_rejects_unmined_address() public {
-        PearlHook hook = _deployMinedHook(IPoolManager(address(mockPm)), treasury, false, THRESHOLD, 0, 0);
-        assertEq(uint160(address(hook)) & Hooks.ALL_HOOK_MASK, PEARL_HOOK_FLAGS);
+        TCHook hook = _deployMinedHook(IPoolManager(address(mockPm)), treasury, false, THRESHOLD, 0, 0);
+        assertEq(uint160(address(hook)) & Hooks.ALL_HOOK_MASK, TC_HOOK_FLAGS);
         Hooks.validateHookPermissions(IHooks(address(hook)), hook.getHookPermissions());
 
         // Deploying without mining at a regular CREATE address fails permission validation.
         vm.expectRevert(abi.encodeWithSelector(Hooks.HookAddressNotValid.selector, vm.computeCreateAddress(address(this), vm.getNonce(address(this)))));
-        new PearlHook(IPoolManager(address(mockPm)), treasury, false, THRESHOLD, 0, 0);
+        new TCHook(IPoolManager(address(mockPm)), treasury, false, THRESHOLD, 0, 0);
     }
 
     function test_callbacks_only_poolManager() public {
-        PearlHook hook = _deployMinedHook(IPoolManager(address(mockPm)), treasury, false, THRESHOLD, 0, 0);
+        TCHook hook = _deployMinedHook(IPoolManager(address(mockPm)), treasury, false, THRESHOLD, 0, 0);
         PoolKey memory key = _dummyKey();
         IPoolManager.SwapParams memory params = IPoolManager.SwapParams({zeroForOne: true, amountSpecified: -100, sqrtPriceLimitX96: 0});
 
         vm.prank(stranger);
-        vm.expectRevert(PearlHook.NotPoolManager.selector);
+        vm.expectRevert(TCHook.NotPoolManager.selector);
         hook.beforeSwap(stranger, key, params, "");
 
         vm.prank(stranger);
-        vm.expectRevert(PearlHook.NotPoolManager.selector);
+        vm.expectRevert(TCHook.NotPoolManager.selector);
         hook.afterSwap(stranger, key, params, toBalanceDelta(-100, 100), "");
     }
 
@@ -211,7 +211,7 @@ contract PearlHookTest is Test {
     // ---------------------------------------------------------------------
 
     function test_unpack_delta_roundtrip() public {
-        PearlHook hook = _deployMinedHook(IPoolManager(address(mockPm)), treasury, false, THRESHOLD, 0, 0);
+        TCHook hook = _deployMinedHook(IPoolManager(address(mockPm)), treasury, false, THRESHOLD, 0, 0);
         (int256 a0, int256 a1) = hook.unpackDelta(_packDelta(-500, 750));
         assertEq(a0, -500);
         assertEq(a1, 750);
@@ -226,7 +226,7 @@ contract PearlHookTest is Test {
     /// (delta positive). A naive "input amount" reader would tax the token
     /// on two of these four — these assertions pin the correct behaviour.
     function test_resolve_quote_amount_four_cases() public {
-        PearlHook hook = _deployMinedHook(IPoolManager(address(mockPm)), treasury, false, THRESHOLD, 0, 0);
+        TCHook hook = _deployMinedHook(IPoolManager(address(mockPm)), treasury, false, THRESHOLD, 0, 0);
         // Case 1: buy, exact-in. zeroForOne=false (quote -> token).
         // Swapper pays 1,000 quote (delta1 = -1000), receives token (+X).
         assertEq(hook.resolveQuoteAmount(_packDelta(5000, -1000)), 1000);
@@ -242,7 +242,7 @@ contract PearlHookTest is Test {
     }
 
     function test_resolve_quote_amount_when_quote_is_currency0() public {
-        PearlHook hook = _deployMinedHook(IPoolManager(address(mockPm)), treasury, true, THRESHOLD, 0, 0);
+        TCHook hook = _deployMinedHook(IPoolManager(address(mockPm)), treasury, true, THRESHOLD, 0, 0);
         // Quote is amount0 now: pays 2,000 quote on a buy...
         assertEq(hook.resolveQuoteAmount(_packDelta(-2000, 7000)), 2000);
         // ...and receives 1,800 quote on a sell.
@@ -250,8 +250,8 @@ contract PearlHookTest is Test {
     }
 
     function test_adapter_afterSwap_records_and_returns_fee() public {
-        PearlHook hook = _deployMinedHook(IPoolManager(address(mockPm)), treasury, false, 1_000_000e6, 0, 0);
-        PearlHookCore c = hook.core();
+        TCHook hook = _deployMinedHook(IPoolManager(address(mockPm)), treasury, false, 1_000_000e6, 0, 0);
+        TCCore c = hook.core();
         assertEq(c.poolReporter(), address(hook));
 
         PoolKey memory key = _dummyKey();
@@ -289,12 +289,12 @@ contract PearlHookTest is Test {
 }
 
 /// @notice Spec §7.3 Base Sepolia Fork-Test Matrix:
-///         Tests `PearlHook` against the canonical Uniswap v4 `PoolManager`,
+///         Tests `TCHook` against the canonical Uniswap v4 `PoolManager`,
 ///         `PoolModifyLiquidityTest`, and `PoolSwapTest` deployed on Base Sepolia
 ///         (chain ID 84532) across all 4 swap directions, pre-gate, crossing swap,
 ///         post-gate, both `quoteIsCurrency0` orientations, launch guard window,
 ///         and end-to-end `LaunchFactory.launch()`.
-contract PearlHookForkTest is Test {
+contract TCHookForkTest is Test {
     // Canonical Base Sepolia Uniswap v4 deployments
     IPoolManager constant POOL_MANAGER = IPoolManager(BASE_SEPOLIA_POOL_MANAGER);
     PoolModifyLiquidityTest constant MODIFY_LIQUIDITY_ROUTER =
@@ -303,7 +303,7 @@ contract PearlHookForkTest is Test {
 
     uint256 constant FORK_BLOCK = 49_250_000;
     uint160 constant SQRT_PRICE_1_1 = 79228162514264337593543950336; // 1:1 price (tick 0)
-    uint24 constant POOL_FEE = 0; // 0 LP fee to isolate exact 30 bps PearlHook fee math in tests
+    uint24 constant POOL_FEE = 0; // 0 LP fee to isolate exact 30 bps TCHook fee math in tests
     int24 constant TICK_SPACING = 60;
 
     uint256 constant GATE_THRESHOLD = 10_000e18; // 10,000 quote units for fast multi-swap gate testing
@@ -320,12 +320,12 @@ contract PearlHookForkTest is Test {
     struct ForkPoolEnv {
         ForkTestERC20 token;
         ForkTestERC20 quote;
-        PearlHook hook;
-        PearlHookCore core;
+        TCHook hook;
+        TCCore core;
         PoolKey key;
     }
 
-    /// @dev Deploy sorted token + quote ERC-20s, mine + deploy `PearlHook`,
+    /// @dev Deploy sorted token + quote ERC-20s, mine + deploy `TCHook`,
     ///      initialize the pool on the forked Base Sepolia `PoolManager`,
     ///      and seed deep full-range liquidity.
     function _setupForkPool(
@@ -349,8 +349,8 @@ contract PearlHookForkTest is Test {
         bytes memory constructorArgs =
             abi.encode(POOL_MANAGER, treasury, quoteIsCurrency0, threshold, maxSwapQuote, maxSwapBlocks);
         (, bytes32 salt) =
-            HookMiner.find(address(this), PEARL_HOOK_FLAGS, type(PearlHook).creationCode, constructorArgs);
-        env.hook = new PearlHook{salt: salt}(
+            HookMiner.find(address(this), TC_HOOK_FLAGS, type(TCHook).creationCode, constructorArgs);
+        env.hook = new TCHook{salt: salt}(
             POOL_MANAGER, treasury, quoteIsCurrency0, threshold, maxSwapQuote, maxSwapBlocks
         );
         env.core = env.hook.core();
@@ -656,7 +656,7 @@ contract PearlHookForkTest is Test {
         LaunchFactory factory = new LaunchFactory(treasury);
         ForkTestERC20 quote = new ForkTestERC20("Mock USDC", "mUSDC");
 
-        // Predict the LaunchToken address that factory.launch will deploy (after PearlHook and LaunchLocker)
+        // Predict the LaunchToken address that factory.launch will deploy (after TCHook and LaunchLocker)
         address predictedToken = vm.computeCreateAddress(address(factory), vm.getNonce(address(factory)) + 2);
         bool quoteIsC0 = address(quote) < predictedToken;
 
@@ -686,7 +686,7 @@ contract PearlHookForkTest is Test {
         assertEq(r.token, predictedToken);
         assertTrue(LaunchToken(r.token).capExempt( address(POOL_MANAGER)), "PoolManager must be capExempt");
 
-        // Initialize the v4 pool on Base Sepolia PoolManager with the factory-deployed PearlHook
+        // Initialize the v4 pool on Base Sepolia PoolManager with the factory-deployed TCHook
         (Currency c0, Currency c1) = quoteIsC0
             ? (Currency.wrap(address(quote)), Currency.wrap(r.token))
             : (Currency.wrap(r.token), Currency.wrap(address(quote)));
@@ -725,12 +725,12 @@ contract PearlHookForkTest is Test {
 
         bool buyZeroForOne = quoteIsC0;
         _swap(key, buyZeroForOne, -int256(11_000e18)); // crosses 10,000e18 gate
-        assertTrue(PearlHookCore(r.hookCore).feeActive());
+        assertTrue(TCCore(r.hookCore).feeActive());
         assertEq(quote.balanceOf(treasury), 0);
 
         _swap(key, buyZeroForOne, -int256(2_000e18)); // post-gate buy: 30 bps of 2,000 = 6e18
         assertEq(quote.balanceOf(treasury), 6e18);
         assertEq(IERC20(r.token).balanceOf(treasury), 0);
-        assertEq(PearlHookCore(r.hookCore).totalFeesQuote(), 6e18);
+        assertEq(TCCore(r.hookCore).totalFeesQuote(), 6e18);
     }
 }

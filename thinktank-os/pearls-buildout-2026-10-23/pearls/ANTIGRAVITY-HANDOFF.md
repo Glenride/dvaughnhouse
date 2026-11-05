@@ -15,9 +15,9 @@ v0.7 redline draft, and the earlier launchpad concept note.
 
 - Foundry project, solc 0.8.24 / cancun / via_ir, pinned in `foundry.toml` + `foundry.lock`.
 - Contracts in `src/`: PearlsConstants, LaunchFactory, LaunchToken, LaunchCertificate,
-  LaunchLocker, VestingVault, AirdropDistributor, PearlHookCore, PearlHook, IPearlHook,
+  LaunchLocker, VestingVault, AirdropDistributor, TCCore, TCHook, ITCHook,
   AttestationRegistry.
-- Tests: **33 passing, 0 failing** (`forge test`) — Pearls.t.sol (core), PearlHook.t.sol
+- Tests: **33 passing, 0 failing** (`forge test`) — Pearls.t.sol (core), TCHook.t.sol
   (hook), AttestationRegistry.t.sol, Mocks.sol.
 - Slither: **zero High / zero Medium** (`docs/slither-2026-10-21.txt`). Aderyn/Halmos were
   NOT run — that gap is stated in the spec; closing it is fair game.
@@ -28,8 +28,8 @@ v0.7 redline draft, and the earlier launchpad concept note.
 
 ## The build-out work (in priority order)
 
-1. **PearlHook v4 integration — THE critical path.** The accounting core (PearlHookCore)
-   is complete and tested. The adapter (`src/PearlHook.sol`) is a deliberate PARTIAL:
+1. **TCHook v4 integration — THE critical path.** The accounting core (TCCore)
+   is complete and tested. The adapter (`src/TCHook.sol`) is a deliberate PARTIAL:
    its header lists exactly what is missing — read spec §7 before touching it.
    - Pin Uniswap v4-core / v4-periphery as dependencies (do not float versions).
    - Replace the mirrored callback signatures with the canonical v4 interfaces.

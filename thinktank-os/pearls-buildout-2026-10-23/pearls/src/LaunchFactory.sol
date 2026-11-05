@@ -14,10 +14,10 @@ import {LaunchCertificate} from "./LaunchCertificate.sol";
 import {LaunchLocker} from "./LaunchLocker.sol";
 import {VestingVault} from "./VestingVault.sol";
 import {AirdropDistributor} from "./AirdropDistributor.sol";
-import {PearlHookCore} from "./PearlHookCore.sol";
-import {PearlHook} from "./PearlHook.sol";
+import {TCCore} from "./TCCore.sol";
+import {TCHook} from "./TCHook.sol";
 import {HookMiner} from "./HookMiner.sol";
-import {AIRDROP_CAMPAIGN_FEE, BASE_SEPOLIA_POOL_MANAGER, PEARL_HOOK_FLAGS} from "./PearlsConstants.sol";
+import {AIRDROP_CAMPAIGN_FEE, BASE_SEPOLIA_POOL_MANAGER, TC_HOOK_FLAGS} from "./PearlsConstants.sol";
 
 /// @title LaunchFactory
 /// @notice One transaction launches a token with every parameter frozen:
@@ -32,8 +32,8 @@ import {AIRDROP_CAMPAIGN_FEE, BASE_SEPOLIA_POOL_MANAGER, PEARL_HOOK_FLAGS} from 
 ///      factory↔certificate wiring can never be re-pointed.
 ///
 ///      Pool creation is the integration boundary (spec §2): the factory
-///      mines a CREATE2 salt encoding `PearlHook.HOOK_FLAGS` in the low 14
-///      address bits and deploys the `PearlHook` pair (the adapter deploys
+///      mines a CREATE2 salt encoding `TCHook.HOOK_FLAGS` in the low 14
+///      address bits and deploys the `TCHook` pair (the adapter deploys
 ///      its accounting core in its own constructor — no address prediction,
 ///      no setters) and sends the liquidity tranche to `params.liquidityAllocation`
 ///      (in production: the pool-initialiser that creates the v4 pool,
@@ -163,8 +163,8 @@ contract LaunchFactory {
         // naming itself as the core's reporter. Exact wiring, no prediction.
         (address expectedHook, bytes32 hookSalt) = HookMiner.find(
             address(this),
-            PEARL_HOOK_FLAGS,
-            type(PearlHook).creationCode,
+            TC_HOOK_FLAGS,
+            type(TCHook).creationCode,
             abi.encode(
                 POOL_MANAGER,
                 treasury,
@@ -174,7 +174,7 @@ contract LaunchFactory {
                 params.maxSwapBlocks
             )
         );
-        PearlHook hook = new PearlHook{salt: hookSalt}(
+        TCHook hook = new TCHook{salt: hookSalt}(
             POOL_MANAGER,
             treasury,
             params.quoteIsCurrency0,
@@ -183,7 +183,7 @@ contract LaunchFactory {
             params.maxSwapBlocks
         );
         assert(address(hook) == expectedHook);
-        PearlHookCore hookCore = hook.core();
+        TCCore hookCore = hook.core();
         result.hook = address(hook);
         result.hookCore = address(hookCore);
 

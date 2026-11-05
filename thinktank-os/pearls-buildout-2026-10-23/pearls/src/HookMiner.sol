@@ -25,10 +25,10 @@ library HookMiner {
     /// @param deployer The address that will execute CREATE2 (`address(this)` in a factory or test,
     ///        or `0x4e59b44847b379578588920cA78FbF26c0B4956C` in a `forge script`).
     /// @param flags Desired low-14-bit hook permission flags.
-    /// @param creationCode Contract creation bytecode (`type(PearlHook).creationCode`).
+    /// @param creationCode Contract creation bytecode (`type(TCHook).creationCode`).
     /// @param constructorArgs ABI-encoded constructor arguments.
     /// @return hookAddress The predicted CREATE2 deployment address.
-    /// @return salt The salt to pass to `new PearlHook{salt: salt}(...)`.
+    /// @return salt The salt to pass to `new TCHook{salt: salt}(...)`.
     function find(
         address deployer,
         uint160 flags,

@@ -1,7 +1,7 @@
 # Pearls — Build-Out Report
 
 **Date:** 2026-10-23 (Updated 2026-10-29 — Phase 2 Security Complete)  
-**Scope:** Priority 1 (`PearlHook` Uniswap v4 Integration + Spec §7.3 Base Sepolia Fork-Test Matrix), Priority 2 (Slither + Aderyn + Halmos Verification & Triage), Phase 0 (True Uniswap v4.0.0 Pin Restoration), Phase 1 (Toolchain, Periphery Pinning & PearlHook Completion), and Phase 2 (Aderyn Pass, Halmos Invariant Expansion, & Adversarial Fork Matrix).  
+**Scope:** Priority 1 (`TCHook` Uniswap v4 Integration + Spec §7.3 Base Sepolia Fork-Test Matrix), Priority 2 (Slither + Aderyn + Halmos Verification & Triage), Phase 0 (True Uniswap v4.0.0 Pin Restoration), Phase 1 (Toolchain, Periphery Pinning & TCHook Completion), and Phase 2 (Aderyn Pass, Halmos Invariant Expansion, & Adversarial Fork Matrix).  
 **Status:** Complete. All 75 Foundry tests (45 unit/fuzz + 30 Base Sepolia fork matrix), all 11 Halmos symbolic proofs, and all 3 off-chain token list generator tests pass with 0 failures against the true canonical `@uniswap/v4-core` `v4.0.0` release tag (`e50237c43811bd9b526eff40f26772152a42daba`) and pinned `@uniswap/v4-periphery` `v1.0.3` (`3779387e5d296f39df543d23524b050f89a62917`). Nothing has been deployed to any network. No third-party audit exists or is claimed.
 
 ---
@@ -19,20 +19,20 @@
   The earlier 2026-10-23 pin-fix prompt was mistaken about which commit was the official release tag vs. the post-v4.0.0 development commit; that addendum and its claims regarding commit `59d3ecf53afa9264a16bba0e38f4c5d2231f80bc` are formally retracted and superseded.
   Commit `e50237c43811bd9b526eff40f26772152a42daba` is the true, canonical Uniswap `v4.0.0` release tag (Jan 21, 2025). The commit `59d3ecf` was a subsequent post-v4.0.0 commit where `SwapParams` and `ModifyLiquidityParams` were moved into a separate `src/types/PoolOperation.sol`.
   In true `v4.0.0` (`e50237c`), `PoolOperation.sol` does not exist; `SwapParams` and `ModifyLiquidityParams` reside directly inside `interface IPoolManager` in `src/interfaces/IPoolManager.sol`.
-  On 2026-10-28 (per the 2026-10-28 Work Order), `lib/v4-core` was restored to tag `v4.0.0` (`e50237c43811bd9b526eff40f26772152a42daba`), all references across `src/IPearlHook.sol`, `src/PearlHook.sol`, `src/PearlHookCore.sol`, `test/PearlHook.t.sol`, and `test/PearlHookRouterFork.t.sol` were aligned to `IPoolManager.SwapParams` and `IPoolManager.ModifyLiquidityParams`, and `foundry.lock` was updated accordingly.
+  On 2026-10-28 (per the 2026-10-28 Work Order), `lib/v4-core` was restored to tag `v4.0.0` (`e50237c43811bd9b526eff40f26772152a42daba`), all references across `src/ITCHook.sol`, `src/TCHook.sol`, `src/TCCore.sol`, `test/TCHook.t.sol`, and `test/TCHookRouterFork.t.sol` were aligned to `IPoolManager.SwapParams` and `IPoolManager.ModifyLiquidityParams`, and `foundry.lock` was updated accordingly.
 
 ### 1.2 CREATE2 Hook Permission Mining ([`src/HookMiner.sol`](./src/HookMiner.sol), [`src/PearlsConstants.sol`](./src/PearlsConstants.sol))
-- Created [`src/HookMiner.sol`](./src/HookMiner.sol) to deterministically mine a CREATE2 salt whose deployed address has low 14 bits (`Hooks.ALL_HOOK_MASK = 0x3FFF`) equal to `PEARL_HOOK_FLAGS = 0x00CC`:
+- Created [`src/HookMiner.sol`](./src/HookMiner.sol) to deterministically mine a CREATE2 salt whose deployed address has low 14 bits (`Hooks.ALL_HOOK_MASK = 0x3FFF`) equal to `TC_HOOK_FLAGS = 0x00CC`:
   - `Hooks.BEFORE_SWAP_FLAG` (`1 << 7`)
   - `Hooks.AFTER_SWAP_FLAG` (`1 << 6`)
   - `Hooks.BEFORE_SWAP_RETURNS_DELTA_FLAG` (`1 << 3`)
   - `Hooks.AFTER_SWAP_RETURNS_DELTA_FLAG` (`1 << 2`)
 - `HookMiner.find` precomputes `keccak256(bytes.concat(creationCode, constructorArgs))` once and hashes the 85-byte CREATE2 preimage in a fixed `memory-safe` scratch slot so on-chain salt mining inside `LaunchFactory.launch()` incurs zero quadratic memory expansion (~4.6M total launch gas).
-- Added `BASE_SEPOLIA_POOL_MANAGER = 0x05E73354cFDd6745C338b50BcFDfA3Aa6fA03408` and `PEARL_HOOK_FLAGS = 0x00CC` to [`src/PearlsConstants.sol`](./src/PearlsConstants.sol).
+- Added `BASE_SEPOLIA_POOL_MANAGER = 0x05E73354cFDd6745C338b50BcFDfA3Aa6fA03408` and `TC_HOOK_FLAGS = 0x00CC` to [`src/PearlsConstants.sol`](./src/PearlsConstants.sol).
 
-### 1.3 Canonical v4 Hook Adapter & Quote-Only Fee Settlement ([`src/PearlHook.sol`](./src/PearlHook.sol), [`src/IPearlHook.sol`](./src/IPearlHook.sol), [`src/PearlHookCore.sol`](./src/PearlHookCore.sol))
-- Replaced the mirrored primitive callback signatures in [`src/IPearlHook.sol`](./src/IPearlHook.sol), [`src/PearlHook.sol`](./src/PearlHook.sol), and [`src/PearlHookCore.sol`](./src/PearlHookCore.sol) with canonical `@uniswap/v4-core` `v4.0.0` types (`IHooks`, `IPoolManager`, `PoolKey`, `BalanceDelta`, `BeforeSwapDelta`, with `SwapParams` and `ModifyLiquidityParams` sourced from `IPoolManager`).
-- Enforced `Hooks.validateHookPermissions(IHooks(address(this)), getHookPermissions())` in `PearlHook`'s constructor and gated `beforeSwap` / `afterSwap` with `onlyPoolManager`.
+### 1.3 Canonical v4 Hook Adapter & Quote-Only Fee Settlement ([`src/TCHook.sol`](./src/TCHook.sol), [`src/ITCHook.sol`](./src/ITCHook.sol), [`src/TCCore.sol`](./src/TCCore.sol))
+- Replaced the mirrored primitive callback signatures in [`src/ITCHook.sol`](./src/ITCHook.sol), [`src/TCHook.sol`](./src/TCHook.sol), and [`src/TCCore.sol`](./src/TCCore.sol) with canonical `@uniswap/v4-core` `v4.0.0` types (`IHooks`, `IPoolManager`, `PoolKey`, `BalanceDelta`, `BeforeSwapDelta`, with `SwapParams` and `ModifyLiquidityParams` sourced from `IPoolManager`).
+- Enforced `Hooks.validateHookPermissions(IHooks(address(this)), getHookPermissions())` in `TCHook`'s constructor and gated `beforeSwap` / `afterSwap` with `onlyPoolManager`.
 - **Architectural Note — Uniswap v4 Specified vs. Unspecified Delta Split across the 4 Swap Directions:**
   In Uniswap v4's [`Hooks.sol`](./lib/v4-core/src/libraries/Hooks.sol) (`lines 294–312`), `afterSwap` returns a single `int128` that `PoolManager` applies **exclusively** to the swap's **unspecified** currency (`hookDeltaUnspecified`), whereas `hookDeltaSpecified` is sourced **exclusively** from `beforeSwap`'s `BeforeSwapDelta.getSpecifiedDelta()`. Because Pearls charges the post-gate 30 bps fee **strictly in the quote asset** across all 4 swap directions (and never in the launched token):
   1. **When the quote asset is the unspecified currency (`isQuoteSpecified(params) == false` — Case 2: Sell exact-in, Case 3: Buy exact-out):**
@@ -42,7 +42,7 @@
      - Once `core.feeActive()` is `true`: `beforeSwap` computes `fee = core.quoteFee(specifiedQuote, true)`, settles the quote fee to the treasury via `poolManager.take(quoteCurrency, core.treasury(), fee)`, and returns `toBeforeSwapDelta(fee.toInt128(), 0)`. `afterSwap` verifies the swap did not partially fill (`actualQuote == specifiedQuote`, reverting with `PartialFillWithFee` if a price limit cut the swap short so a swapper is never overcharged), records `specifiedQuote` in `core.recordSwap(specifiedQuote)`, and returns `0`.
 
 ### 1.4 Factory Integration ([`src/LaunchFactory.sol`](./src/LaunchFactory.sol))
-- Updated `LaunchFactory.launch()` to mine a valid CREATE2 salt via `HookMiner.find(address(this), PEARL_HOOK_FLAGS, ...)` and deploy `PearlHook{salt: hookSalt}` wired to `POOL_MANAGER`.
+- Updated `LaunchFactory.launch()` to mine a valid CREATE2 salt via `HookMiner.find(address(this), TC_HOOK_FLAGS, ...)` and deploy `TCHook{salt: hookSalt}` wired to `POOL_MANAGER`.
 - Added `address(POOL_MANAGER)` to `LaunchToken`'s initial `capExempt` array (expanding the exemption list from 5 to 6 addresses per spec §4 so seeding liquidity and swapping into the pool during the wallet-cap window do not trip the per-wallet cap on `PoolManager`).
 
 ---
@@ -54,9 +54,9 @@
 |---|---|---:|---:|---|
 | `PearlsTest` | [`test/Pearls.t.sol`](./test/Pearls.t.sol) | 24 | 0 | Factory launch, bps splits, certificate, wallet cap, locker (Abyssal & Timed ≥180d), vesting vault, airdrop distributor (0.0194 ETH fee + Merkle claims), fee tier validation, canonical pool guarantee. |
 | `AttestationRegistryTest` | [`test/AttestationRegistry.t.sol`](./test/AttestationRegistry.t.sol) | 8 | 0 | Content-hash anchoring, issuer gate, duplicate protection, reverse lookup. |
-| `PearlHookTest` | [`test/PearlHook.t.sol`](./test/PearlHook.t.sol) | 13 | 0 | Gate math, crossing-swap zero fee, fuzz monotonicity (256 runs), launch guard, `HookMiner` CREATE2 permission validation, `onlyPoolManager`, 4-case delta resolution. |
-| `PearlHookForkTest` | [`test/PearlHook.t.sol`](./test/PearlHook.t.sol) | 7 | 0 | **Spec §7.3 Base Sepolia Fork Matrix** (block `49,250,000`, chain ID `84532`) against live `PoolManager` (`0x05E73354cFDd6745C338b50BcFDfA3Aa6fA03408`): all 4 direction cases × pre-gate / crossing / post-gate (`quoteIsCurrency0 = false` and `true`), launch guard enforcement & expiry across all 4 directions, and end-to-end `LaunchFactory.launch()` -> pool init -> liquidity -> swaps. |
-| `PearlHookRouterForkTest` | [`test/PearlHookRouterFork.t.sol`](./test/PearlHookRouterFork.t.sol) | 7 | 0 | Router-path quotability & execution proofs (`V4Quoter`, `UniversalRouter`, `Permit2`) on Base Sepolia: all 4 directions, guard window, and quote-competitiveness benchmark. |
+| `TCHookTest` | [`test/TCHook.t.sol`](./test/TCHook.t.sol) | 13 | 0 | Gate math, crossing-swap zero fee, fuzz monotonicity (256 runs), launch guard, `HookMiner` CREATE2 permission validation, `onlyPoolManager`, 4-case delta resolution. |
+| `TCHookForkTest` | [`test/TCHook.t.sol`](./test/TCHook.t.sol) | 7 | 0 | **Spec §7.3 Base Sepolia Fork Matrix** (block `49,250,000`, chain ID `84532`) against live `PoolManager` (`0x05E73354cFDd6745C338b50BcFDfA3Aa6fA03408`): all 4 direction cases × pre-gate / crossing / post-gate (`quoteIsCurrency0 = false` and `true`), launch guard enforcement & expiry across all 4 directions, and end-to-end `LaunchFactory.launch()` -> pool init -> liquidity -> swaps. |
+| `TCHookRouterForkTest` | [`test/TCHookRouterFork.t.sol`](./test/TCHookRouterFork.t.sol) | 7 | 0 | Router-path quotability & execution proofs (`V4Quoter`, `UniversalRouter`, `Permit2`) on Base Sepolia: all 4 directions, guard window, and quote-competitiveness benchmark. |
 | **Total** | | **59** | **0** | **45 unit/fuzz + 14 Base Sepolia fork tests** |
 
 ### 2.2 Symbolic Verification (`halmos --contract PearlHalmosTest`) — **5 Passed, 0 Failed**
@@ -90,9 +90,9 @@ Full output in [`docs/halmos-2026-10-23.txt`](./docs/halmos-2026-10-23.txt); tri
 
 | Item | Scope | Status | Evidence |
 |:---|:---|:---:|:---|
-| **1. Router-Path Fork Tests** | Quotability & Execution proof through official v4 Quoter & Universal Router on Base Sepolia across full §7.3 matrix | **DONE** | [`test/PearlHookRouterFork.t.sol`](./test/PearlHookRouterFork.t.sol): 7 passed. Canonical Base Sepolia deployments verified (`V4Quoter`: `0x4A6513c898fe1B2d0E78d3b0e0A4a151589B1cBa`, `UniversalRouter`: `0x8702463e73f74d0b6765aBceb314Ef07aCb92650`, `Permit2`: `0x000000000022D473030F116dDEE9F6B43aC78BA3`). Quoted amounts equal executed amounts exactly across all 4 direction cases, pre-gate, crossing swap, and post-gate (30 bps fee). |
-| **2. Guard-Window Routing** | Quoter & Universal Router behavior characterization during `maxSwapBlocks` | **DONE** | [`test/PearlHookRouterFork.t.sol`](./test/PearlHookRouterFork.t.sol): `test_fork_router_guard_window_under_cap_succeeds_and_over_cap_reverts()`. Swaps $\le$ cap quote and execute normally. Swaps $>$ cap revert cleanly at quoter and router levels, preventing user gas loss. Verbatim UX report provided below. |
-| **3. Quote-Competitiveness Benchmark** | Pearls pool vs identical vanilla v4 pool at $100 / $1,000 / $10,000 sizes | **DONE** | [`test/PearlHookRouterFork.t.sol`](./test/PearlHookRouterFork.t.sol): `test_fork_benchmark_pearls_vs_vanilla_pre_and_post_gate()`. Exact parity pre-gate (0 bps difference). Exact 30 bps quote difference post-gate with 0 extraneous slippage. Verbatim numbers table below. |
+| **1. Router-Path Fork Tests** | Quotability & Execution proof through official v4 Quoter & Universal Router on Base Sepolia across full §7.3 matrix | **DONE** | [`test/TCHookRouterFork.t.sol`](./test/TCHookRouterFork.t.sol): 7 passed. Canonical Base Sepolia deployments verified (`V4Quoter`: `0x4A6513c898fe1B2d0E78d3b0e0A4a151589B1cBa`, `UniversalRouter`: `0x8702463e73f74d0b6765aBceb314Ef07aCb92650`, `Permit2`: `0x000000000022D473030F116dDEE9F6B43aC78BA3`). Quoted amounts equal executed amounts exactly across all 4 direction cases, pre-gate, crossing swap, and post-gate (30 bps fee). |
+| **2. Guard-Window Routing** | Quoter & Universal Router behavior characterization during `maxSwapBlocks` | **DONE** | [`test/TCHookRouterFork.t.sol`](./test/TCHookRouterFork.t.sol): `test_fork_router_guard_window_under_cap_succeeds_and_over_cap_reverts()`. Swaps $\le$ cap quote and execute normally. Swaps $>$ cap revert cleanly at quoter and router levels, preventing user gas loss. Verbatim UX report provided below. |
+| **3. Quote-Competitiveness Benchmark** | Pearls pool vs identical vanilla v4 pool at $100 / $1,000 / $10,000 sizes | **DONE** | [`test/TCHookRouterFork.t.sol`](./test/TCHookRouterFork.t.sol): `test_fork_benchmark_pearls_vs_vanilla_pre_and_post_gate()`. Exact parity pre-gate (0 bps difference). Exact 30 bps quote difference post-gate with 0 extraneous slippage. Verbatim numbers table below. |
 | **4. Fee Tier Hygiene** | Restrict `poolFeeTier` in `LaunchFactory` to canonical v4 tiers (100/1, 500/10, 3000/60, 10000/200) | **DONE** | [`src/LaunchFactory.sol`](./src/LaunchFactory.sol): `error InvalidPoolFeeTier(uint24 feeTier)` and `getTickSpacing(feeTier)`. Validated in `_validate()`. Tested in [`test/Pearls.t.sol`](./test/Pearls.t.sol) (`test_fee_tier_hygiene_and_validation` and `test_single_canonical_pool_guarantee`). Does not alter `LaunchCertificate` semantics. |
 | **5. Indexer / Discovery Surface** | Emit complete pool reconstruction params in `Launched` event + off-chain token list generator | **DONE** | [`src/LaunchFactory.sol`](./src/LaunchFactory.sol): Added `poolFeeTier`, `tickSpacing`, `poolId` to `Launched` event and `LaunchResult`. Created [`tools/generate_token_list.py`](./tools/generate_token_list.py), test [`tools/test_token_list.py`](./tools/test_token_list.py), and fixture [`tools/fixtures/launch_events.json`](./tools/fixtures/launch_events.json) (3/3 passing). |
 | **6. Liquidity Seeding Shape** | Evaluate initial tranche range/shape at benchmark sizes vs vanilla | **DONE** | Evaluated initial range `[-600, 600]` (~12% range). Provides ~16.5x capital efficiency over full-range. Findings and trade-offs documented below. |
@@ -106,7 +106,7 @@ All tests execute against canonical `@uniswap/v4-core` `v4.0.0` at release tag c
 | Test Category | Before | After | Change | Notes |
 |:---|---:|---:|:---:|:---|
 | **Unit / Fuzz Tests** (`forge test --no-match-contract ForkTest`) | 43 | **45** | +2 | Added `test_fee_tier_hygiene_and_validation` & `test_single_canonical_pool_guarantee` in [`test/Pearls.t.sol`](./test/Pearls.t.sol). |
-| **Base Sepolia Fork Tests** (`forge test --match-contract ForkTest`) | 7 | **14** | +7 | Added 7 comprehensive router/quoter/benchmark tests in [`test/PearlHookRouterFork.t.sol`](./test/PearlHookRouterFork.t.sol). |
+| **Base Sepolia Fork Tests** (`forge test --match-contract ForkTest`) | 7 | **14** | +7 | Added 7 comprehensive router/quoter/benchmark tests in [`test/TCHookRouterFork.t.sol`](./test/TCHookRouterFork.t.sol). |
 | **Symbolic Verification** (`halmos --contract PearlHalmosTest`) | 5 | **5** | 0 | All 5 formal invariant proofs pass. Enabled `ast = true` in [`foundry.toml`](./foundry.toml). |
 | **Off-Chain Generator Tests** (`python3 tools/test_token_list.py`) | 0 | **3** | +3 | Validates Uniswap Token List v1.0.0 schema formatting from `Launched` events. |
 | **Total Test Surface** | **55** | **67** | **+12** | **100% passing (0 failing, 0 skipped)** |
@@ -162,8 +162,8 @@ The initial liquidity tranche deployed in test environments uses tick bounds `[-
 ### 4.6 Single Canonical Pool Guarantee (Item 4)
 
 Uniswap v4 Aggregator routing relies on clean liquidity aggregation without fragmented pools. We verified that:
-1. `LaunchFactory` mines a unique CREATE2 salt for `PearlHook` based on the launch parameters.
-2. The newly deployed `PearlHook` instance address is baked directly into the `PoolKey.hooks` field.
+1. `LaunchFactory` mines a unique CREATE2 salt for `TCHook` based on the launch parameters.
+2. The newly deployed `TCHook` instance address is baked directly into the `PoolKey.hooks` field.
 3. Because `PoolId = keccak256(abi.encode(PoolKey))`, only **one canonical pool ID** can exist for the launch.
 4. If an external party attempts to deploy a duplicate pool with the same tokens and hook, `PoolManager.initialize()` reverts.
 5. If someone deploys an un-hooked pool or a pool with a non-canonical fee tier, it produces a different `PoolId` and lacks the platform's volume-gated treasury mechanics.
@@ -171,7 +171,7 @@ Uniswap v4 Aggregator routing relies on clean liquidity aggregation without frag
 
 ---
 
-## 5. Addendum (2026-10-29 — Phase 1: Toolchain, Periphery Pinning & PearlHook Completion)
+## 5. Addendum (2026-10-29 — Phase 1: Toolchain, Periphery Pinning & TCHook Completion)
 
 ### 5.1 Toolchain Status on the iMac
 - **Foundry Location & PATH**: Pre-existing Foundry binaries were located in `/home/housedv/.config/.foundry/bin/`. Standard symlinks were established to ensure permanent PATH availability across all interactive and non-interactive shells:
@@ -189,10 +189,10 @@ Uniswap v4 Aggregator routing relies on clean liquidity aggregation without frag
 |:---|:---|:---|:---|
 | **0. Toolchain** | Install and verify Foundry on iMac | **Built**: Symlinks created from `~/.config/.foundry/bin` to `~/.foundry/bin` and `~/.local/bin`. Local `forge --version` confirmed (`1.8.6`). | PATH symlinks in `/home/housedv/.local/bin/` and `/home/housedv/.foundry/bin`. |
 | **1. Pin `v4-periphery`** | Pin `lib/v4-periphery` with release tag + rev in `foundry.lock` | **Built**: Investigated release line; Uniswap distributes `v4-periphery` releases via npm (`@uniswap/v4-periphery@1.0.3`). Verified `package.json` at rev `3779387e5d296f39df543d23524b050f89a62917` is version `1.0.3`. Pinned tag `v1.0.3` and rev `3779387e5d296f39df543d23524b050f89a62917` in `foundry.lock`. No periphery API differences surfaced. | [`foundry.lock`](./foundry.lock) |
-| **2. Interface Alignment** | Replace mirrored callback signatures with canonical v4 interfaces | **Assessed & Verified**: `PearlHook` directly implements canonical `IHooks` (`contract PearlHook is IHooks, IPearlHook`) covering all 10 callbacks. `IPearlHook` aligns accounting views and callback types to canonical v4 structs (`IPoolManager.SwapParams`, `BalanceDelta`, `BeforeSwapDelta`). `PearlHookCore` implements accounting views and keeps callback stubs reverting by design. | [`src/IPearlHook.sol`](./src/IPearlHook.sol), [`src/PearlHook.sol`](./src/PearlHook.sol), [`src/PearlHookCore.sol`](./src/PearlHookCore.sol), [`test/PearlHook.t.sol`](./test/PearlHook.t.sol). |
-| **3. CREATE2 Salt Mining** | Salt mining encodes permission flags into hook address | **Assessed & Verified**: `HookMiner.sol` deterministically mines CREATE2 address with low 14 bits matching `PEARL_HOOK_FLAGS = 0x00CC` (`BEFORE_SWAP`, `AFTER_SWAP`, `BEFORE_SWAP_RETURNS_DELTA`, `AFTER_SWAP_RETURNS_DELTA`). Validated in `PearlHook` constructor via `Hooks.validateHookPermissions`. Validated in `test_hookMiner_mines_valid_permissions_and_rejects_unmined_address()` (mined passes; unmined CREATE reverts with `HookAddressNotValid`). | [`src/HookMiner.sol`](./src/HookMiner.sol), [`src/PearlHook.sol`](./src/PearlHook.sol), [`test/PearlHook.t.sol`](./test/PearlHook.t.sol). |
-| **4. Fee Settlement** | Fee settlement inside unlock context via `PoolManager.take()` | **Assessed & Verified**: Implemented in `PearlHook.sol` via `poolManager.take(quoteCurrency, core.treasury(), fee)`. Quote-only fee routing proven across all 4 direction cases on Base Sepolia fork with real ERC-20 transfers to treasury. | [`src/PearlHook.sol`](./src/PearlHook.sol), [`test/PearlHook.t.sol`](./test/PearlHook.t.sol). |
-| **5. Fork Matrix** | Spec §7.3 matrix on Base Sepolia fork | **Executed & Verified**: 14/14 fork tests pass against `https://sepolia.base.org` at block `49,250,000`. Full suite: 59 passed, 0 failed. Halmos: 5/5 proofs. Slither: 0 High, 0 Medium. Token list: 3/3 passed. | [`test/PearlHook.t.sol`](./test/PearlHook.t.sol), [`test/PearlHookRouterFork.t.sol`](./test/PearlHookRouterFork.t.sol). |
+| **2. Interface Alignment** | Replace mirrored callback signatures with canonical v4 interfaces | **Assessed & Verified**: `TCHook` directly implements canonical `IHooks` (`contract TCHook is IHooks, ITCHook`) covering all 10 callbacks. `ITCHook` aligns accounting views and callback types to canonical v4 structs (`IPoolManager.SwapParams`, `BalanceDelta`, `BeforeSwapDelta`). `TCCore` implements accounting views and keeps callback stubs reverting by design. | [`src/ITCHook.sol`](./src/ITCHook.sol), [`src/TCHook.sol`](./src/TCHook.sol), [`src/TCCore.sol`](./src/TCCore.sol), [`test/TCHook.t.sol`](./test/TCHook.t.sol). |
+| **3. CREATE2 Salt Mining** | Salt mining encodes permission flags into hook address | **Assessed & Verified**: `HookMiner.sol` deterministically mines CREATE2 address with low 14 bits matching `TC_HOOK_FLAGS = 0x00CC` (`BEFORE_SWAP`, `AFTER_SWAP`, `BEFORE_SWAP_RETURNS_DELTA`, `AFTER_SWAP_RETURNS_DELTA`). Validated in `TCHook` constructor via `Hooks.validateHookPermissions`. Validated in `test_hookMiner_mines_valid_permissions_and_rejects_unmined_address()` (mined passes; unmined CREATE reverts with `HookAddressNotValid`). | [`src/HookMiner.sol`](./src/HookMiner.sol), [`src/TCHook.sol`](./src/TCHook.sol), [`test/TCHook.t.sol`](./test/TCHook.t.sol). |
+| **4. Fee Settlement** | Fee settlement inside unlock context via `PoolManager.take()` | **Assessed & Verified**: Implemented in `TCHook.sol` via `poolManager.take(quoteCurrency, core.treasury(), fee)`. Quote-only fee routing proven across all 4 direction cases on Base Sepolia fork with real ERC-20 transfers to treasury. | [`src/TCHook.sol`](./src/TCHook.sol), [`test/TCHook.t.sol`](./test/TCHook.t.sol). |
+| **5. Fork Matrix** | Spec §7.3 matrix on Base Sepolia fork | **Executed & Verified**: 14/14 fork tests pass against `https://sepolia.base.org` at block `49,250,000`. Full suite: 59 passed, 0 failed. Halmos: 5/5 proofs. Slither: 0 High, 0 Medium. Token list: 3/3 passed. | [`test/TCHook.t.sol`](./test/TCHook.t.sol), [`test/TCHookRouterFork.t.sol`](./test/TCHookRouterFork.t.sol). |
 
 ### 5.3 Fee Settlement Proof on Base Sepolia Fork (Spec §7.3 Matrix)
 
@@ -220,9 +220,9 @@ Settlement was verified against the canonical Base Sepolia `PoolManager` (`0x05E
 ### 5.4 Exact Suite Counts
 - `PearlsTest`: **24 passed, 0 failed, 0 skipped**
 - `AttestationRegistryTest`: **8 passed, 0 failed, 0 skipped**
-- `PearlHookTest`: **13 passed, 0 failed, 0 skipped**
-- `PearlHookForkTest`: **7 passed, 0 failed, 0 skipped**
-- `PearlHookRouterForkTest`: **7 passed, 0 failed, 0 skipped**
+- `TCHookTest`: **13 passed, 0 failed, 0 skipped**
+- `TCHookForkTest`: **7 passed, 0 failed, 0 skipped**
+- `TCHookRouterForkTest`: **7 passed, 0 failed, 0 skipped**
 - **Total Forge Tests**: **59 passed, 0 failed, 0 skipped**
 - **Halmos Invariant Proofs**: **5 passed, 0 failed**
 - **Slither Analysis**: **0 High, 0 Medium**
@@ -269,8 +269,8 @@ Implemented 16 attacker-perspective tests on the Base Sepolia fork in [`test/Pea
 ### 6.5 Phase 2 Total Test Surface
 - **Forge Unit & Fuzz Tests**: **45 passed, 0 failed**
 - **Forge Fork Tests (Base Sepolia Chain 84532)**:
-  - `PearlHookForkTest`: **7 passed**
-  - `PearlHookRouterForkTest`: **7 passed**
+  - `TCHookForkTest`: **7 passed**
+  - `TCHookRouterForkTest`: **7 passed**
   - `PearlAdversarialForkTest`: **16 passed**
   - **Total Fork Tests**: **30 passed, 0 failed**
 - **Total Forge Suite**: **75 passed, 0 failed, 0 skipped** (6 suites)
@@ -332,7 +332,7 @@ Per `TRESS-COLUMN-WORK-ORDER-TEST-SAFE-2026-11-02.md`:
 
 ### 7.4 Remaining Open Gate: EIP-170 Code Size Limit
 - `forge build --sizes` reports `LaunchFactory` runtime size is **27,495 bytes**, exceeding the EIP-170 limit of **24,576 bytes** by 2,919 bytes.
-- Root Cause: `LaunchFactory` embeds the complete creation bytecodes of `LaunchToken`, `LaunchLocker`, `VestingVault`, `AirdropDistributor`, and `PearlHook`.
+- Root Cause: `LaunchFactory` embeds the complete creation bytecodes of `LaunchToken`, `LaunchLocker`, `VestingVault`, `AirdropDistributor`, and `TCHook`.
 - Per locked rules ("no redesign, no behavior change; report findings, do not soften them"), this structural finding is held for D'Vaughn's decision.
 
 ### 7.5 Status of Subsequent Phase 3 Tasks
@@ -353,7 +353,7 @@ In accordance with D'Vaughn's directive ("Tress Column, back office ops console,
 | **Domain** | `tc.dvaughnhouse.com` | `trade.tc.dvaughnhouse.com` | `ops.tc.dvaughnhouse.com` |
 | **Staging Route** | `/staging/tress-column` | `/staging/terminal` | `/staging/ops-console` |
 | **Primary Audience** | Public Creators & Launchers | Public Traders & Liquidity Providers | Staff Operators (Internal Operations) |
-| **Core Functions** | Fair launch deployment wizard, certificate generator, locker verification | Non-custodial DEX routing (Uniswap v4 + PearlHook), candlestick chart, volume gate tracker | Plus+ subscription tiers, airdrop campaign tracking, telemetry, fee reconciliation |
+| **Core Functions** | Fair launch deployment wizard, certificate generator, locker verification | Non-custodial DEX routing (Uniswap v4 + TCHook), candlestick chart, volume gate tracker | Plus+ subscription tiers, airdrop campaign tracking, telemetry, fee reconciliation |
 | **Routing Markup Switch** | N/A | Hardcoded OFF / Disabled (0% routing fee) | Monitored (zero custodial take) |
 | **Treasury & Custody** | Non-custodial | Non-custodial | Strict accounting to on-chain Safe `0xC0132b5782F129c6d552c6aB725D2341349a084d` |
 | **Hard Negatives** | No privileged admin keys | No wallet custody, no proprietary execution desk | Zero custody, zero withdrawal approvals, no user freezing, no admin keys |

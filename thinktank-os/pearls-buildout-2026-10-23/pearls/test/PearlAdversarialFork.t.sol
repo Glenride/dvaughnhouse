@@ -13,15 +13,15 @@ import {PoolModifyLiquidityTest} from "@uniswap/v4-core/src/test/PoolModifyLiqui
 import {PoolSwapTest} from "@uniswap/v4-core/src/test/PoolSwapTest.sol";
 import {TickMath} from "@uniswap/v4-core/src/libraries/TickMath.sol";
 
-import {PearlHook} from "../src/PearlHook.sol";
-import {PearlHookCore} from "../src/PearlHookCore.sol";
+import {TCHook} from "../src/TCHook.sol";
+import {TCCore} from "../src/TCCore.sol";
 import {HookMiner} from "../src/HookMiner.sol";
 import {LaunchFactory} from "../src/LaunchFactory.sol";
 import {LaunchToken} from "../src/LaunchToken.sol";
 import {LaunchCertificate} from "../src/LaunchCertificate.sol";
 import {LaunchLocker} from "../src/LaunchLocker.sol";
-import {PEARL_HOOK_FLAGS, BASE_SEPOLIA_POOL_MANAGER} from "../src/PearlsConstants.sol";
-import {ForkTestERC20} from "./PearlHook.t.sol";
+import {TC_HOOK_FLAGS, BASE_SEPOLIA_POOL_MANAGER} from "../src/PearlsConstants.sol";
+import {ForkTestERC20} from "./TCHook.t.sol";
 import {MockQuoteAsset, MockLPPosition} from "./Mocks.sol";
 
 /// @title PearlAdversarialForkTest
@@ -47,8 +47,8 @@ contract PearlAdversarialForkTest is Test {
     struct AdversarialPoolEnv {
         ForkTestERC20 token;
         ForkTestERC20 quote;
-        PearlHook hook;
-        PearlHookCore core;
+        TCHook hook;
+        TCCore core;
         PoolKey key;
     }
 
@@ -78,8 +78,8 @@ contract PearlAdversarialForkTest is Test {
         bytes memory constructorArgs =
             abi.encode(POOL_MANAGER, treasury, quoteIsCurrency0, threshold, maxSwapQuote, maxSwapBlocks);
         (, bytes32 salt) =
-            HookMiner.find(address(this), PEARL_HOOK_FLAGS, type(PearlHook).creationCode, constructorArgs);
-        env.hook = new PearlHook{salt: salt}(
+            HookMiner.find(address(this), TC_HOOK_FLAGS, type(TCHook).creationCode, constructorArgs);
+        env.hook = new TCHook{salt: salt}(
             POOL_MANAGER, treasury, quoteIsCurrency0, threshold, maxSwapQuote, maxSwapBlocks
         );
         env.core = env.hook.core();
@@ -204,7 +204,7 @@ contract PearlAdversarialForkTest is Test {
     // =====================================================================
 
     /// @notice Attack: Attacker attempts to bypass launch guard by swapping more than maxSwapQuoteAmount.
-    /// @dev Result: Reverts with PearlHookCore.SwapTooLarge.
+    /// @dev Result: Reverts with TCCore.SwapTooLarge.
     function test_adversarial_max_swap_guard_blocks_whale_buy() public {
         AdversarialPoolEnv memory env = _setupAdversarialPool(false, GATE_THRESHOLD, 100e18, 10);
 
@@ -386,15 +386,15 @@ contract PearlAdversarialForkTest is Test {
         });
 
         vm.prank(attacker);
-        vm.expectRevert(PearlHook.NotPoolManager.selector);
+        vm.expectRevert(TCHook.NotPoolManager.selector);
         env.hook.beforeSwap(attacker, env.key, params, "");
 
         vm.prank(attacker);
-        vm.expectRevert(PearlHook.NotPoolManager.selector);
+        vm.expectRevert(TCHook.NotPoolManager.selector);
         env.hook.afterSwap(attacker, env.key, params, toBalanceDelta(-100, 100), "");
     }
 
-    /// @notice Attack: Attacker tries to deploy PearlHook at an unmined address.
+    /// @notice Attack: Attacker tries to deploy TCHook at an unmined address.
     /// @dev Result: Reverts with Hooks.HookAddressNotValid.
     function test_adversarial_unmined_hook_deployment_reverts() public {
         vm.expectRevert(
@@ -403,16 +403,16 @@ contract PearlAdversarialForkTest is Test {
                 vm.computeCreateAddress(address(this), vm.getNonce(address(this)))
             )
         );
-        new PearlHook(POOL_MANAGER, treasury, false, GATE_THRESHOLD, 0, 0);
+        new TCHook(POOL_MANAGER, treasury, false, GATE_THRESHOLD, 0, 0);
     }
 
-    /// @notice Attack: Attacker calls recordSwap on PearlHookCore directly.
-    /// @dev Result: Reverts with PearlHookCore.NotReporter.
+    /// @notice Attack: Attacker calls recordSwap on TCCore directly.
+    /// @dev Result: Reverts with TCCore.NotReporter.
     function test_adversarial_unauthorized_record_swap_on_core_reverts() public {
         AdversarialPoolEnv memory env = _setupAdversarialPool(false, GATE_THRESHOLD, 0, 0);
 
         vm.prank(attacker);
-        vm.expectRevert(PearlHookCore.NotReporter.selector);
+        vm.expectRevert(TCCore.NotReporter.selector);
         env.core.recordSwap(100e18);
     }
 }
