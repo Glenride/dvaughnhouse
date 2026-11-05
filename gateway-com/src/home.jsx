@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Parallax } from "./motion.jsx";
-import { ROOM_PROJECTS, bioSystemLabels } from "./data/projects.js";
+import { ROOM_PROJECTS } from "./data/projects.js";
+import { BIO_PARAS } from "./data/home-content.js";
 import { ARROW, PROJECT_ICONS } from "./data/projectIcons.jsx";
 import heroLight from "./assets/hero-network-light.webp";
 import heroDark from "./assets/hero-network-dark.webp";
@@ -40,12 +41,6 @@ const FILM = [
   { src: film5, pos: "50% 50%" },
   { src: film6, pos: "50% 50%" },
   { src: film7, pos: "50% 40%" },
-];
-
-const BIO_PARAS = [
-  "I spent nearly 15 years running regulated clinical research: data, protocols, proof. Now I build independently: systems, software, and stories, held to the same standard. The machine proposes. The Human decides.",
-  `I\u2019m building Glenride into a company of one that ships real systems (${bioSystemLabels().join(", ")}) and the media that explains them, so the work outlives the pitch.`,
-  "Because good engineering too often feels sterile, and good media too often lacks rigor. I create where code, evidence, and story lock together.",
 ];
 
 // Prototype bio timing, unit-for-unit: fade 1.2, gap 0.8, word 0.3,

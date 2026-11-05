@@ -1,7 +1,0 @@
-User-agent: meta-webindexer
-Allow: /
-
-User-agent: *
-Allow: /
-
-Sitemap: https://dvaughnhouse.com/sitemap.xml
