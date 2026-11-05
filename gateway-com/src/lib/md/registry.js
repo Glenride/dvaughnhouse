@@ -271,6 +271,8 @@ function thoughtsBody() {
     "",
     "I spend two hours on your most repetitive task: I map how it runs today, and hand you the written map plus the first automation to build. You keep the decision; the machine does the repetition. Pay by Friday night to lock a slot, and we do the two hours next week at a time that works. First come, first served.",
     "",
+    "The full First Build week is $2,520 at the standard rate — this two-hour audit is the $350 way in.",
+    "",
     "Claim a slot on the [audit page](https://dvaughnhouse.com/audit).",
     "",
     "## Everything here runs on one principle: proof, not promises",

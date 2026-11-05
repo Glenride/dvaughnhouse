@@ -69,6 +69,9 @@ export function ThoughtsPage() {
                 Two audit slots open — $350 each.
               </h2>
               <p className="mt-4 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
+                The full First Build week is $2,520 at the standard rate — this two-hour audit is the $350 way in.
+              </p>
+              <p className="mt-4 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
                 I spend two hours on your most repetitive task: I map how it
                 runs today, and hand you the written map plus the first
                 automation to build. You keep the decision; the machine does
