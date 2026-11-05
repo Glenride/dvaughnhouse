@@ -20,6 +20,7 @@ const titles = {
   "/first-build": "The First Build — D'Vaughn House",
   "/terms": "Terms of Service — D'Vaughn House",
   "/privacy": "Privacy Policy — D'Vaughn House",
+  "/testimonials": "Share your experience — D'Vaughn House",
 };
 
 const template = readFileSync(join(dist, "index.html"), "utf8");

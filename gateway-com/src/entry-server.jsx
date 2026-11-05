@@ -4,7 +4,7 @@
 import { renderToString } from "react-dom/server";
 import App from "./App.jsx";
 
-export const routes = ["/", "/donate", "/patron", "/about", "/first-build", "/terms", "/privacy", "/thoughts", "/projects"];
+export const routes = ["/", "/donate", "/patron", "/about", "/first-build", "/terms", "/privacy", "/thoughts", "/projects", "/testimonials"];
 
 export function render(path) {
   return renderToString(<App path={path} />);

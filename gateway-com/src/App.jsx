@@ -6,6 +6,7 @@ import { CursorTrail, Parallax, useRevealOnScroll } from "./motion.jsx";
 import { SiteNav } from "./nav.jsx";
 import { ThoughtsPage } from "./thoughts.jsx";
 import { ProjectsPage } from "./projects.jsx";
+import { TestimonialsPage } from "./testimonials.jsx";
 import {
   CloseSection,
   CustomCursor,
@@ -849,6 +850,7 @@ export default function App({ path: propPath } = {}) {
   const isPrivacy = path.startsWith("/privacy");
   const isThoughts = path.startsWith("/thoughts");
   const isProjects = path.startsWith("/projects");
+  const isTestimonials = path.startsWith("/testimonials");
   if (isDonate) {
     return (
       <div className="min-h-screen bg-paper font-serif text-ink antialiased dark:bg-night dark:text-cream">
@@ -916,6 +918,18 @@ export default function App({ path: propPath } = {}) {
         <SiteNav base="/" />
         <main className="pt-24">
           <ProjectsPage />
+        </main>
+        <Footer base="/" />
+      </div>
+    );
+  }
+  if (isTestimonials) {
+    return (
+      <div className="min-h-screen bg-paper font-serif text-ink antialiased dark:bg-night dark:text-cream">
+        <CursorTrail />
+        <SiteNav base="/" />
+        <main className="pt-24">
+          <TestimonialsPage />
         </main>
         <Footer base="/" />
       </div>
