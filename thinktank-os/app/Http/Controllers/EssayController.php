@@ -31,6 +31,18 @@ class EssayController extends Controller
     ];
 
     /**
+     * The manifest of published essays (slug => metadata). Public so the
+     * markdown registry and the sitemap can list the same essays as the
+     * HTML pages, from the same source of truth.
+     *
+     * @return array<string, array<string, string>>
+     */
+    public static function manifest(): array
+    {
+        return self::DOCUMENTS;
+    }
+
+    /**
      * Slugs of the published essays (used for counts on the home page).
      *
      * @return array<int, string>

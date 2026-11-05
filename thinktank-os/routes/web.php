@@ -4,14 +4,37 @@ use App\Http\Controllers\AttestationController;
 use App\Http\Controllers\CreditController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ManuscriptController;
+use App\Http\Controllers\MarkdownController;
+use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Controllers\PortfolioMatrixController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EssayController;
+use App\Http\Controllers\ResearchController;
 use App\Http\Controllers\SopController;
 use App\Http\Controllers\StandardsController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\VanguardLibraryController;
 use Illuminate\Support\Facades\Route;
+
+// AI-readable surfaces (ScrollLaunch prompt 1): generated from code,
+// never hand-written static files. robots.txt is served by a route so
+// it stays in sync with llms.txt and ai.txt (public/robots.txt removed).
+// These skip the Inertia middleware: it force-sets `Vary: X-Inertia`,
+// which would overwrite the `Vary: Accept` these responses must carry.
+Route::get('/llms.txt', [MarkdownController::class, 'llmsTxt'])->name('ai.llms')->withoutMiddleware(HandleInertiaRequests::class);
+Route::get('/llms-full.txt', [MarkdownController::class, 'llmsFullTxt'])->name('ai.llmsFull')->withoutMiddleware(HandleInertiaRequests::class);
+Route::get('/ai.txt', [MarkdownController::class, 'aiTxt'])->name('ai.policy')->withoutMiddleware(HandleInertiaRequests::class);
+Route::get('/robots.txt', [MarkdownController::class, 'robotsTxt'])->name('ai.robots')->withoutMiddleware(HandleInertiaRequests::class);
+Route::get('/sitemap.xml', [MarkdownController::class, 'sitemapXml'])->name('ai.sitemap')->withoutMiddleware(HandleInertiaRequests::class);
+Route::get('/api/md/_catalog', [MarkdownController::class, 'catalog'])->name('md.catalog')->withoutMiddleware(HandleInertiaRequests::class);
+Route::get('/api/md/{path}', [MarkdownController::class, 'showApi'])->where('path', '.*')->name('md.api')->withoutMiddleware(HandleInertiaRequests::class);
+// .md suffix for every public page (registered before the HTML routes;
+// the pattern only matches paths ending in .md).
+Route::get('/{path}.md', [MarkdownController::class, 'showMd'])->where('path', '.*')->name('md.page')->withoutMiddleware(HandleInertiaRequests::class);
+
+// Research (ScrollLaunch prompt 2): original statistics from Glenride's own data.
+Route::get('/research', [ResearchController::class, 'index'])->name('research.index');
+Route::get('/research/attestations', [ResearchController::class, 'attestations'])->name('research.attestations');
 
 // store.dvaughnhouse.com lands on the storefront, not the library
 Route::domain('store.dvaughnhouse.com')->group(function () {

@@ -255,6 +255,52 @@ class StoreController extends Controller
     ];
 
     /**
+     * Public catalog for the markdown renderer and the sitemap: the same
+     * products, prices and statuses as the HTML storefront, from the
+     * same source data. No new facts are introduced here.
+     */
+    public function publicCatalog(): array
+    {
+        $grouped = [];
+        foreach ($this->categories() as $key => $cat) {
+            $grouped[] = array_merge($cat, [
+                'products' => array_values(array_filter(
+                    $this->products,
+                    fn ($p) => $p['category'] === $key
+                )),
+            ]);
+        }
+
+        $seo = $this->storeSeoData($grouped);
+
+        $products = [];
+        foreach ($grouped as $category) {
+            foreach ($category['products'] as $p) {
+                $match = null;
+                foreach ($seo['products'] as $sp) {
+                    if ($sp['name'] === $p['name']) {
+                        $match = $sp;
+                        break;
+                    }
+                }
+
+                $products[] = array_merge($p, [
+                    'priceLabel' => $match['priceLabel'] ?? null,
+                    'statusLabel' => $match['statusLabel'] ?? $p['status'],
+                ]);
+            }
+        }
+
+        return [
+            'categories' => $this->categories(),
+            'products' => $products,
+            'faqAnswer' => $seo['faqAnswer'],
+            'asOf' => $seo['asOf'],
+            'updated' => $seo['updated'],
+        ];
+    }
+
+    /**
      * Products grouped by category for the storefront.
      */
     public function categories(): array

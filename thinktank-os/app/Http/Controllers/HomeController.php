@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Attestation;
 use App\Models\Manuscript;
+use App\Support\SiteConfig;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\View;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -19,6 +21,10 @@ class HomeController extends Controller
      */
     public function index(Request $request): Response
     {
+        // Homepage Organization + WebSite JSON-LD, from the same site
+        // config as llms.txt and ai.txt (rendered by the Blade root view).
+        View::share('pageJsonLd', SiteConfig::organizationJsonLdString());
+
         $featuredBriefs = Manuscript::published()
             ->latest('published_at')
             ->take(3)

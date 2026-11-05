@@ -334,6 +334,17 @@ export default function Landing({
                                 Commercial work and executive salons →
                             </span>
                         </Link>
+                        <Link
+                            href={route('research.index')}
+                            className="group flex flex-wrap items-baseline justify-between gap-2 border-b border-line py-6 transition dark:border-line-dark"
+                        >
+                            <span className="font-display text-xl font-bold text-ink transition group-hover:text-sienna-deep dark:text-cream dark:group-hover:text-sienna">
+                                Research
+                            </span>
+                            <span className="text-sm text-ink-soft dark:text-cream-soft">
+                                Original statistics from Glenride&apos;s own data →
+                            </span>
+                        </Link>
                         <div className="border-b border-line py-6 dark:border-line-dark">
                             <p className="font-display text-xl font-bold text-ink dark:text-cream">
                                 The record, before you reach out
