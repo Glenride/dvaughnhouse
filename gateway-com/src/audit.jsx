@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { AUDIT_PAY_URL, AUDIT_PRICE } from "./data/site-content.js";
 
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
@@ -43,8 +44,7 @@ export function AuditPage() {
       if (res.ok && data.ok) {
         setStatus({
           state: "success",
-          message:
-            "Received. I'll email you shortly with payment details — your slot is locked once the $350 is paid by Friday night. Two slots only, first come, first served.",
+          message: `Received. Your slot is locked once the ${AUDIT_PRICE} (tax included) is paid by Friday night. Two slots only, first come, first served.`,
         });
         setForm({ name: "", email: "", business: "", task: "", day: "Monday", company: "" });
       } else if (data.error === "storage_not_configured") {
@@ -71,10 +71,10 @@ export function AuditPage() {
         Claim an audit slot.
       </h1>
       <p className="mt-6 max-w-2xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-        Two slots open — $350 each. Book by Friday night. I spend two hours
-        on your most repetitive task: I map how it runs today, and hand you
-        the written map plus the first automation to build. You keep the
-        decision; the machine does the repetition.
+        Two slots open — {AUDIT_PRICE} each, tax included. Book by Friday
+        night. I spend two hours on your most repetitive task: I map how it
+        runs today, and hand you the written map plus the first automation to
+        build. You keep the decision; the machine does the repetition.
       </p>
       <p className="mt-4 max-w-2xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
         Pay by Friday night to lock a slot, and we do the two hours next week
@@ -153,13 +153,23 @@ export function AuditPage() {
             disabled={status.state === "sending"}
             className="inline-flex items-center rounded-full bg-sienna px-6 py-3 text-sm font-semibold text-ink transition-colors hover:bg-sienna-deep hover:text-paper disabled:opacity-60"
           >
-            {status.state === "sending" ? "Sending…" : "Claim my slot — $350"}
+            {status.state === "sending" ? "Sending…" : `Claim my slot — ${AUDIT_PRICE}`}
           </button>
         </div>
         {status.state === "success" && (
-          <p role="status" className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
-            {status.message}
-          </p>
+          <div>
+            <p role="status" className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
+              {status.message}
+            </p>
+            <a
+              href={AUDIT_PAY_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-4 inline-flex items-center rounded-full bg-sienna px-6 py-3 text-sm font-semibold text-ink transition-colors hover:bg-sienna-deep hover:text-paper"
+            >
+              Pay {AUDIT_PRICE} to lock my slot →
+            </a>
+          </div>
         )}
         {status.state === "error" && (
           <p role="alert" className="text-sm font-medium text-red-700 dark:text-red-400">

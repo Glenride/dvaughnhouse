@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import flashSaleAudit from "./assets/flash-sale-audit.webp";
 import { projectById } from "./data/projects.js";
+import { AUDIT_PAY_URL, AUDIT_PRICE } from "./data/site-content.js";
 import { AREAS, BENEFITS, STAGES, STATS } from "./data/thoughts-content.js";
 
 // Thoughts: the old homepage's expository copy, reorganized onto its own
@@ -58,7 +59,7 @@ export function ThoughtsPage() {
           <div className="grid gap-0 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
             <img
               src={flashSaleAudit}
-              alt="AI Workflow Audit — $350, two slots, book by Friday"
+              alt="AI Workflow Audit — $374.50, two slots, book by Friday"
               className="h-full w-full object-cover"
             />
             <div className="p-7 sm:p-10">
@@ -66,10 +67,10 @@ export function ThoughtsPage() {
                 Flash sale — book by Friday night
               </p>
               <h2 className="mt-3 font-display text-3xl font-bold tracking-tight text-ink dark:text-cream">
-                Two audit slots open — $350 each.
+                Two audit slots open — {AUDIT_PRICE} each, tax included.
               </h2>
               <p className="mt-4 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-                The full First Build week is $2,520 at the standard rate — this two-hour audit is the $350 way in.
+                The full First Build week is $2,520 at the standard rate — this two-hour audit is the {AUDIT_PRICE} way in (tax included).
               </p>
               <p className="mt-4 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
                 I spend two hours on your most repetitive task: I map how it
@@ -87,6 +88,16 @@ export function ThoughtsPage() {
                   className="inline-flex items-center rounded-full bg-sienna px-6 py-3 text-sm font-semibold text-ink transition-colors hover:bg-sienna-deep hover:text-paper"
                 >
                   Claim a slot →
+                </a>
+              </p>
+              <p className="mt-4 text-sm">
+                <a
+                  href={AUDIT_PAY_URL}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-semibold text-sienna-deep underline underline-offset-4 hover:text-ink dark:text-sienna dark:hover:text-cream"
+                >
+                  Or pay {AUDIT_PRICE} now to lock it →
                 </a>
               </p>
               <p className="mt-6 text-xs text-ink-soft dark:text-cream-soft">
