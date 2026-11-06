@@ -150,8 +150,8 @@ export function FlashSaleBanner() {
     <div className="bg-sienna-deep pt-24 text-paper">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-4 gap-y-1 px-6 py-3 text-center sm:justify-between sm:text-left lg:px-8">
         <p className="text-sm font-semibold">
-          Flash sale — two AI workflow audit slots, {AUDIT_PRICE} each (tax
-          included). Book by Friday night.
+          The Founder&rsquo;s Override — two AI workflow audit slots,{" "}
+          {AUDIT_PRICE} each (tax included). Book by Sunday night.
         </p>
         <a href="/audit" className="text-sm font-bold underline underline-offset-4 hover:text-cream">
           Claim a slot →

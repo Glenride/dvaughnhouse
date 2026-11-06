@@ -44,7 +44,7 @@ export function AuditPage() {
       if (res.ok && data.ok) {
         setStatus({
           state: "success",
-          message: `Received. Your slot is locked once the ${AUDIT_PRICE} (tax included) is paid by Friday night. Two slots only, first come, first served.`,
+          message: `Received. Your slot is locked once the ${AUDIT_PRICE} (tax included) is paid by Sunday night, November 8. Two slots only, first come, first served.`,
         });
         setForm({ name: "", email: "", business: "", task: "", day: "Monday", company: "" });
       } else if (data.error === "storage_not_configured") {
@@ -71,13 +71,14 @@ export function AuditPage() {
         Claim an audit slot.
       </h1>
       <p className="mt-6 max-w-2xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-        Two slots open — {AUDIT_PRICE} each, tax included. Book by Friday
-        night. I spend two hours on your most repetitive task: I map how it
-        runs today, and hand you the written map plus the first automation to
-        build. You keep the decision; the machine does the repetition.
+        The Founder&rsquo;s Override — two slots open, {AUDIT_PRICE} each, tax
+        included. Book by Sunday night, November 8. I spend two hours on your
+        most repetitive task: I map how it runs today, and hand you the
+        written map plus the first automation to build. You keep the decision;
+        the machine does the repetition.
       </p>
       <p className="mt-4 max-w-2xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-        Pay by Friday night to lock a slot, and we do the two hours next week
+        Pay by Sunday night to lock a slot, and we do the two hours next week
         at a time that works. First come, first served. If it&rsquo;s not a
         fit, I&rsquo;ll tell you that on a quick call — no charge, no pitch.
       </p>

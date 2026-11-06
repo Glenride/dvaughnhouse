@@ -64,7 +64,7 @@ export function ThoughtsPage() {
             />
             <div className="p-7 sm:p-10">
               <p className="font-mono text-xs uppercase tracking-widest text-sienna-deep dark:text-sienna">
-                Flash sale — book by Friday night
+                The Founder&rsquo;s Override — book by Sunday night
               </p>
               <h2 className="mt-3 font-display text-3xl font-bold tracking-tight text-ink dark:text-cream">
                 Two audit slots open — {AUDIT_PRICE} each, tax included.
@@ -79,7 +79,7 @@ export function ThoughtsPage() {
                 the repetition.
               </p>
               <p className="mt-4 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-                Pay by Friday night to lock a slot, and we do the two hours
+                Pay by Sunday night to lock a slot, and we do the two hours
                 next week at a time that works. First come, first served.
               </p>
               <p className="mt-6">

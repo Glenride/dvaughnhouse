@@ -269,9 +269,9 @@ function thoughtsBody() {
   return [
     "You don't need another lecture about AI. You need less busywork, straight facts on drug shortages, and plain talk on where things are headed — from someone who spent fifteen years inside the system.",
     "",
-    `## Flash sale — two audit slots, ${AUDIT_PRICE} each, tax included (book by Friday night, November 2026)`,
+    `## The Founder's Override — two audit slots, ${AUDIT_PRICE} each, tax included (book by Sunday night, November 8, 2026)`,
     "",
-    "I spend two hours on your most repetitive task: I map how it runs today, and hand you the written map plus the first automation to build. You keep the decision; the machine does the repetition. Pay by Friday night to lock a slot, and we do the two hours next week at a time that works. First come, first served.",
+    "I spend two hours on your most repetitive task: I map how it runs today, and hand you the written map plus the first automation to build. You keep the decision; the machine does the repetition. Pay by Sunday night, November 8, to lock a slot, and we do the two hours next week at a time that works. First come, first served.",
     "",
     `The full First Build week is $2,520 at the standard rate — this two-hour audit is the ${AUDIT_PRICE} way in (tax included).`,
     "",
@@ -353,13 +353,13 @@ function testimonialsBody() {
 
 function auditBody() {
   return [
-    `Two slots open — ${AUDIT_PRICE} each, tax included. Book by Friday night. I spend two hours on your most repetitive task: I map how it runs today, and hand you the written map plus the first automation to build. You keep the decision; the machine does the repetition.`,
+    `The Founder's Override — two slots open, ${AUDIT_PRICE} each, tax included. Book by Sunday night, November 8. I spend two hours on your most repetitive task: I map how it runs today, and hand you the written map plus the first automation to build. You keep the decision; the machine does the repetition.`,
     "",
-    "Pay by Friday night to lock a slot, and we do the two hours next week at a time that works. First come, first served. If it's not a fit, I'll tell you that on a quick call — no charge, no pitch.",
+    "Pay by Sunday night to lock a slot, and we do the two hours next week at a time that works. First come, first served. If it's not a fit, I'll tell you that on a quick call — no charge, no pitch.",
     "",
     "The full version of this is the First Build: one week, one workflow, $1,500 at the founding rate. This is the two-hour door into it.",
     "",
-    `Claim a slot on the [audit page](${absUrl("/audit")}) — name, email, business, your most repetitive task, and your preferred day next week. Your slot is locked once the ${AUDIT_PRICE} (tax included) is paid by Friday night — or [pay now](${AUDIT_PAY_URL}).`,
+    `Claim a slot on the [audit page](${absUrl("/audit")}) — name, email, business, your most repetitive task, and your preferred day next week. Your slot is locked once the ${AUDIT_PRICE} (tax included) is paid by Sunday night, November 8 — or [pay now](${AUDIT_PAY_URL}).`,
   ].join("\n");
 }
 
@@ -481,11 +481,11 @@ export const ROUTES = [
     mdPath: "/audit.md",
     title: "Claim an audit slot — D'Vaughn House",
     summary:
-      `Two AI workflow audit slots at ${AUDIT_PRICE} each (tax included): two hours on your most repetitive task, with a written map and the first automation to build. Book by Friday night; the audit happens next week.`,
+      `Two AI workflow audit slots at ${AUDIT_PRICE} each (tax included): two hours on your most repetitive task, with a written map and the first automation to build. Book by Sunday night, November 8; the audit happens next week.`,
     aiSummary:
-      `Claim an audit slot: two ${AUDIT_PRICE} AI workflow audit slots (tax included), book by Friday night, audit next week. Two hours on the buyer's most repetitive task, delivering a written map and the first automation to build. First come, first served; the slot is locked once the ${AUDIT_PRICE} is paid.`,
+      `Claim an audit slot: two ${AUDIT_PRICE} AI workflow audit slots (tax included), book by Sunday night, November 8, audit next week. Two hours on the buyer's most repetitive task, delivering a written map and the first automation to build. First come, first served; the slot is locked once the ${AUDIT_PRICE} is paid.`,
     description:
-      `Claim one of two ${AUDIT_PRICE} AI workflow audit slots (tax included) — book by Friday night, audit next week.`,
+      `Claim one of two ${AUDIT_PRICE} AI workflow audit slots (tax included) — book by Sunday night, November 8, audit next week.`,
     updated: "2026-11-06",
     section: "core",
     render: auditBody,
