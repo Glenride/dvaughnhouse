@@ -49,11 +49,20 @@ class StanzaManuscriptsSeeder extends Seeder
         );
 
         foreach ($this->manuscripts() as $m) {
+            // raw_file_path is NOT NULL in the schema, so the full text is
+            // stored in both places (raw = submitted draft, synthesized =
+            // the brief the Library reads). Same bytes either way.
+            $rawPath = 'manuscripts/raw/' . $m['id'] . '.md';
             $briefPath = 'manuscripts/synthesized/' . $m['id'] . '.md';
             $source = __DIR__ . '/data/stanza-manuscripts/' . $m['slug'] . '.md';
 
-            if (! Storage::disk('local')->exists($briefPath) && is_file($source)) {
-                Storage::disk('local')->put($briefPath, file_get_contents($source));
+            if (is_file($source)) {
+                if (! Storage::disk('local')->exists($rawPath)) {
+                    Storage::disk('local')->put($rawPath, file_get_contents($source));
+                }
+                if (! Storage::disk('local')->exists($briefPath)) {
+                    Storage::disk('local')->put($briefPath, file_get_contents($source));
+                }
             }
 
             Manuscript::firstOrCreate(
@@ -62,7 +71,7 @@ class StanzaManuscriptsSeeder extends Seeder
                     'id' => $m['id'],
                     'user_id' => $user->id,
                     'abstract' => $m['abstract'],
-                    'raw_file_path' => null,
+                    'raw_file_path' => $rawPath,
                     'synthesized_brief_path' => $briefPath,
                     'status' => 'published',
                     'compliance_ethics_verified' => true,
