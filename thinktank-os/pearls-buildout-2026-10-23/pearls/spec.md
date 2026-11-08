@@ -40,28 +40,51 @@
 ## 2. Architecture overview
 
 ```
+Transaction 1 — Part 1. `DistributionFactory.deploy(LaunchParams)`
+deploys the token, locker, vesting vault and airdrop distributor.
+No token transfers happen here; the full supply sits in Part 1
+until Part 2.
+
                          ┌────────────────────────────────────────────┐
-                         │              LaunchFactory                  │
-                         │  immutable: treasury Safe, certificate,     │
-                         │  protocol constants                        │
+                         │        DistributionFactory (Part 1)        │
+                         │  immutable: treasury Safe                  │
+                         │  one instance per launch                   │
                          └──────┬───────────────┬──────────────┬──────┘
-                  launch()      │               │              │
-              ┌─────────────────▼──┐  ┌─────────▼───────┐  ┌───▼──────────────┐
-              │    LaunchToken   │  │ LaunchCertificate│  │   LaunchLocker   │
-              │ ERC-20 + Permit  │  │ ERC-721 + stored │  │ holds v4 LP NFT  │
-              │ wallet-cap guard │  │ launch record    │  │ Abyssal / Timed  │
-              └──────────────────┘  └──────────────────┘  └───┬──────────────┘
-                                                              │ (position NFT,
-              ┌──────────────────┐  ┌──────────────────┐      │  minted by the
-              │  VestingVault    │  │ AirdropDistributor│     │  pool layer)
-              │ linear + cliff   │  │ Merkle, 0.0194   │      │
-              │ (optional)       │  │ ETH flat fee     │  ┌───▼──────────────┐
-              └──────────────────┘  └──────────────────┘  │    TCHook     │
-                                                          │ v4 hook: volume  │
-              Off-chain (DESIGNED ONLY, §10):             │ gate + launch    │
-              Indexer · Whale/Unlock Radar · Batch        │ guard + fee      │
-              Claimer · Snapshot Engine · Portal ·        └──────────────────┘
-              CoinGuard tiers · Plus+ subscriptions
+                                │               │              │
+              ┌─────────────────▼──┐  ┌────────▼───────┐  ┌───▼──────────────┐
+              │    LaunchToken   │  │  LaunchLocker  │  │  VestingVault    │
+              │ ERC-20 + Permit  │  │ holds v4 LP NFT│  │ linear + cliff   │
+              │ wallet-cap guard │  │ Abyssal / Timed│  │ (optional)       │
+              └──────────────────┘  └──────────────────┘  └──────────────────┘
+              ┌──────────────────┐
+              │ AirdropDistributor│
+              │ Merkle, 0.0194   │
+              │ ETH flat fee     │
+              │ (optional)       │
+              └──────────────────┘
+
+Transaction 2 — Part 2. `HookCertificateFactory.launch(part1,
+LaunchParams)` cross-checks every Part 1 output against the launch
+params, deploys TCHook (+ TCCore) and the certificate, performs the
+frozen distribution, mints the certificate last, and emits `Launched`
+with the same fields as the old single-factory launch.
+
+                         ┌────────────────────────────────────────────┐
+                         │     HookCertificateFactory (Part 2)        │
+                         │  immutable: treasury Safe, certificate     │
+                         │  singleton per chain                       │
+                         └──────┬───────────────┬──────────────┬──────┘
+                                │               │              │
+              ┌─────────────────▼──┐  ┌────────▼───────┐  ┌───▼──────────────┐
+              │  LaunchCertificate│  │    TCHook      │  │    TCCore       │
+              │ ERC-721 + stored │  │ v4 hook: volume│  │ volume tracking,│
+              │ launch record    │  │ gate + launch  │  │ $10M gate, fee  │
+              └──────────────────┘  │ guard + fee    │  │ accounting      │
+                                     └──────────────────┘  └──────────────────┘
+
+              Off-chain (DESIGNED ONLY, §10):
+              Indexer · Whale/Unlock Radar · Batch Claimer · Snapshot
+              Engine · Portal · CoinGuard tiers · Plus+ subscriptions
 ```
 
 **Pool-creation boundary (honest split).** Creating the Uniswap v4 pool, minting the LP
@@ -76,7 +99,8 @@ integration phase (§7.4) and is **not** faked in the core.
 
 | Contract | Type | Admin keys | Purpose |
 |---|---|---|---|
-| `LaunchFactory` | Singleton per chain | None (immutable treasury) | One-transaction launches; validates and freezes all parameters; deploys token/vault/distributor/locker/hook-accounting; deploys the certificate contract in its own constructor and issues certificates through it |
+| `DistributionFactory` | Part 1, one per launch | None (immutable treasury) | Deploys token, locker, vault and distributor; validates and freezes all parameters; no token transfers — the full supply stays in this contract until Part 2. Deployed bytecode 17,984 bytes (under the 24,576-byte EIP-170 limit) |
+| `HookCertificateFactory` | Part 2, singleton per chain | None (immutable treasury) | Validates Part 1 outputs against the launch params; deploys TCHook/TCCore and the certificate contract in its own constructor; performs the frozen distribution; mints the certificate last and emits `Launched` with the same fields as the old single-factory launch. Deployed bytecode 17,798 bytes |
 | `LaunchToken` | ERC-20 + ERC20Permit | None | The launched token. Fixed supply minted once at deploy to the factory for distribution. Per-wallet cap guard for the first N blocks |
 | `LaunchCertificate` | ERC-721 + record store | Mint restricted to the factory (set once, immutable) | "The pearl": one NFT per launch holding the full plain-language launch record on-chain |
 | `LaunchLocker` | ERC-721 custodian | None | Holds the LP position NFT. Abyssal (forever) or Timed (≥180 d). Fee handling per launch choice: Creator Claimable or Dead/Compounded |
@@ -91,7 +115,9 @@ never deployed by the production script.
 
 ## 4. Deploy-time configuration surface
 
-One struct, one transaction — `LaunchFactory.launch(LaunchParams)`:
+One struct, two transactions — `DistributionFactory.deploy(LaunchParams)`, then `HookCertificateFactory.launch(part1, LaunchParams)`:
+
+A launch is two transactions: Part 1 deploys the distribution side (no transfers); Part 2 validates Part 1’s outputs, deploys the hook and the certificate, performs the distribution, and mints the certificate last.
 
 | Parameter | Type | Rules enforced on-chain |
 |---|---|---|
@@ -353,9 +379,9 @@ demand evidence).
 
 1. `forge test` green locally + on a fresh Anvil instance (this repo, done at build time).
 2. Slither + Aderyn clean; Halmos invariant proofs pass.
-3. Deploy script (`script/Deploy.s.sol`) deploys `LaunchFactory` (which deploys the
-   `LaunchCertificate` in its constructor) with the treasury set to a **test** Safe on
-   Base Sepolia. Chain guard in the script: it refuses any chain id other than 84532
+3. Deploy script (`script/Deploy.s.sol`) deploys `DistributionFactory` (Part 1) and `HookCertificateFactory` (Part 2, which deploys the
+   `LaunchCertificate` in its constructor) with the treasury set to a **test** Safe on Base Sepolia. Part 2 is a singleton per
+   chain; a fresh Part 1 is deployed per launch. Chain guard in the script: it refuses any chain id other than 84532
    (Base Sepolia) or 31337 (Anvil).
 4. Dummy launch end-to-end on Sepolia (testnet dummy as "Pearl #0" — **not** SPINE; SPINE's
    sequencing is a separate open decision, §12), certificate rendered, locker custody proven.

@@ -64,8 +64,10 @@ table for all four swap cases. The **v4 adapter is partial**: it is not
 wired to a real PoolManager (no CREATE2 salt mining, no `take()`/settle
 settlement, canonical v4-core interfaces not yet pinned). It compiles and
 its resolution logic is unit-tested; it would take no fee on a live pool
-today. Closing that gap is the integration phase in spec §7.4. Never
-describe the hook as done until the fork-test matrix passes.
+today. Closing that gap is the integration phase in spec §7.4. The
+fork-test matrix now passes on the two-step launch (fork equivalence
+and fork end-to-end both pass), so the hook is verified against a fork;
+what remains is the adapter wiring, not the tests.
 
 ## Build & test
 
