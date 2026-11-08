@@ -16,16 +16,16 @@ const HERO_SLIDES = [
     {
         image: '/images/heroes/hero-global-network.jpg',
         headline: 'Research that signs its work.',
-        line: 'Every brief carries its evidence, its verifier, and its date — attested, and open to challenge.',
+        line: 'I wish there was a record I could check, not a claim I had to take on trust. Every brief carries its evidence, its verifier, and its date — attested, and open to challenge.',
         ctaLabel: 'View the attestations',
         ctaHref: route('attestations.index'),
     },
     {
         image: '/images/heroes/hero-ship-risk.jpg',
         headline: 'Shortages, measured — not guessed.',
-        line: 'U.S. drug shortages, tracked and published in the open from FDA and ASHP data.',
-        ctaLabel: 'Read the thesis',
-        ctaHref: route('thesis.index'),
+        line: 'I hate finding out a drug is in shortage from a pharmacist. Every Monday, Glenride publishes a weekly U.S. drug shortage digest — what is in shortage, what resolved, and why — from FDA and ASHP data. As of Q3 2026: 225 active U.S. drug shortages, 87 new this year.',
+        ctaLabel: 'Read the weekly digest',
+        ctaHref: route('library.index'),
     },
     {
         image: '/images/heroes/hero-port-lanes.jpg',
@@ -75,11 +75,11 @@ const BODY_BAND_IMAGES = [
 const RESEARCH_AREAS = [
     {
         name: 'Supply-Chain Resilience',
-        line: 'How critical supply chains fail, where they bend, and what keeps them running.',
+        line: 'Supply chain vulnerabilities, in plain language: how critical supply chains fail, where they bend, and what keeps them running.',
     },
     {
         name: 'Pharmaceutical Data Evaluation',
-        line: 'Clinical and regulatory data, evaluated for what it actually shows.',
+        line: 'U.S. drug shortages and pharmaceutical data, evaluated for what they actually show — including where the FDA and ASHP shortage lists disagree.',
     },
     {
         name: 'Applied AI & Enterprise Software Systems',
@@ -117,7 +117,7 @@ export default function Landing({
 
     return (
         <div className="min-h-screen bg-paper font-serif text-ink selection:bg-sienna selection:text-ink dark:bg-night dark:text-cream">
-            <Head title="Glenride Gateway — Independent, AI-Native Think Tank" />
+            <Head title="Weekly U.S. Drug Shortage Digest | Glenride" />
 
             <InstitutionalHeader
                 auth={auth}
@@ -152,21 +152,33 @@ export default function Landing({
                         </h2>
                         <div className="mt-6 space-y-5 text-lg leading-relaxed text-ink-soft dark:text-cream-soft">
                             <p>
-                                Glenride is an independent, AI-native think tank. We
-                                find where critical systems break before the break
-                                becomes harm — and we publish a record anyone can
-                                check.
+                                I hate that most supply-chain failures feel like
+                                surprises. They are not. I wish there was one
+                                place that just told me what is breaking, what
+                                is in shortage, and what changed this week —
+                                with the source and the date on every number,
+                                so I can check it myself.
                             </p>
                             <p>
-                                We study supply chains, pharmaceutical data, and the
-                                software systems modern life quietly depends on. We
-                                measure what others guess at, we show our sources,
-                                and we sign our work. When a finding is strong
-                                enough to change a rule, we carry it to the people
-                                who write the rules. When an answer can become a
-                                tool, we build the tool. Our money comes from our
-                                work, so our conclusions answer to evidence, not to
-                                a sponsor.
+                                Glenride is an independent, AI-native think tank.
+                                We find where critical systems break before the
+                                break becomes harm — and we publish a record
+                                anyone can check.
+                            </p>
+                            <p>
+                                We study supply chain vulnerabilities,
+                                pharmaceutical data, and the software systems
+                                modern life quietly depends on. Every Monday we
+                                publish a weekly U.S. drug shortage digest, and
+                                we show where the FDA and ASHP shortage lists
+                                disagree instead of hiding it. We measure what
+                                others guess at, we show our sources, and we
+                                sign our work. When a finding is strong enough
+                                to change a rule, we carry it to the people who
+                                write the rules. When an answer can become a
+                                tool, we build the tool. Our money comes from
+                                our work, so our conclusions answer to evidence,
+                                not to a sponsor.
                             </p>
                             <p>— D'Vaughn House, Founder</p>
                         </div>
@@ -355,8 +367,9 @@ export default function Landing({
                                     before it posts.
                                 </li>
                                 <li>
-                                    Every Monday — a public U.S. drug-shortage
-                                    digest.
+                                    Every Monday — a public weekly U.S. drug
+                                    shortage digest, from FDA and ASHP data:
+                                    225 active shortages as of Q3 2026.
                                 </li>
                                 <li>
                                     Attested — every record in the public registry
