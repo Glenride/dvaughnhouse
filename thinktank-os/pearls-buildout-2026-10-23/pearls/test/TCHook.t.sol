@@ -21,7 +21,9 @@ import {BASE_SEPOLIA_POOL_MANAGER, TC_HOOK_FLAGS} from "../src/PearlsConstants.s
 import {HookMiner} from "../src/HookMiner.sol";
 import {TCCore} from "../src/TCCore.sol";
 import {TCHook} from "../src/TCHook.sol";
-import {LaunchFactory} from "../src/LaunchFactory.sol";
+import {DistributionFactory} from "../src/DistributionFactory.sol";
+import {HookCertificateFactory} from "../src/HookCertificateFactory.sol";
+import {LaunchParams, LaunchResult} from "../src/LaunchTypes.sol";
 import {LaunchCertificate} from "../src/LaunchCertificate.sol";
 import {LaunchToken} from "../src/LaunchToken.sol";
 
@@ -293,7 +295,8 @@ contract TCHookTest is Test {
 ///         `PoolModifyLiquidityTest`, and `PoolSwapTest` deployed on Base Sepolia
 ///         (chain ID 84532) across all 4 swap directions, pre-gate, crossing swap,
 ///         post-gate, both `quoteIsCurrency0` orientations, launch guard window,
-///         and end-to-end `LaunchFactory.launch()`.
+///         and end-to-end split launch (DistributionFactory.deploy +
+///         HookCertificateFactory.launch).
 contract TCHookForkTest is Test {
     // Canonical Base Sepolia Uniswap v4 deployments
     IPoolManager constant POOL_MANAGER = IPoolManager(BASE_SEPOLIA_POOL_MANAGER);
@@ -648,19 +651,21 @@ contract TCHookForkTest is Test {
     }
 
     // ---------------------------------------------------------------------
-    // End-to-End LaunchFactory.launch() -> Pool Init -> Liquidity -> Swaps
+    // End-to-End split launch -> Pool Init -> Liquidity -> Swaps
     // on Base Sepolia Fork
     // ---------------------------------------------------------------------
 
     function test_fork_end_to_end_factory_launch_and_swaps() public {
-        LaunchFactory factory = new LaunchFactory(treasury);
+        DistributionFactory part1 = new DistributionFactory(treasury);
+        HookCertificateFactory part2 = new HookCertificateFactory(treasury);
         ForkTestERC20 quote = new ForkTestERC20("Mock USDC", "mUSDC");
 
-        // Predict the LaunchToken address that factory.launch will deploy (after TCHook and LaunchLocker)
-        address predictedToken = vm.computeCreateAddress(address(factory), vm.getNonce(address(factory)) + 2);
+        // Predict the LaunchToken address that Part 1 will deploy: the
+        // locker is Part 1's first CREATE, the token its second.
+        address predictedToken = vm.computeCreateAddress(address(part1), vm.getNonce(address(part1)) + 1);
         bool quoteIsC0 = address(quote) < predictedToken;
 
-        LaunchFactory.LaunchParams memory p;
+        LaunchParams memory p;
         p.name = "Abyssal Pearl";
         p.symbol = "PEARL";
         p.totalSupply = 1_000_000_000e18;
@@ -682,8 +687,10 @@ contract TCHookForkTest is Test {
         p.maxSwapQuoteAmount = 0;
         p.maxSwapBlocks = 0;
 
-        LaunchFactory.LaunchResult memory r = factory.launch(p);
+        part1.deploy(p);
+        LaunchResult memory r = part2.launch(part1, p);
         assertEq(r.token, predictedToken);
+        assertEq(part1.token(), predictedToken);
         assertTrue(LaunchToken(r.token).capExempt( address(POOL_MANAGER)), "PoolManager must be capExempt");
 
         // Initialize the v4 pool on Base Sepolia PoolManager with the factory-deployed TCHook

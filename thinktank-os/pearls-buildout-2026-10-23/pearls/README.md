@@ -25,7 +25,10 @@ spec.md                  Technical specification v1.0
 foundry.toml             Pinned solc 0.8.24 / cancun / via_ir, Base Sepolia RPC slot
 src/
   PearlsConstants.sol    Locked constants (0.0194 ETH airdrop fee, 30 bps fee)
-  LaunchFactory.sol      One-transaction launches; deploys everything else
+  LaunchTypes.sol        Shared launch structs + validation errors (both factories)
+  LaunchValidation.sol   Shared launch parameter rules (both factories)
+  DistributionFactory.sol  Part 1: deploys token, locker, vault, distributor
+  HookCertificateFactory.sol  Part 2: deploys hook pair, distributes, mints certificate
   LaunchToken.sol        ERC-20 + Permit, fixed supply, launch-window wallet cap
   LaunchCertificate.sol  ERC-721 "pearl": the frozen launch record
   LaunchLocker.sol       LP position custody: Abyssal (forever) or Timed (>=180d)
@@ -34,9 +37,24 @@ src/
   TCCore.sol      Volume gate + fee + launch-guard accounting (complete, tested)
   TCHook.sol          Uniswap v4 hook adapter (PARTIAL — see spec §7.4)
   ITCHook.sol         The guaranteed hook surface
-script/Deploy.s.sol      Factory deploy — hard-gated to chain 84532 / 31337
-test/                    33 tests: Pearls.t.sol (core), TCHook.t.sol (hook), Mocks.sol
-```
+script/Deploy.s.sol      Both factories deploy — hard-gated to chain 84532 / 31337
+test/                    83 tests: Pearls.t.sol (core), TCHook.t.sol (hook), Mocks.sol
+                         + LegacyLaunchFactory.sol (pre-split reference, equivalence test only)
+
+A launch is TWO transactions, not one. The old single LaunchFactory
+embedded the creation code of every contract it deployed and measured
+27,495 bytes of deployed bytecode — over the 24,576-byte EIP-170 limit.
+The split keeps each factory under the limit (Part 1: 17,984 bytes;
+Part 2: 17,798 bytes). Step 1 deploys the distribution modules and
+holds the full token supply; step 2 deploys the hook pair, runs the
+frozen distribution, and mints the certificate. Part 2 cross-checks
+every Part 1 output against the launch params before doing anything,
+so a tampered Part 1 cannot produce a launch. One known difference
+from the old one-step launch: the hook pair is NOT wallet-cap-exempt
+in the new token (it does not exist when Part 1 deploys the token);
+in practice the hook never receives the launch token, so no transfer
+behaviour changes. See `test_two_step_launch_matches_legacy_one_step`
+in Pearls.t.sol, which asserts the equivalence field by field.
 
 ## TCHook status — read this before quoting it
 

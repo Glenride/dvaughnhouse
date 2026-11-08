@@ -16,7 +16,6 @@ import {TickMath} from "@uniswap/v4-core/src/libraries/TickMath.sol";
 import {TCHook} from "../src/TCHook.sol";
 import {TCCore} from "../src/TCCore.sol";
 import {HookMiner} from "../src/HookMiner.sol";
-import {LaunchFactory} from "../src/LaunchFactory.sol";
 import {LaunchToken} from "../src/LaunchToken.sol";
 import {LaunchCertificate} from "../src/LaunchCertificate.sol";
 import {LaunchLocker} from "../src/LaunchLocker.sol";
