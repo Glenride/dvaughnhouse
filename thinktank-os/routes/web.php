@@ -10,6 +10,7 @@ use App\Http\Controllers\PortfolioMatrixController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EssayController;
 use App\Http\Controllers\ResearchController;
+use App\Http\Controllers\DrugShortageController;
 use App\Http\Controllers\SopController;
 use App\Http\Controllers\StandardsController;
 use App\Http\Controllers\StoreController;
@@ -35,6 +36,13 @@ Route::get('/{path}.md', [MarkdownController::class, 'showMd'])->where('path', '
 // Research (ScrollLaunch prompt 2): original statistics from Glenride's own data.
 Route::get('/research', [ResearchController::class, 'index'])->name('research.index');
 Route::get('/research/attestations', [ResearchController::class, 'attestations'])->name('research.attestations');
+
+// Drug-shortage hub (SEO): exact-match pages for the rising queries.
+// Static pages — no database, no models, no live API calls.
+Route::get('/drug-shortages/current', [DrugShortageController::class, 'current'])->name('drug-shortages.current');
+Route::get('/drug-shortages/list', [DrugShortageController::class, 'list'])->name('drug-shortages.list');
+Route::get('/drug-shortages/fda-list', [DrugShortageController::class, 'fdaList'])->name('drug-shortages.fda-list');
+Route::get('/drug-shortages/ashp-vs-fda', [DrugShortageController::class, 'ashpVsFda'])->name('drug-shortages.ashp-vs-fda');
 
 // store.dvaughnhouse.com lands on the storefront, not the library
 Route::domain('store.dvaughnhouse.com')->group(function () {
