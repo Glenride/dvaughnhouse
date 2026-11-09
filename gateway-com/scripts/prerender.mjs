@@ -41,6 +41,21 @@ for (const route of routes) {
   const title = titles[route];
   if (title) {
     html = html.replace(/<title>.*?<\/title>/, `<title>${title}</title>`);
+    // Social cards: keep og/twitter title + url in step with the page title.
+    const escTitle = title.replace(/&/g, "&amp;").replace(/"/g, "&quot;");
+    html = html.replace(
+      /<meta property="og:title" content="[^"]*" \/>/,
+      () => `<meta property="og:title" content="${escTitle}" />`,
+    );
+    html = html.replace(
+      /<meta name="twitter:title" content="[^"]*" \/>/,
+      () => `<meta name="twitter:title" content="${escTitle}" />`,
+    );
+    const pageUrl = route === "/" ? "https://dvaughnhouse.com" : `https://dvaughnhouse.com${route}`;
+    html = html.replace(
+      /<meta property="og:url" content="[^"]*" \/>/,
+      () => `<meta property="og:url" content="${pageUrl}" />`,
+    );
   }
   // Head signals for AI agents (invisible in the rendered page):
   // a factual per-page meta description, an ai-summary, and the
@@ -51,6 +66,15 @@ for (const route of routes) {
     html = html.replace(
       /<meta name="description" content="[^"]*" \/>/,
       `<meta name="description" content="${esc(mdRoute.description)}" />`,
+    );
+    // Social cards: description follows the same per-page copy.
+    html = html.replace(
+      /<meta property="og:description" content="[^"]*" \/>/,
+      () => `<meta property="og:description" content="${esc(mdRoute.description)}" />`,
+    );
+    html = html.replace(
+      /<meta name="twitter:description" content="[^"]*" \/>/,
+      () => `<meta name="twitter:description" content="${esc(mdRoute.description)}" />`,
     );
     html = html.replace(
       "</head>",
