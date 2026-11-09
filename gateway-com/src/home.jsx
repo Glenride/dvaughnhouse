@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Parallax } from "./motion.jsx";
 import { ROOM_PROJECTS } from "./data/projects.js";
-import { AUDIT_PRICE } from "./data/site-content.js";
+import { FIRST_BUILD_PRICE } from "./data/site-content.js";
 import { BIO_PARAS } from "./data/home-content.js";
 import { ARROW, PROJECT_ICONS } from "./data/projectIcons.jsx";
 import heroLight from "./assets/hero-network-light.webp";
@@ -145,16 +145,16 @@ export function CustomCursor() {
   );
 }
 
-export function FlashSaleBanner() {
+export function FirstBuildBanner() {
   return (
     <div className="bg-sienna-deep pt-24 text-paper">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-1 px-6 py-3 text-left lg:px-8">
         <p className="text-sm font-semibold">
-          The Founder&rsquo;s Override — two AI workflow audit slots,{" "}
-          {AUDIT_PRICE} each (tax included). Book by Sunday night.
+          The First Build — one week, one workflow, one working system.{" "}
+          {FIRST_BUILD_PRICE} tax-inclusive for the first three clients.
         </p>
-        <a href="/audit" className="text-sm font-bold underline underline-offset-4 hover:text-cream">
-          Claim a slot →
+        <a href="/first-build" className="text-sm font-bold underline underline-offset-4 hover:text-cream">
+          See how it works →
         </a>
       </div>
     </div>
@@ -441,8 +441,12 @@ export function WorkRooms() {
   );
 }
 
-export function CloseSection() {
-  const [form, setForm] = useState({ name: "", email: "", topic: "partnership", message: "", company: "" });
+export function CloseSection({
+  heading = "Keep building with intention.",
+  intro,
+  defaultTopic = "partnership",
+} = {}) {
+  const [form, setForm] = useState({ name: "", email: "", topic: defaultTopic, message: "", company: "" });
   const [status, setStatus] = useState({ state: "idle", message: "" });
 
   const set = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }));
@@ -459,7 +463,7 @@ export function CloseSection() {
       const data = await res.json().catch(() => ({}));
       if (res.ok && data.ok) {
         setStatus({ state: "success", message: "Received. I'll read it personally — thank you." });
-        setForm({ name: "", email: "", topic: "partnership", message: "", company: "" });
+        setForm({ name: "", email: "", topic: defaultTopic, message: "", company: "" });
       } else if (data.error === "storage_not_configured") {
         setStatus({ state: "error", message: "The contact form isn't online yet — check back soon." });
       } else if (data.error === "rate_limited") {
@@ -475,12 +479,16 @@ export function CloseSection() {
   return (
     <section className="ph-close" id="contact" aria-label="Closing">
       <div className="ph-wrap-narrow reveal">
-        <h2>Keep building with intention.</h2>
-        <p>
-          The tools keep getting faster at generating. Deciding what deserves to exist, and how it
-          feels, stays Human. If a system of yours needs building or proving, start with one
-          conversation.
-        </p>
+        <h2>{heading}</h2>
+        {intro ? (
+          <p>{intro}</p>
+        ) : (
+          <p>
+            The tools keep getting faster at generating. Deciding what deserves to exist, and how it
+            feels, stays Human. If a system of yours needs building or proving, start with one
+            conversation.
+          </p>
+        )}
         <span className="ph-email-pill">dvaughn@dvaughnhouse.com</span>
         <form className="ph-contact-form" onSubmit={submit}>
           <div className="ph-form-row">
@@ -505,6 +513,7 @@ export function CloseSection() {
             <label htmlFor="contact-topic">Topic</label>
             <select id="contact-topic" value={form.topic} onChange={set("topic")}>
               <option value="partnership">Partnership</option>
+              <option value="first-build">First Build — fit call</option>
               <option value="research">Research collaboration</option>
               <option value="press">Press</option>
               <option value="speaking">Speaking</option>

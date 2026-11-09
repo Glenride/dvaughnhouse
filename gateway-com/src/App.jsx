@@ -13,7 +13,7 @@ import { AuditPage } from "./audit.jsx";
 import {
   CloseSection,
   CustomCursor,
-  FlashSaleBanner,
+  FirstBuildBanner,
   Motto,
   PinnedBio,
   PortfolioFooter,
@@ -531,7 +531,7 @@ function FirstBuildPage() {
       </p>
       <div className="mt-8 flex flex-wrap gap-4">
         <a
-          href="/#contact"
+          href="#contact"
           className="inline-flex items-center rounded-full bg-sienna px-6 py-3 text-sm font-semibold text-ink transition-colors hover:bg-sienna-deep hover:text-paper"
         >
           Start with a fit call
@@ -652,17 +652,14 @@ function FirstBuildPage() {
       </h2>
       <p className="mt-4 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
         A 20-minute fit call. I ask three questions about the task, and we
-        both know if the First Build fits. Use the contact form and mention
-        “First Build” in your message.
+        both know if the First Build fits. Use the form below and tell me the
+        most repetitive task in your business.
       </p>
-      <p className="mt-8">
-        <a
-          href="/#contact"
-          className="font-semibold text-sienna-deep underline decoration-sienna-deep/40 underline-offset-4 transition-colors hover:text-ink dark:text-sienna dark:hover:text-cream"
-        >
-          Start with a fit call →
-        </a>
-      </p>
+      <CloseSection
+        heading="Book your fit call."
+        intro="Leave your name, email, and the task. I'll read it personally and reply about a fit call."
+        defaultTopic="first-build"
+      />
       <p className="mt-12 text-sm text-ink-soft dark:text-cream-soft">
         D&rsquo;Vaughn House — Independent AI Orchestrator, Cincinnati, Ohio
       </p>
@@ -864,7 +861,7 @@ export default function App({ path: propPath } = {}) {
       <CustomCursor />
       <SiteNav />
       <main>
-        <FlashSaleBanner />
+        <FirstBuildBanner />
         <PortfolioHero />
         <Motto />
         <PinnedBio />
