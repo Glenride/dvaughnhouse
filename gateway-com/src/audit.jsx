@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
-import { AUDIT_PAY_URL, AUDIT_PRICE } from "./data/site-content.js";
+import {
+  AUDIT_PAY_URL,
+  AUDIT_PRICE,
+  FIRST_BUILD_PRICE,
+} from "./data/site-content.js";
 
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
@@ -64,18 +68,20 @@ export function AuditPage() {
 
   return (
     <div className="mx-auto max-w-2xl px-6 py-16 sm:py-20 lg:px-8">
-      <p className="font-mono text-xs uppercase tracking-widest text-sienna-deep dark:text-sienna">
-        D&rsquo;Vaughn House — Independent AI Orchestrator, Cincinnati, Ohio
-      </p>
-      <h1 className="mt-4 font-display text-5xl font-extrabold tracking-tight text-ink sm:text-6xl dark:text-cream">
+      <h1 className="font-display text-5xl font-extrabold tracking-tight text-ink sm:text-6xl dark:text-cream">
         Claim an audit slot.
       </h1>
       <p className="mt-6 max-w-2xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
         The Founder&rsquo;s Override — two slots open, {AUDIT_PRICE} each, tax
-        included. Book by Sunday night, November 8. I spend two hours on your
-        most repetitive task: I map how it runs today, and hand you the
-        written map plus the first automation to build. You keep the decision;
-        the machine does the repetition.
+        included. Book by Sunday night, November 8. We pick your most
+        repetitive task, map it end to end, and you leave with the map plus
+        the first automation — and a clear yes or no on whether a full build
+        is worth it.
+      </p>
+      <p className="mt-4 max-w-2xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
+        I spend two hours on your most repetitive task: I map how it runs
+        today, and hand you the written map plus the first automation to
+        build. You keep the decision; the machine does the repetition.
       </p>
       <p className="mt-4 max-w-2xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
         Pay by Sunday night to lock a slot, and we do the two hours next week
@@ -84,7 +90,8 @@ export function AuditPage() {
       </p>
       <p className="mt-4 max-w-2xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
         The full version of this is the First Build: one week, one workflow,
-        $1,500 at the founding rate. This is the two-hour door into it.
+        {FIRST_BUILD_PRICE} tax-inclusive at the founding rate. This is the
+        two-hour door into it.
       </p>
 
       <form onSubmit={submit} className="mt-10 space-y-5">
@@ -178,6 +185,9 @@ export function AuditPage() {
           </p>
         )}
       </form>
+      <p className="mt-12 text-sm text-ink-soft dark:text-cream-soft">
+        D&rsquo;Vaughn House — Independent AI Orchestrator, Cincinnati, Ohio
+      </p>
     </div>
   );
 }

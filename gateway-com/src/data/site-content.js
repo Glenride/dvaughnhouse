@@ -11,6 +11,14 @@ export const DONATION_NETWORK = "Base";
 export const AUDIT_PRICE = "$374.50";
 export const AUDIT_PAY_URL = "https://buy.stripe.com/eVq4gB9eAeDdauYejnbfO04";
 
+// The First Build checkout (Stripe payment link, tax-inclusive package).
+// Founding package: $1,500 + tax = $1,605. Standard week: $2,520 + tax = $2,696.40.
+export const FIRST_BUILD_PRICE = "$1,605";
+export const FIRST_BUILD_PAY_URL = "https://buy.stripe.com/fZu6oJaiE1Qrbz2fnrbfO03";
+export const FIRST_BUILD_FOUNDING_PRICE = "$1,500";
+export const FIRST_BUILD_STANDARD_PRICE = "$2,520";
+export const FIRST_BUILD_STANDARD_TAX_INCLUSIVE = "$2,696.40";
+
 export const PILLARS = [
   {
     title: "The Independent Architect",
@@ -88,7 +96,7 @@ export const FIRST_BUILD_STEPS = [
   },
   {
     n: "Day 5",
-    title: "Hand it over",
+    title: "Hand the system over",
     body: "Working system, walkthrough with your team, and a one-page handover doc. Your team runs it from there.",
   },
 ];

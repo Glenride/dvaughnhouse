@@ -51,7 +51,11 @@
     scroll-margin-top: 6.5rem;
   }
 
-  .js-motion .reveal {
+  /* Taste hidden-content: the hidden state lives ONLY under
+     .reveal-armed, a class the reveal script adds on its live path in
+     the same effect that starts observing. If the script never gets
+     that far, nothing is hidden and the page reads at rest. */
+  .js-motion.reveal-armed .reveal {
     opacity: 0;
     transform: translateY(22px);
     transition:
@@ -59,14 +63,14 @@
       transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  .js-motion .reveal.reveal-visible {
+  .js-motion.reveal-armed .reveal.reveal-visible {
     opacity: 1;
     transform: translateY(0);
   }
 
   /* Staged reveal: a delayed element animates in after its sibling, so
      the motto headline rises first and the role line follows. */
-  .js-motion .reveal-delay {
+  .js-motion.reveal-armed .reveal-delay {
     transition-delay: 0.16s;
   }
 
@@ -128,7 +132,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .js-motion .reveal {
+    .js-motion.reveal-armed .reveal {
       opacity: 1;
       transform: none;
       transition: none;
@@ -205,7 +209,9 @@
   position: relative;
   z-index: 2;
   width: 100%;
-  max-width: 88rem;
+  /* Taste right-edge: the hero bottom ran 24px past the content's right
+     edge at 1024 — it was 88rem while every other wrap is 76rem. */
+  max-width: 76rem;
   margin-inline: auto;
   padding-inline: 1.5rem;
   display: flex;
@@ -342,10 +348,12 @@
   font-size: 12px;
   letter-spacing: 0.17em;
   text-transform: uppercase;
-  color: rgba(34, 29, 24, 0.6);
+  /* Taste text-contrast: the 60% ink sat at 4.3:1 (needs 4.5:1 for a
+     label). Solid ink-soft reads 7.29:1; cream-soft reads 10.59:1 dark. */
+  color: #57504a;
 }
 @media (prefers-color-scheme: dark) {
-  .ph-motto-role { color: rgba(250, 245, 236, 0.6); }
+  .ph-motto-role { color: #cfc6b4; }
 }
 
 /* --- Bio: stacked and legible by default; pinned + illuminated only via JS --- */
@@ -431,7 +439,18 @@
   .ph-bio-on .ph-mani-block { grid-column: 1; grid-row: 1; justify-self: center; }
   .ph-bio-on .ph-mani-block .ph-mani-text { margin-inline: auto; text-align: center; }
 }
-.ph-story-link { text-align: center; margin-top: 40px; }
+/* Taste container-edges: the story link and the motion-pause button sit
+   in a row, so the button is a row item on the container's lines instead
+   of a free-floating box. */
+.ph-story-link {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 18px;
+  text-align: center;
+  margin-top: 40px;
+}
 .ph-story-link-a {
   font-family: "Bricolage Grotesque", Georgia, serif;
   font-weight: 600;
@@ -445,6 +464,31 @@
   .ph-story-link-a { color: #f3ecdc; }
 }
 .ph-story-link-a:hover { color: #b84a2b; }
+/* Taste loop-pause control: one button pauses every ambient loop
+   (filmstrip, hero Ken Burns) without removing the motion. */
+.ph-motion-pause {
+  display: inline-block;
+  font-family: "Bricolage Grotesque", Georgia, serif;
+  font-weight: 600;
+  font-size: 13.5px;
+  color: #57504a;
+  background: transparent;
+  border: 1px solid rgba(34, 29, 24, 0.22);
+  border-radius: 999px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+.ph-motion-pause:hover { border-color: #b84a2b; color: #b84a2b; }
+@media (prefers-color-scheme: dark) {
+  .ph-motion-pause { color: #cfc6b4; border-color: rgba(243, 236, 220, 0.22); }
+  .ph-motion-pause:hover { border-color: #f0835f; color: #f0835f; }
+}
+.motion-paused .ph-film-track,
+.motion-paused .ph-hero-media img,
+.motion-paused .animate-kenburns {
+  animation-play-state: paused;
+}
 
 /* --- Filmstrip: small frames, nearly too fast to see --- */
 .ph-film {
@@ -632,7 +676,10 @@
   border: 1px solid rgba(34, 29, 24, 0.13);
   border-radius: 14px;
   background: #f3ecdc;
-  padding: 8px 26px;
+  /* Taste spill/overlap-text: the Witness stamp hangs 46px below this
+     panel and its top edge reaches 58px up into it, over the last row.
+     64px of bottom padding lifts the last row clear of the stamp. */
+  padding: 8px 26px 64px;
   position: relative;
 }
 @media (prefers-color-scheme: dark) {
@@ -677,7 +724,8 @@
 }
 @media (max-width: 640px) {
   .ph-stamp { width: 88px; height: 88px; bottom: -38px; right: 12px; }
-  .ph-registry { margin-bottom: 56px; }
+  /* Stamp top edge reaches 50px into the panel on mobile: same clearance. */
+  .ph-registry { margin-bottom: 56px; padding-bottom: 56px; }
 }
 
 /* --- Close + homepage footer: one personal lockup only --- */

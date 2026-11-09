@@ -25,6 +25,10 @@ export function useRevealOnScroll() {
   useEffect(() => {
     if (typeof document === "undefined") return undefined;
     document.documentElement.classList.add("js-motion");
+    // Taste hidden-content: arm the hidden state only here, in the same
+    // effect that starts the observer — never in plain CSS — so content
+    // stays visible if this script never runs.
+    document.documentElement.classList.add("reveal-armed");
     if (reducedMotion()) {
       document
         .querySelectorAll(".reveal")

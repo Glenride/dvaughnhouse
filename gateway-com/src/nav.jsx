@@ -58,7 +58,7 @@ export function SiteNav({ base = "" }) {
     "rounded-full bg-sienna px-5 py-2.5 text-sm font-semibold text-ink transition-colors hover:bg-sienna-deep hover:text-paper";
   return (
     <header className="site-nav fixed inset-x-0 top-4 z-50 px-4 sm:px-6">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between rounded-full border border-line bg-paper/95 px-6 shadow-lg shadow-ink/10 backdrop-blur dark:border-line-dark dark:bg-night/95 lg:px-8">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between rounded-full border border-line bg-paper px-6 shadow-lg shadow-ink/10 dark:border-line-dark dark:bg-night lg:px-8">
         <a href={homeHref} className="leading-none" aria-label="D'Vaughn House — home">
           <img src={houseMark} alt="D'Vaughn House — home" className="h-[26px] w-[26px] rounded-full" />
         </a>
@@ -84,7 +84,7 @@ export function SiteNav({ base = "" }) {
             </a>
           ) : (
             <a href="/auth/login" className={linkCls}>
-              Sign in
+              Sign in with Albert Pass
             </a>
           )}
         </nav>
@@ -101,7 +101,7 @@ export function SiteNav({ base = "" }) {
       </div>
       {open && (
         <nav
-          className="mx-auto mt-2 max-w-6xl rounded-3xl border border-line bg-paper/95 px-6 py-4 shadow-lg shadow-ink/10 backdrop-blur dark:border-line-dark dark:bg-night/95"
+          className="mx-auto mt-2 max-w-6xl rounded-3xl border border-line bg-paper px-6 py-4 shadow-lg shadow-ink/10 dark:border-line-dark dark:bg-night"
           aria-label="Expanded"
         >
           <ul className="space-y-3">
@@ -138,7 +138,7 @@ export function SiteNav({ base = "" }) {
                 </>
               ) : (
                 <a href="/auth/login" onClick={() => setOpen(false)} className="block text-base font-medium text-ink dark:text-cream">
-                  Sign in
+                  Sign in with Albert Pass
                 </a>
               )}
             </li>
@@ -146,7 +146,7 @@ export function SiteNav({ base = "" }) {
         </nav>
       )}
       {authError && AUTH_ERROR_TEXT[authError] && (
-        <div className="mx-auto mt-2 max-w-6xl rounded-full border border-line bg-paper/95 px-6 py-2 text-center text-sm text-ink-soft shadow-lg dark:border-line-dark dark:bg-night/95 dark:text-cream-soft">
+        <div className="mx-auto mt-2 max-w-6xl rounded-full border border-line bg-paper px-6 py-2 text-center text-sm text-ink-soft shadow-lg dark:border-line-dark dark:bg-night dark:text-cream-soft">
           {AUTH_ERROR_TEXT[authError]}
         </div>
       )}

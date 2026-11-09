@@ -148,7 +148,7 @@ export function CustomCursor() {
 export function FlashSaleBanner() {
   return (
     <div className="bg-sienna-deep pt-24 text-paper">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-4 gap-y-1 px-6 py-3 text-center sm:justify-between sm:text-left lg:px-8">
+      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-1 px-6 py-3 text-left lg:px-8">
         <p className="text-sm font-semibold">
           The Founder&rsquo;s Override — two AI workflow audit slots,{" "}
           {AUDIT_PRICE} each (tax included). Book by Sunday night.
@@ -246,6 +246,16 @@ export function PinnedBio() {
   const [active, setActive] = useState(false);
   const [pinH, setPinH] = useState(null);
   const [u, setU] = useState(0);
+  // Taste rule (loop-pause): anything moving past 5 s needs a pause
+  // button. The filmstrip (6.5 s loop) and the hero Ken Burns zoom (26 s)
+  // both qualify, so one control pauses all ambient loops. Scroll-linked
+  // motion (the pinned bio itself) is untouched — it stops when scrolling
+  // stops. Reduced-motion already rests everything (see index.css).
+  const [motionPaused, setMotionPaused] = useState(false);
+  useEffect(() => {
+    document.documentElement.classList.toggle("motion-paused", motionPaused);
+    return () => document.documentElement.classList.remove("motion-paused");
+  }, [motionPaused]);
 
   useEffect(() => {
     if (reducedMotion() || !pinRef.current) return undefined;
@@ -359,6 +369,14 @@ export function PinnedBio() {
         <a className="ph-story-link-a" href="/about">
           Read the full story <span aria-hidden="true">&rarr;</span>
         </a>
+        <button
+          type="button"
+          className="ph-motion-pause"
+          aria-pressed={motionPaused}
+          onClick={() => setMotionPaused((v) => !v)}
+        >
+          {motionPaused ? "Play moving images" : "Pause moving images"}
+        </button>
       </div>
     </section>
   );

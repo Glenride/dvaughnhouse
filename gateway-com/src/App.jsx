@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import heroDonate from "./assets/hero-donate.jpg";
+import heroNetworkLight from "./assets/hero-network-light.webp";
+import heroNetworkDark from "./assets/hero-network-dark.webp";
 import glenrideLogo from "./assets/glenride-logo.png";
 import brandLogo from "./assets/dvaughn-house-logo.png";
 import { CursorTrail, Parallax, useRevealOnScroll } from "./motion.jsx";
@@ -22,6 +24,11 @@ import { projectById } from "./data/projects.js";
 import {
   DONATION_ADDRESS,
   DONATION_NETWORK,
+  FIRST_BUILD_FOUNDING_PRICE,
+  FIRST_BUILD_PAY_URL,
+  FIRST_BUILD_PRICE,
+  FIRST_BUILD_STANDARD_PRICE,
+  FIRST_BUILD_STANDARD_TAX_INCLUSIVE,
   FIRST_BUILD_STEPS,
   LEGAL_DOCS,
   PATRON_TIERS,
@@ -503,10 +510,7 @@ function FirstBuildPage() {
   const steps = FIRST_BUILD_STEPS;
   return (
     <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20 lg:px-8">
-      <p className="font-mono text-xs uppercase tracking-widest text-sienna-deep dark:text-sienna">
-        D&rsquo;Vaughn House — Independent AI Orchestrator, Cincinnati, Ohio
-      </p>
-      <h1 className="mt-4 font-display text-5xl font-extrabold tracking-tight text-ink sm:text-6xl dark:text-cream">
+      <h1 className="font-display text-5xl font-extrabold tracking-tight text-ink sm:text-6xl dark:text-cream">
         The First Build
       </h1>
       <p className="mt-6 max-w-3xl font-display text-2xl font-bold tracking-tight text-ink sm:text-3xl dark:text-cream">
@@ -518,6 +522,13 @@ function FirstBuildPage() {
         that runs it, with a Human check at the end. You keep the decision. The
         machine does the repetition.
       </p>
+      <p className="mt-6 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
+        You get a system that does the repetitive work — collecting, drafting,
+        sorting, chasing, or assembling — and flags the rest for a Human
+        decision. It runs on your real work, not a demo. A Human check is
+        built in, so nothing goes out, goes live, or gets decided without a
+        Human approving it.
+      </p>
       <div className="mt-8 flex flex-wrap gap-4">
         <a
           href="/#contact"
@@ -526,9 +537,24 @@ function FirstBuildPage() {
           Start with a fit call
         </a>
       </div>
+      <p className="mt-5 text-sm text-ink-soft dark:text-cream-soft">
+        Fixed scope · {FIRST_BUILD_PRICE} tax-inclusive for the first three
+        clients · Cincinnati, Ohio
+      </p>
+      <div className="mt-12 overflow-hidden rounded-2xl border border-line dark:border-line-dark">
+        <picture>
+          <source media="(prefers-color-scheme: dark)" srcSet={heroNetworkDark} />
+          <img
+            src={heroNetworkLight}
+            alt="A network map of connected systems"
+            className="block w-full"
+            loading="lazy"
+          />
+        </picture>
+      </div>
 
-      <h2 className="mt-16 font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
-        Who it&rsquo;s for
+      <h2 className="mt-12 font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
+        Who the First Build is for
       </h2>
       <p className="mt-4 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
         Small businesses and independent operators. If the work lives in
@@ -536,7 +562,7 @@ function FirstBuildPage() {
       </p>
 
       <h2 className="mt-16 font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
-        What happens in the week
+        What happens in the First Build week
       </h2>
       <div className="reveal mt-8 grid grid-cols-1 gap-6 md:grid-cols-3">
         {steps.map((s) => (
@@ -555,19 +581,19 @@ function FirstBuildPage() {
 
       <div className="mt-16 grid gap-10 md:grid-cols-2">
         <div>
-          <h2 className="font-display text-3xl font-bold tracking-tight text-ink dark:text-cream">
-            What&rsquo;s included
+          <h2 className="font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
+            What&rsquo;s included in the First Build
           </h2>
           <ul className="mt-4 list-disc space-y-2 pl-6 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
             <li>One workflow, automated end to end</li>
             <li>A Human check step built into every output — the machine proposes, the Human decides</li>
             <li>The tightened process, written down — so the work stays clean even if the tool changes</li>
-            <li>A handover call with the team who will run it</li>
+            <li>A handover call with the team who will run the system</li>
           </ul>
         </div>
         <div>
-          <h2 className="font-display text-3xl font-bold tracking-tight text-ink dark:text-cream">
-            What&rsquo;s not included
+          <h2 className="font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
+            What&rsquo;s not included in the First Build
           </h2>
           <ul className="mt-4 list-disc space-y-2 pl-6 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
             <li>Ongoing maintenance or monitoring (available as a follow-on)</li>
@@ -578,28 +604,38 @@ function FirstBuildPage() {
       </div>
 
       <div className="mt-16 rounded-2xl border border-line bg-paper-deep p-8 sm:p-10 dark:border-line-dark dark:bg-night-card">
-        <h2 className="font-display text-3xl font-bold tracking-tight text-ink dark:text-cream">
+        <h2 className="font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
           Price, fixed scope, quoted up front
         </h2>
-        <p className="mt-4 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-          <strong className="font-bold text-ink dark:text-cream">$126 per hour.</strong>{" "}
-          First three clients:{" "}
+        <p className="mt-4 text-[1.0625rem] leading-[1.7] text-ink dark:text-cream">
+          <strong className="font-bold text-ink dark:text-cream">{FIRST_BUILD_PRICE} tax-inclusive</strong>{" "}
+          for the first three clients —{" "}
           <strong className="font-bold text-ink dark:text-cream">$75 per hour (founding rate).</strong>{" "}
           A typical week runs about 20 hours, so roughly{" "}
-          <strong className="font-bold text-ink dark:text-cream">$2,520</strong> at the
-          standard rate,{" "}
-          <strong className="font-bold text-ink dark:text-cream">$1,500</strong> for
-          the first three clients. Quoted up front once the fit call confirms
+          <strong className="font-bold text-ink dark:text-cream">{FIRST_BUILD_STANDARD_PRICE}</strong> at the
+          standard rate ({FIRST_BUILD_STANDARD_TAX_INCLUSIVE} tax-inclusive),{" "}
+          <strong className="font-bold text-ink dark:text-cream">{FIRST_BUILD_FOUNDING_PRICE}</strong> for
+          the first three clients before tax. Quoted up front once the fit call confirms
           the scope — no surprise hours.
         </p>
-        <p className="mt-4 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
+        <p className="mt-4 text-[1.0625rem] leading-[1.7] text-ink dark:text-cream">
           If the fit call shows the job doesn&rsquo;t fit, I&rsquo;ll say so on
           that call — no engagement, no charge.
         </p>
+        <div className="mt-8 flex flex-wrap gap-4">
+          <a
+            href={FIRST_BUILD_PAY_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center rounded-full bg-sienna px-6 py-3 text-sm font-semibold text-ink transition-colors hover:bg-sienna-deep hover:text-paper"
+          >
+            Pay {FIRST_BUILD_PRICE} now
+          </a>
+        </div>
       </div>
 
       <h2 className="mt-16 font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
-        Why me
+        Why D&rsquo;Vaughn House
       </h2>
       <p className="mt-4 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
         D&rsquo;Vaughn House is an Independent AI Orchestrator in Cincinnati
@@ -607,26 +643,29 @@ function FirstBuildPage() {
         research programs for over a decade — including a contract assignment
         with ICON Clinical Research at AstraZeneca, where he ran coordination
         for a Real World Evidence group of 30+ epidemiologists — and now builds
-        AI systems for small operators: agents, automations, and transcription
-        pipelines that run on his own machines.
+        working systems for small operators: systems that do the repetitive
+        work and run on his own machines, with a Human check on every output.
       </p>
 
       <h2 className="mt-16 font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
-        Next step
+        The next step: a 20-minute fit call
       </h2>
       <p className="mt-4 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
         A 20-minute fit call. I ask three questions about the task, and we
         both know if the First Build fits. Use the contact form and mention
         “First Build” in your message.
       </p>
-      <div className="mt-8">
+      <p className="mt-8">
         <a
           href="/#contact"
-          className="inline-flex items-center rounded-full bg-sienna px-6 py-3 text-sm font-semibold text-ink transition-colors hover:bg-sienna-deep hover:text-paper"
+          className="font-semibold text-sienna-deep underline decoration-sienna-deep/40 underline-offset-4 transition-colors hover:text-ink dark:text-sienna dark:hover:text-cream"
         >
-          Start a conversation
+          Start with a fit call →
         </a>
-      </div>
+      </p>
+      <p className="mt-12 text-sm text-ink-soft dark:text-cream-soft">
+        D&rsquo;Vaughn House — Independent AI Orchestrator, Cincinnati, Ohio
+      </p>
     </div>
   );
 }
