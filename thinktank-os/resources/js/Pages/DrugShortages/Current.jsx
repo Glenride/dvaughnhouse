@@ -22,16 +22,6 @@ export default function Current({ auth }) {
                 <h1 className="mt-4 font-display text-4xl font-bold tracking-tight text-ink dark:text-cream sm:text-5xl">
                     Current Drug Shortages
                 </h1>
-                <p className="mt-6 text-lg leading-relaxed text-ink-soft dark:text-cream-soft">
-                    I hate finding out a drug is in shortage from a pharmacist. I
-                    wish there was one place that just said what is in shortage
-                    right now, what changed this week, and why — with the source
-                    and the date on every number, so I can check it myself. This
-                    is that page.
-                </p>
-                <p className="mt-4 font-mono text-xs uppercase tracking-widest text-ink-soft dark:text-cream-soft">
-                    Last updated November 7, 2026 · Updated every Monday
-                </p>
 
                 <h2 className="mt-12 font-display text-2xl font-bold text-ink dark:text-cream">
                     The numbers right now
