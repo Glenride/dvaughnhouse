@@ -5,6 +5,7 @@
  */
 export default function SiteFooter() {
     const legal = [
+        { label: 'Mission Control', href: 'https://mission.dvaughnhouse.com' },
         { label: 'About', href: 'https://dvaughnhouse.com/#about' },
         { label: 'Contact', href: 'https://dvaughnhouse.com/#contact' },
         { label: 'Terms of Service', href: 'https://dvaughnhouse.com/terms' },

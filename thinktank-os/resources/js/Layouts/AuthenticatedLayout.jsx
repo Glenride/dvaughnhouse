@@ -65,6 +65,12 @@ export default function AuthenticatedLayout({ header, children }) {
                                         Credits
                                     </NavLink>
                                 )}
+                                <a
+                                    href="https://mission.dvaughnhouse.com"
+                                    className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium leading-5 text-ink-soft transition duration-150 ease-in-out hover:border-sienna hover:text-ink focus:border-sienna focus:text-ink focus:outline-none"
+                                >
+                                    Mission Control
+                                </a>
                             </div>
                         </div>
 
@@ -195,6 +201,9 @@ export default function AuthenticatedLayout({ header, children }) {
                                 Credits
                             </ResponsiveNavLink>
                         )}
+                        <ResponsiveNavLink href="https://mission.dvaughnhouse.com">
+                            Mission Control
+                        </ResponsiveNavLink>
                     </div>
 
                     <div className="border-t border-line pb-1 pt-4">
