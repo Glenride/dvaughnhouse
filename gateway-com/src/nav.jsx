@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import houseMark from "./assets/house-mark.png";
 
 const AUTH_ERROR_TEXT = {
@@ -31,6 +31,8 @@ const MENU = [
 
 export function SiteNav({ base = "" }) {
   const [open, setOpen] = useState(false);
+  const menuButtonRef = useRef(null);
+  const hamburgerRef = useRef(null);
   const [sessionEmail, setSessionEmail] = useState(null);
   const [authError, setAuthError] = useState(null);
   useEffect(() => {
@@ -46,6 +48,22 @@ export function SiteNav({ base = "" }) {
       window.history.replaceState(null, "", window.location.pathname + window.location.search);
     }
   }, []);
+  // Escape closes the expanded menu from any focus position and returns
+  // focus to the toggle visible at this viewport — the desktop Menu button
+  // or the mobile hamburger; exactly one is displayed at a time.
+  useEffect(() => {
+    if (!open) return undefined;
+    const onKeyDown = (e) => {
+      if (e.key !== "Escape") return;
+      setOpen(false);
+      const visible = [menuButtonRef.current, hamburgerRef.current].find(
+        (el) => el && el.getClientRects().length > 0,
+      );
+      visible?.focus();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [open]);
   const homeHref = base === "/" ? "/" : "#top";
   // Absolute paths (e.g. /about) must not be prefixed with base, or "/" + "/about" becomes "//about" (a hostname, not a page).
   const navHref = (href) => {
@@ -70,6 +88,7 @@ export function SiteNav({ base = "" }) {
           ))}
           <button
             type="button"
+            ref={menuButtonRef}
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
             aria-label="Toggle expanded menu"
@@ -89,6 +108,7 @@ export function SiteNav({ base = "" }) {
           )}
         </nav>
         <button
+          ref={hamburgerRef}
           className="rounded-full p-2 text-ink transition-colors hover:bg-paper-deep md:hidden dark:text-cream dark:hover:bg-night-card"
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}

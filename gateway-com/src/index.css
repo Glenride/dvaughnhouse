@@ -46,8 +46,14 @@
     scroll-behavior: smooth;
   }
 
+  /* Every fragment target clears the fixed pill (top-4 + h-16 = 5rem):
+     #work is a div, not a section, so the section rule alone left the
+     Work-card jump landing the first room's eyebrow under the pill.
+     No scroll-padding on html: it would stack with these margins and
+     double the offset. */
   section[id],
-  div[id="top"] {
+  div[id="top"],
+  div[id="work"] {
     scroll-margin-top: 6.5rem;
   }
 
@@ -348,12 +354,13 @@
   font-size: 12px;
   letter-spacing: 0.17em;
   text-transform: uppercase;
-  /* Taste text-contrast: the 60% ink sat at 4.3:1 (needs 4.5:1 for a
-     label). Solid ink-soft reads 7.29:1; cream-soft reads 10.59:1 dark. */
-  color: #57504a;
+  /* Text-contrast: ink-soft read 7.29:1 but rendered barely legible at
+     12px tracked caps on cream. Solid ink reads 15.38:1; solid cream
+     reads 15.26:1 on night — the primary text tones, both schemes. */
+  color: #221d18;
 }
 @media (prefers-color-scheme: dark) {
-  .ph-motto-role { color: #cfc6b4; }
+  .ph-motto-role { color: #f3ecdc; }
 }
 
 /* --- Bio: stacked and legible by default; pinned + illuminated only via JS --- */

@@ -378,7 +378,7 @@ function PatronPage() {
           ))}
         </div>
 
-        <div id="join" className="mx-auto mt-16 max-w-2xl scroll-mt-8">
+        <div id="join" className="mx-auto mt-16 max-w-2xl scroll-mt-24">
           <h2 className="font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl dark:text-cream">
             Join as a patron
           </h2>
