@@ -7,7 +7,7 @@
 export const DONATION_ADDRESS = "0xa6eab535043EB98De32e5791b0E83ab47f88C430";
 export const DONATION_NETWORK = "Base";
 
-// Flash-sale audit checkout (Stripe payment link, tax-inclusive price).
+// AI Workflow Audit checkout (Stripe payment link, tax-inclusive price).
 export const AUDIT_PRICE = "$374.50";
 export const AUDIT_PAY_URL = "https://buy.stripe.com/eVq4gB9eAeDdauYejnbfO04";
 

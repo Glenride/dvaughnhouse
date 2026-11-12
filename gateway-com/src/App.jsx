@@ -727,7 +727,7 @@ function Footer() {
           Token and market content is educational only.
         </p>
         <p className="mt-2 text-[11px] leading-relaxed text-ink-soft dark:text-cream-soft">
-          Content updated: October 25, 2026.
+          Content updated: November 12, 2026.
         </p>
       </div>
     </footer>

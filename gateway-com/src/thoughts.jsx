@@ -1,7 +1,10 @@
 import { useEffect } from "react";
-import flashSaleAudit from "./assets/flash-sale-audit.webp";
 import { projectById } from "./data/projects.js";
-import { AUDIT_PAY_URL, AUDIT_PRICE } from "./data/site-content.js";
+import {
+  FIRST_BUILD_PRICE,
+  FIRST_BUILD_STANDARD_PRICE,
+  FIRST_BUILD_STANDARD_TAX_INCLUSIVE,
+} from "./data/site-content.js";
 import { AREAS, BENEFITS, STAGES, STATS } from "./data/thoughts-content.js";
 
 // Thoughts: the old homepage's expository copy, reorganized onto its own
@@ -53,58 +56,37 @@ export function ThoughtsPage() {
         the system.
       </p>
 
-      {/* Flash sale, added November 5, 2026 — dated offer, not predecessor-homepage copy. */}
-      <section aria-label="Flash sale" className="mt-20">
-        <div className="overflow-hidden rounded-2xl border border-line bg-paper dark:border-line-dark dark:bg-night-card">
-          <div className="grid gap-0 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
-            <img
-              src={flashSaleAudit}
-              alt="AI Workflow Audit — $374.50, two slots, book by Friday"
-              className="h-full w-full object-cover"
-            />
-            <div className="p-7 sm:p-10">
-              <p className="font-mono text-xs uppercase tracking-widest text-sienna-deep dark:text-sienna">
-                The Founder&rsquo;s Override — book by Sunday night
-              </p>
-              <h2 className="mt-3 font-display text-3xl font-bold tracking-tight text-ink dark:text-cream">
-                Two audit slots open — {AUDIT_PRICE} each, tax included.
-              </h2>
-              <p className="mt-4 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-                The full First Build week is $2,520 at the standard rate — this two-hour audit is the {AUDIT_PRICE} way in (tax included).
-              </p>
-              <p className="mt-4 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-                I spend two hours on your most repetitive task: I map how it
-                runs today, and hand you the written map plus the first
-                automation to build. You keep the decision; the machine does
-                the repetition.
-              </p>
-              <p className="mt-4 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-                Pay by Sunday night to lock a slot, and we do the two hours
-                next week at a time that works. First come, first served.
-              </p>
-              <p className="mt-6">
-                <a
-                  href="/audit"
-                  className="inline-flex items-center rounded-full bg-sienna px-6 py-3 text-sm font-semibold text-ink transition-colors hover:bg-sienna-deep hover:text-paper"
-                >
-                  Claim a slot →
-                </a>
-              </p>
-              <p className="mt-4 text-sm">
-                <a
-                  href={AUDIT_PAY_URL}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="font-semibold text-sienna-deep underline underline-offset-4 hover:text-ink dark:text-sienna dark:hover:text-cream"
-                >
-                  Or pay {AUDIT_PRICE} now to lock it →
-                </a>
-              </p>
-              <p className="mt-6 text-xs text-ink-soft dark:text-cream-soft">
-                All images on this page are illustrations generated for this article unless otherwise credited.
-              </p>
-            </div>
-          </div>
+      {/* First Build offer — mirrors the /first-build page. No deadline, no slot count. */}
+      <section aria-label="First Build" className="mt-20">
+        <div className="rounded-2xl border border-line bg-paper p-7 sm:p-10 dark:border-line-dark dark:bg-night-card">
+          <p className="font-mono text-xs uppercase tracking-widest text-sienna-deep dark:text-sienna">
+            The First Build
+          </p>
+          <h2 className="mt-3 font-display text-3xl font-bold tracking-tight text-ink dark:text-cream">
+            One week. One workflow. One working system.
+          </h2>
+          <p className="mt-4 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
+            I take the single most repetitive job in your business — the one
+            your team does the same way every day or every week — and I build
+            the system that runs it, with a Human check at the end. You keep
+            the decision. The machine does the repetition.
+          </p>
+          <p className="mt-4 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
+            {FIRST_BUILD_PRICE} tax-inclusive for the first three clients — $75
+            per hour (founding rate). A typical week runs about 20 hours, so
+            roughly {FIRST_BUILD_STANDARD_PRICE} at the standard rate of $126
+            per hour ({FIRST_BUILD_STANDARD_TAX_INCLUSIVE} tax-inclusive).
+            Quoted up front once the fit call confirms the scope — no surprise
+            hours.
+          </p>
+          <p className="mt-6">
+            <a
+              href="/first-build"
+              className="inline-flex items-center rounded-full bg-sienna px-6 py-3 text-sm font-semibold text-ink transition-colors hover:bg-sienna-deep hover:text-paper"
+            >
+              Start with a fit call →
+            </a>
+          </p>
         </div>
       </section>
 
