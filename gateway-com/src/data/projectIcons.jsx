@@ -85,4 +85,15 @@ export const PROJECT_ICONS = {
     <path className="ic-ink" d="M45 45h110v110H45z" />
     <path className="ic-sienna" d="M65 75h70M65 100h70M65 125h45" />
   </>),
+  rea: lineIcon(<>
+    <path className="ic-ink" d="M40 50h120v100H40z" />
+    <path className="ic-ink" d="M40 74h120" />
+    <circle className="ic-sienna" cx="62" cy="112" r="13" />
+    <circle className="ic-ink" cx="100" cy="112" r="13" />
+    <circle className="ic-sienna" cx="138" cy="112" r="13" />
+  </>),
+  skills: lineIcon(<>
+    <path className="ic-sienna" d="M42 58l8 8 14-16M42 98l8 8 14-16M42 138l8 8 14-16" />
+    <path className="ic-ink" d="M76 60h84M76 100h84M76 140h84" />
+  </>),
 };
