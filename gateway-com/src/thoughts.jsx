@@ -52,7 +52,7 @@ export function ThoughtsPage() {
       <p className="mt-6 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
         You don&rsquo;t need another lecture about AI. You need less
         busywork, straight facts on drug shortages, and plain talk on where
-        things are headed — from someone who spent fifteen years inside
+        things are headed — from someone who spent twelve years inside
         the system.
       </p>
 

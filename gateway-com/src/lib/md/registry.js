@@ -274,7 +274,7 @@ function legalBody(doc) {
 
 function thoughtsBody() {
   return [
-    "You don't need another lecture about AI. You need less busywork, straight facts on drug shortages, and plain talk on where things are headed — from someone who spent fifteen years inside the system.",
+    "You don't need another lecture about AI. You need less busywork, straight facts on drug shortages, and plain talk on where things are headed — from someone who spent twelve years inside the system.",
     "",
     `## The First Build — one week, one workflow, one working system`,
     "",
@@ -451,7 +451,7 @@ export const ROUTES = [
     mdPath: "/thoughts.md",
     title: "Thoughts — D'Vaughn House",
     summary:
-      "Less busywork, straight facts on drug shortages, and plain talk on where things are headed — from someone who spent fifteen years inside the system.",
+      "Less busywork, straight facts on drug shortages, and plain talk on where things are headed — from someone who spent twelve years inside the system.",
     aiSummary:
       "Thoughts: the principle is proof, not promises. It covers what an independent AI orchestrator does, third-party figures on drug shortages and supply chains, and the three-stage loop of chief-of-staff OS, Glenride attestation, and SpinWave.",
     description:
