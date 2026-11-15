@@ -1,0 +1,74 @@
+'forge clean' running (wd: /home/housedv/projects/dvaughnhouse/thinktank-os/pearls-buildout-2026-10-23/pearls)
+'forge config --json' running
+'forge build --build-info --deny never --skip ./test/** ./script/** --force' running (wd: /home/housedv/projects/dvaughnhouse/thinktank-os/pearls-buildout-2026-10-23/pearls)
+INFO:Detectors:
+Detector: incorrect-equality
+VestingVault.release() (src/VestingVault.sol#73-79) uses a dangerous strict equality:
+	- amount == 0 (src/VestingVault.sol#75)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#dangerous-strict-equalities
+INFO:Detectors:
+Detector: reentrancy-events
+Reentrancy in AirdropDistributor.claim(uint256,address,uint256,bytes32[]) (src/AirdropDistributor.sol#82-89):
+	External calls:
+	- token.safeTransfer(account,amount) (src/AirdropDistributor.sol#87)
+	Event emitted after the call(s):
+	- Claimed(index,account,amount) (src/AirdropDistributor.sol#88)
+Reentrancy in LaunchLocker.collectFees() (src/LaunchLocker.sol#121-135):
+	External calls:
+	- (amount0,amount1) = position.collectFees(address(this)) (src/LaunchLocker.sol#127)
+	- IERC20(t0).safeTransfer(creator,bal0) (src/LaunchLocker.sol#132)
+	- IERC20(t1).safeTransfer(creator,bal1) (src/LaunchLocker.sol#133)
+	Event emitted after the call(s):
+	- FeesCollected(creator,amount0,amount1) (src/LaunchLocker.sol#134)
+Reentrancy in LaunchFactory.launch(LaunchFactory.LaunchParams) (src/LaunchFactory.sol#150-301):
+	External calls:
+	- IERC20(address(token)).safeTransfer(address(vault),vestingAmount) (src/LaunchFactory.sol#231)
+	- distributor = new AirdropDistributor{value: AIRDROP_CAMPAIGN_FEE}(IERC20(address(token)),params.airdropMerkleRoot,treasury) (src/LaunchFactory.sol#236-238)
+	- IERC20(address(token)).safeTransfer(address(distributor),airdropAmount) (src/LaunchFactory.sol#240)
+	- IERC20(address(token)).safeTransfer(params.liquidityAllocation,liquidityAmount) (src/LaunchFactory.sol#244)
+	- result.certificateId = certificate.mint(params.creator,record) (src/LaunchFactory.sol#283)
+	External calls sending eth:
+	- distributor = new AirdropDistributor{value: AIRDROP_CAMPAIGN_FEE}(IERC20(address(token)),params.airdropMerkleRoot,treasury) (src/LaunchFactory.sol#236-238)
+	Event emitted after the call(s):
+	- Launched(result.certificateId,address(token),params.creator,address(locker),result.vestingVault,result.airdropDistributor,address(hookCore),address(hook),params.quoteAsset,params.totalSupply,params.volumeThresholdQuote,params.poolFeeTier,tickSpacing,result.poolId) (src/LaunchFactory.sol#285-300)
+Reentrancy in VestingVault.release() (src/VestingVault.sol#73-79):
+	External calls:
+	- token.safeTransfer(beneficiary,amount) (src/VestingVault.sol#77)
+	Event emitted after the call(s):
+	- Released(beneficiary,amount) (src/VestingVault.sol#78)
+Reentrancy in LaunchLocker.withdrawPrincipal() (src/LaunchLocker.sol#140-150):
+	External calls:
+	- IERC721(positionCollection).safeTransferFrom(address(this),creator,positionTokenId) (src/LaunchLocker.sol#148)
+	Event emitted after the call(s):
+	- PrincipalWithdrawn(creator,positionTokenId) (src/LaunchLocker.sol#149)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-4
+INFO:Detectors:
+Detector: timestamp
+LaunchLocker.withdrawPrincipal() (src/LaunchLocker.sol#140-150) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp < unlockTime (src/LaunchLocker.sol#146)
+VestingVault.vestedAmount() (src/VestingVault.sol#58-63) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp < startTime + cliffSeconds (src/VestingVault.sol#59)
+	- block.timestamp >= startTime + durationSeconds (src/VestingVault.sol#60)
+VestingVault.release() (src/VestingVault.sol#73-79) uses timestamp for comparisons
+	Dangerous comparisons:
+	- amount == 0 (src/VestingVault.sol#75)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#block-timestamp
+INFO:Detectors:
+Detector: assembly
+HookMiner.find(address,uint160,bytes,bytes) (src/HookMiner.sol#32-76) uses assembly
+	- INLINE ASM (src/HookMiner.sol#45-73)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#assembly-usage
+INFO:Detectors:
+Detector: cyclomatic-complexity
+LaunchFactory._validate(LaunchFactory.LaunchParams) (src/LaunchFactory.sol#303-327) has a high cyclomatic complexity (13).
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#cyclomatic-complexity
+INFO:Detectors:
+Detector: too-many-digits
+HookMiner.find(address,uint160,bytes,bytes) (src/HookMiner.sol#32-76) uses literals with too many digits:
+	- mstore(uint256,uint256)(ptr_find_asm_0,0xff0000000000000000000000000000000000000000 | deployer & 0xffffffffffffffffffffffffffffffffffffffff) (src/HookMiner.sol#52-58)
+LaunchFactory.launch(LaunchFactory.LaunchParams) (src/LaunchFactory.sol#150-301) uses literals with too many digits:
+	- (expectedHook,hookSalt) = HookMiner.find(address(this),PEARL_HOOK_FLAGS,type()(PearlHook).creationCode,abi.encode(POOL_MANAGER,treasury,params.quoteIsCurrency0,params.volumeThresholdQuote,params.maxSwapQuoteAmount,params.maxSwapBlocks)) (src/LaunchFactory.sol#164-176)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#too-many-digits
+INFO:Slither:. analyzed (57 contracts with 102 detectors), 13 result(s) found

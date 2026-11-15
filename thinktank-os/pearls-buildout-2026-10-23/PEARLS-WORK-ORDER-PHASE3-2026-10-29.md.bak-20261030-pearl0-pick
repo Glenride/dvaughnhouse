@@ -1,0 +1,91 @@
+# Pearls — Work Order for Antigravity — Thursday, October 29, 2026 (Phase 3)
+
+**Prepared by:** Janine, at D'Vaughn's direction
+**For:** Antigravity, on the iMac
+**Tree:** the thinktank-os tree, Pearls code at `pearls-buildout-2026-10-23/pearls/`
+**Branch:** `pearls-buildout` (currently at `d06fa6b`, Phase 2). Work, commit, and push on `pearls-buildout` only — never commit directly to `main`.
+**Status:** This order is self-contained for today. It supersedes the 2026-10-29 Phase 2 order as the operative instruction. **Phase 3 is AUTHORIZED by D'Vaughn (tap, 2026-10-29)** — the Sepolia rehearsal may proceed, subject to the gates below. Phases 0–2 are done; Phase 2 closes fully when the H-2 addendum lands (Task 0).
+
+---
+
+## Where things stand (verified, not claimed)
+
+- **Phase 0:** true Uniswap `v4.0.0` pin (`e50237c`), blob-verified.
+- **Phase 1:** hook completion — v4-periphery pinned (`v1.0.3` / `3779387`), canonical interfaces, CREATE2 salt mining, fee settlement via `poolManager.take()` proven on fork. Suite 59/59 re-verified by Janine.
+- **Phase 2:** security — Aderyn pass (High 2, both triaged; Low 5, accepted), Halmos 11 invariant proofs, 16 adversarial fork tests, security report published. Suite 75/75 re-verified by Janine (45 unit/fuzz + 30 fork).
+- **Phase 2 addendum (OPEN, must land first):** the security report's H-2 line claims `LaunchLocker.deposit` is protected by `nonReentrant` — false as committed (no modifier, no `ReentrancyGuard`; `hasPosition` is set AFTER the `ownerOf` call). Addendum file on the iMac: `PEARLS-WORK-ORDER-PHASE2-ADDENDUM-H2-2026-10-29.md`. Deploy NOTHING until that fix is in and re-verified.
+
+## Today's tasks — Phase 3: Base Sepolia + Pearl #0 (in order)
+
+**0. Land the H-2 fix FIRST. No deploy from pre-fix code.**
+Apply the H-2 addendum: `nonReentrant` on `LaunchLocker.deposit`, full suite green, Aderyn re-run, report lines corrected to match the code, commit + push on `pearls-buildout`. Confirm the modifier is actually on the function (read the code, do not trust the report). Every step below deploys ONLY from the post-fix commit. If the fix is not in, stop here and report that.
+
+**1. Prerequisites gate — STOP and report if anything is missing. Do not substitute.**
+Before any deploy transaction, confirm ALL of these and record them in the report. If any item is absent, STOP, report exactly what is missing, and do not proceed — do not invent a treasury address, do not deploy with a placeholder, do not use a personal or mainnet key:
+- A testnet-only deployer key, supplied through the path D'Vaughn directs (never in chat, never a personal wallet key, never a mainnet key).
+- Sepolia ETH on the deployer sufficient for the deployment transactions.
+- A throwaway test Safe address to use as treasury. **The treasury address is immutable once deployed** — it must be the address D'Vaughn approves, not a guess. If no approved Safe address exists, stop and say so.
+- A working Base Sepolia RPC endpoint.
+- `script/Deploy.s.sol` still hard-gated to Base Sepolia (84532) and local Anvil (31337) — verify the gate before running it; do not touch it.
+
+**2. Deploy the factory + hook to Base Sepolia.**
+Deploy via `script/Deploy.s.sol` on Base Sepolia only. Record in `BUILD-OUT-REPORT.md`: deployed addresses (factory, hook, any auxiliary contracts), transaction hashes, block numbers, deployer address, and the treasury Safe address used. Verify on-chain immediately: the hook address validates its permission flags, the factory-hook wiring matches, the PoolManager binding is the canonical Base Sepolia PoolManager (`0x05E73354cFDd6745C338b50BcFDfA3Aa6fA03408`), and the fee terms match the locked doctrine (0% below the $10M gate, 0.30% in quote asset only above it).
+
+**3. Pearl #0 — HELD. Do NOT launch until D'Vaughn picks.**
+Pearl #0 is the first launch, and its form is D'Vaughn's call: SPINE manual deploy vs a throwaway Sepolia dummy. That choice is PENDING as of this order. Do not launch anything under the Pearl #0 name until he picks — no placeholder launch, no "temporary" launch that becomes the record. When he picks, launch exactly that form and record it as Pearl #0.
+
+**4. After Pearl #0 launches: prove it end to end.**
+- The launch certificate renders from on-chain data (not from a local file or a mock).
+- The lock is verifiable on-chain (locker state, lock type, timing).
+- The trust panel shows live state from the Sepolia deployment.
+- Record the evidence: certificate URL/render, lock verification steps + outputs, trust panel state, transaction hashes. If any piece does not prove out, report it as a gap — do not present a partial proof as complete.
+
+**5. Commit and push on branch `pearls-buildout`.**
+Commit the deployment record, verification outputs, and report updates; push on the branch where the work runs. Do not merge to `main` yourself — that is D'Vaughn's call. Run the pre-commit language check (`bash check-language.sh` from the repo root) — never commit if it fails.
+
+## Ground truth (verified, do not re-derive — build on it)
+
+- Uniswap v4-core release tag **`v4.0.0` = commit `e50237c43811bd9b526eff40f26772152a42daba`** (2025-01-21), blob-verified. `v4-periphery` pinned at tag `v1.0.3` / rev `3779387` (npm release line; GitHub git tags for that repo are empty).
+- Fee settlement is proven on fork: `poolManager.take(quoteCurrency, treasury, fee)`, all 4 directions, pre/post-gate, zero below gate and on the crossing swap.
+- Canonical Base Sepolia PoolManager: `0x05E73354cFDd6745C338b50BcFDfA3Aa6fA03408`. Fork-test block used in verification: `49,250,000`.
+- `59d3ecf` is a May 2025 main-branch commit, NOT the v4.0.0 tag. Never repeat the "v4.0.0 @ 59d3ecf" claim anywhere.
+
+## Locked rules — D'Vaughn's decisions, not yours to change
+
+If anything below looks wrong, surface it in your report. Do not remove, rename, relabel, or "fix" it on your own.
+
+- **Fee doctrine, frozen:** the fee is configured at inception per launch, then immutable forever. No platform fee until $10M cumulative volume; above the gate, 0.30% in quote asset only (WETH/USDC); the crossing swap pays no fee; the gate is fixed in quote units at deploy (no swap-time oracle). Tier 1 Patient (locked/burned LP): $10M gate / 0.30%. Tier 3 Uncommitted (no lock): $20K gate / ~0.58% modeled — exact figure unconfirmed, do not hard-code it as locked.
+- **No admin keys, no owner, no setters, no pause, no proxy, no upgrade path.** Core contracts have none and gain none.
+- **Do not change fee constants, the $10M gate, or lock minimums to make tests pass.** If a design point seems wrong, flag it in the report.
+- **Base Sepolia ONLY in this phase. No mainnet, ever, in this order.** Testnet-only deployer key; never a personal wallet key. `script/Deploy.s.sol` gate untouched.
+- **Treasury is immutable once deployed.** Only the approved throwaway test Safe address. No placeholder, no guess.
+- **Canonical tree untouched.** `~/workspace/your_files/pearls/` (Janine's canonical copy) stays untouched — sync is D'Vaughn's call.
+- **Naming, everywhere including code comments and variable names:** Pearls, always plural. The gold colour and Studio seal are Abyssal Gold. Never use: "sovereign", "ventures", or "institute" for Glenride. User-facing copy never says "AI" — users get help from "the Assistant". (This work order is internal; the rule binds anything user-facing you write.)
+- **Honest status, always:** nothing is claimed as live, deployed, audited, or counted until it is. No fabricated testimonials, stats, or endorsements. No third-party audit is claimed until one exists. A Sepolia deployment is a rehearsal, never "the launch" — mainnet language stays out of every report line until D'Vaughn says otherwise.
+
+## Non-goals for today
+
+No mainnet. No Phase 4 surfaces (landing page, terminal, Plus+ portal, Ops console — those build against real Sepolia launches on a later order). No grant applications (those unlock once Sepolia exists; they are the NEXT step after this phase proves out, not part of it). No multi-network PoolManager parameterization (carried gap, his schedule). No canonical-tree edits. No fee/gate/lock changes.
+
+## Open decisions — D'Vaughn's calls, not yours (do not decide them in code)
+
+Pearl #0 (SPINE manual deploy vs Sepolia dummy — PENDING, Task 3 held) · throwaway test Safe address + deployer key path (Task 1 gate) · trading-terminal routing fee · landing-page waitlist/notify path · Plus+ portal auth · canonical-tree sync · multi-network parameterization schedule.
+
+## Report back (required, in BUILD-OUT-REPORT.md)
+
+- H-2 fix confirmation (modifier present on `deposit`, suite + Aderyn re-run, report lines corrected) + post-fix commit hash deployed from.
+- Prerequisites: what was supplied for each Task 1 item, or what was missing if stopped.
+- Deployment record: addresses, transaction hashes, block numbers, deployer, treasury Safe.
+- On-chain verification outputs for Task 2.
+- Pearl #0 status: HELD pending his pick, or launched per his pick with full evidence (Task 4).
+- Remaining gaps, if any.
+
+Janine independently re-verifies all of it (on-chain checks + suite re-run) before anything is reported to D'Vaughn as sound. Report findings; do not soften them.
+
+## Definition of done for today
+
+- H-2 fix landed and verified; deployment from the post-fix commit only.
+- Factory + hook deployed to Base Sepolia and verified on-chain (or a precise stopped report naming the missing prerequisite).
+- Pearl #0 launched per his pick and proven end to end — or explicitly HELD with the pick still pending.
+- Report updated, commit pushed on `pearls-buildout`, language check passed.
+- Nothing on mainnet, nothing claimed beyond what the chain proves.

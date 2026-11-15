@@ -12,8 +12,11 @@ use App\Http\Controllers\EssayController;
 use App\Http\Controllers\ResearchController;
 use App\Http\Controllers\DrugShortageController;
 use App\Http\Controllers\SopController;
+use App\Http\Controllers\OpsConsoleController;
 use App\Http\Controllers\StandardsController;
 use App\Http\Controllers\StoreController;
+use App\Http\Controllers\TradingTerminalController;
+use App\Http\Controllers\TressColumnController;
 use App\Http\Controllers\VanguardLibraryController;
 use Illuminate\Support\Facades\Route;
 
@@ -118,6 +121,24 @@ Route::middleware('auth')->group(function () {
     // Internal Standard Operating Procedures (Fellow Access Only)
     Route::get('/sops', [SopController::class, 'index'])->name('sops.index');
     Route::get('/sops/{slug}', [SopController::class, 'show'])->name('sops.show');
+});
+
+// Tress Column Three Interlocking Applications (Subdomain bindings)
+Route::domain('tc.dvaughnhouse.com')->group(function () {
+    Route::get('/', [TressColumnController::class, 'index'])->name('tress-column.domain');
+});
+Route::domain('trade.dvaughnhouse.com')->group(function () {
+    Route::get('/', [TradingTerminalController::class, 'index'])->name('trading-terminal.domain');
+});
+Route::domain('ops.dvaughnhouse.com')->group(function () {
+    Route::get('/', [OpsConsoleController::class, 'index'])->name('ops-console.domain');
+});
+
+// Staging Preview Routes (Direct URL access across environments)
+Route::prefix('staging')->group(function () {
+    Route::get('/tress-column', [TressColumnController::class, 'index'])->name('tress-column.preview');
+    Route::get('/terminal', [TradingTerminalController::class, 'index'])->name('trading-terminal.preview');
+    Route::get('/ops-console', [OpsConsoleController::class, 'index'])->name('ops-console.preview');
 });
 
 require __DIR__.'/auth.php';

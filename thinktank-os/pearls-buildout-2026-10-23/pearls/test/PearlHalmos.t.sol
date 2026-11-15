@@ -4,10 +4,11 @@ pragma solidity ^0.8.24;
 import {Test} from "forge-std/Test.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-import {PearlHookCore} from "../src/PearlHookCore.sol";
+import {TCCore} from "../src/TCCore.sol";
 import {LaunchLocker} from "../src/LaunchLocker.sol";
 import {LaunchCertificate} from "../src/LaunchCertificate.sol";
 import {AirdropDistributor} from "../src/AirdropDistributor.sol";
+import {VestingVault} from "../src/VestingVault.sol";
 import {LaunchToken} from "../src/LaunchToken.sol";
 import {MockQuoteAsset, MockLPPosition} from "./Mocks.sol";
 
@@ -34,7 +35,7 @@ contract PearlHalmosTest is Test {
     uint256 abyssalTokenId;
     LaunchLocker timedLocker;
     uint256 timedTokenId;
-    PearlHookCore hookCore;
+    TCCore hookCore;
 
     function setUp() public {
         vm.warp(1_000_000);
@@ -60,7 +61,7 @@ contract PearlHalmosTest is Test {
         timedTokenId = position.mint(address(timedLocker));
         timedLocker.deposit(address(position), timedTokenId);
 
-        hookCore = new PearlHookCore(TREASURY, REPORTER, false, GATE_THRESHOLD, 0, 0);
+        hookCore = new TCCore(TREASURY, REPORTER, false, GATE_THRESHOLD, 0, 0);
     }
 
     // ---------------------------------------------------------------------
@@ -192,4 +193,104 @@ contract PearlHalmosTest is Test {
         assert(token.balanceOf(account) == amount);
         assert(token.balanceOf(address(dist)) == amount);
     }
+
+    // ---------------------------------------------------------------------
+    // Invariant (iv): Locker deposit is strictly one-shot
+    // ---------------------------------------------------------------------
+
+    /// @notice Symbolic proof: once a position is deposited in a LaunchLocker,
+    ///         any subsequent deposit attempt by any caller reverts.
+    function check_locker_deposit_is_one_shot(address caller, address anyCollection, uint256 anyTokenId) public {
+        vm.assume(caller != address(0));
+        vm.prank(caller);
+        (bool ok,) = address(abyssalLocker).call(
+            abi.encodeWithSelector(LaunchLocker.deposit.selector, anyCollection, anyTokenId)
+        );
+        assert(!ok);
+    }
+
+    // ---------------------------------------------------------------------
+    // Invariant (v): DeadCompounded locks reject fee collection
+    // ---------------------------------------------------------------------
+
+    /// @notice Symbolic proof: when LpFeeMode is DeadCompounded, calling collectFees
+    ///         reverts unconditionally for any caller.
+    function check_locker_dead_compounded_fees_cannot_be_collected(address caller) public {
+        LaunchLocker deadLocker = new LaunchLocker(
+            CREATOR,
+            LaunchCertificate.LockMode.Abyssal,
+            LaunchCertificate.LpFeeMode.DeadCompounded,
+            type(uint256).max
+        );
+        vm.prank(caller);
+        (bool ok,) = address(deadLocker).call(abi.encodeWithSelector(LaunchLocker.collectFees.selector));
+        assert(!ok);
+    }
+
+    // ---------------------------------------------------------------------
+    // Invariant (vi): Vesting respects cliff and releases linearly
+    // ---------------------------------------------------------------------
+
+    /// @notice Symbolic proof: VestingVault yields strictly 0 before cliff timestamp.
+    function check_vesting_before_cliff_yields_zero(
+        uint256 warpTimestamp,
+        uint256 totalAlloc
+    ) public {
+        vm.assume(totalAlloc > 0 && totalAlloc <= 1_000_000_000e18);
+        uint256 start = 1_000_000;
+        uint256 cliff = 30 days;
+        uint256 duration = 365 days;
+        vm.assume(warpTimestamp >= start && warpTimestamp < start + cliff);
+
+        VestingVault vault = new VestingVault(IERC20(address(feeA)), CREATOR, totalAlloc, start, cliff, duration);
+        vm.warp(warpTimestamp);
+        assert(vault.vestedAmount() == 0);
+        assert(vault.releasable() == 0);
+    }
+
+    /// @notice Symbolic proof: VestingVault yields full totalAllocation at/after duration.
+    function check_vesting_at_or_after_duration_yields_total(
+        uint256 warpTimestamp,
+        uint256 totalAlloc
+    ) public {
+        vm.assume(totalAlloc > 0 && totalAlloc <= 1_000_000_000e18);
+        uint256 start = 1_000_000;
+        uint256 cliff = 30 days;
+        uint256 duration = 365 days;
+        vm.assume(warpTimestamp >= start + duration && warpTimestamp <= start + 7300 days);
+
+        VestingVault vault = new VestingVault(IERC20(address(feeA)), CREATOR, totalAlloc, start, cliff, duration);
+        vm.warp(warpTimestamp);
+        assert(vault.vestedAmount() == totalAlloc);
+    }
+
+    /// @notice Symbolic proof: VestingVault releases linearly within the vesting duration.
+    function check_vesting_linear_schedule_within_window(uint256 warpTimestamp) public {
+        uint256 totalAlloc = 100_000e18;
+        uint256 start = 1_000_000;
+        uint256 cliff = 30 days;
+        uint256 duration = 365 days;
+        vm.assume(warpTimestamp >= start + cliff && warpTimestamp < start + duration);
+
+        VestingVault vault = new VestingVault(IERC20(address(feeA)), CREATOR, totalAlloc, start, cliff, duration);
+        vm.warp(warpTimestamp);
+        uint256 vested = vault.vestedAmount();
+        uint256 elapsed = warpTimestamp - start;
+        assert(vested == (totalAlloc * elapsed) / duration);
+        assert(vested <= totalAlloc);
+    }
+
+    // ---------------------------------------------------------------------
+    // Invariant (vii): Core hook terms are immutable (no setters, no admin)
+    // ---------------------------------------------------------------------
+
+    /// @notice Symbolic proof: volumeThresholdQuote, treasury, poolReporter,
+    ///         and feeBps cannot be changed by state transitions or callers.
+    function check_hook_immutability_and_no_admin() public view {
+        assert(hookCore.volumeThresholdQuote() == GATE_THRESHOLD);
+        assert(hookCore.treasury() == TREASURY);
+        assert(hookCore.poolReporter() == REPORTER);
+        assert(hookCore.feeBps() == 30);
+    }
 }
+

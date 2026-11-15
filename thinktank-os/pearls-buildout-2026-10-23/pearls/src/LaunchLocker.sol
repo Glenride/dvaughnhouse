@@ -5,6 +5,7 @@ import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {ERC721Holder} from "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 import {LaunchCertificate} from "./LaunchCertificate.sol";
 
@@ -49,7 +50,7 @@ interface ILPPosition {
 ///
 ///      There is no owner and no rescue function. A rescue function would be
 ///      an admin key by another name; its absence is the product (spec §8).
-contract LaunchLocker is ERC721Holder {
+contract LaunchLocker is ERC721Holder, ReentrancyGuard {
     using SafeERC20 for IERC20;
 
     /// @notice Who launched (fee recipient in CreatorClaimable mode,
@@ -101,7 +102,7 @@ contract LaunchLocker is ERC721Holder {
     ///      the same transaction that mints the position (spec §2). The NFT
     ///      must be transferred to this contract before/with the call; the
     ///      locker verifies it actually holds it.
-    function deposit(address collection, uint256 tokenId) external {
+    function deposit(address collection, uint256 tokenId) external nonReentrant {
         if (collection == address(0)) revert ZeroAddress();
         if (hasPosition) revert AlreadyHasPosition();
         if (IERC721(collection).ownerOf(tokenId) != address(this)) {

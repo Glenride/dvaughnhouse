@@ -26,6 +26,13 @@ export default {
                 cream: '#F3ECDC',
                 'cream-soft': '#CFC6B4',
                 'line-dark': 'rgba(250, 245, 236, 0.14)',
+                'pearls-white': '#FAF9F6',
+                'nacre-cream': '#F5EFE6',
+                'abyssal-gold': '#D4AF37',
+                'signal-orange': '#FF6B2B',
+                'abyssal-black': '#0D0E11',
+                'abyssal-card': '#14161C',
+                'abyssal-line': 'rgba(212, 175, 55, 0.15)',
             },
             fontFamily: {
                 display: ['"Bricolage Grotesque"', 'Georgia', 'serif'],

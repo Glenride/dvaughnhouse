@@ -1,0 +1,253 @@
+Compiling 105 files with Solc 0.8.24
+Solc 0.8.24 finished in 110.91s
+Compiler run successful!
+warning[reentrancy-events]: event emitted after an external call; reentrancy can reorder or fabricate logs that off-chain consumers rely on
+   ╭▸ src/AirdropDistributor.sol:64:9
+   │
+64 │         emit FeePaid(treasury_, msg.value);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/reentrancy-events
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+   ╭▸ src/VestingVault.sol:59:13
+   │
+59 │         if (block.timestamp < startTime + cliffSeconds) return 0;
+   │             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/block-timestamp
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+   ╭▸ src/VestingVault.sol:60:13
+   │
+60 │         if (block.timestamp >= startTime + durationSeconds) return totalAllocation;
+   │             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/block-timestamp
+
+warning[reentrancy-events]: event emitted after an external call; reentrancy can reorder or fabricate logs that off-chain consumers rely on
+   ╭▸ src/AirdropDistributor.sol:88:9
+   │
+88 │         emit Claimed(index, account, amount);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/reentrancy-events
+
+warning[reentrancy-events]: event emitted after an external call; reentrancy can reorder or fabricate logs that off-chain consumers rely on
+   ╭▸ src/LaunchCertificate.sol:91:9
+   │
+91 │         emit CertificateMinted(launchId, record.token, record.creator);
+   │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   │
+   ╰ help: https://getfoundry.sh/forge/linting/reentrancy-events
+
+warning[arbitrary-send-eth]: ETH is sent to a user-controlled destination; restrict the destination or the caller
+    ╭▸ src/LaunchFactory.sol:236:46
+    │
+236 │               AirdropDistributor distributor = new AirdropDistributor{value: AIRDROP_CAMPAIGN_FEE}(
+    │ ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+237 │ ┃                 IERC20(address(token)), params.airdropMerkleRoot, treasury
+238 │ ┃             );
+    │ ┗━━━━━━━━━━━━━┛
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/arbitrary-send-eth
+
+warning[reentrancy-events]: event emitted after an external call; reentrancy can reorder or fabricate logs that off-chain consumers rely on
+    ╭▸ src/LaunchFactory.sol:285:9
+    │
+285 │ ┏         emit Launched(
+286 │ ┃             result.certificateId,
+287 │ ┃             address(token),
+288 │ ┃             params.creator,
+    ‡ ┃
+299 │ ┃             result.poolId
+300 │ ┃         );
+    │ ┗━━━━━━━━━━┛
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/reentrancy-events
+
+warning[reentrancy-events]: event emitted after an external call; reentrancy can reorder or fabricate logs that off-chain consumers rely on
+    ╭▸ src/LaunchLocker.sol:134:9
+    │
+134 │         emit FeesCollected(creator, amount0, amount1);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/reentrancy-events
+
+warning[block-timestamp]: usage of `block.timestamp` in a comparison may be manipulated by validators
+    ╭▸ src/LaunchLocker.sol:146:13
+    │
+146 │         if (block.timestamp < unlockTime) revert StillLocked(unlockTime);
+    │             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/block-timestamp
+
+warning[reentrancy-events]: event emitted after an external call; reentrancy can reorder or fabricate logs that off-chain consumers rely on
+    ╭▸ src/LaunchLocker.sol:149:9
+    │
+149 │         emit PrincipalWithdrawn(creator, positionTokenId);
+    │         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ╰ help: https://getfoundry.sh/forge/linting/reentrancy-events
+
+warning[unsafe-typecast]: typecast can truncate values
+    ╭▸ src/PearlHook.sol:134:26
+    │
+134 │         amount1 = int256(int128(uint128(uint256(packed) & ((1 << 128) - 1))));
+    │                          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ├ note: consider disabling this lint if you're certain the cast is safe
+    │       
+    │       // casting to 'int128' is safe because [explain why]
+    │       // forge-lint: disable-next-line(unsafe-typecast)
+    │       
+    │       
+    ╰ help: https://getfoundry.sh/forge/linting/unsafe-typecast
+
+warning[unsafe-typecast]: typecast can truncate values
+    ╭▸ src/PearlHook.sol:134:33
+    │
+134 │         amount1 = int256(int128(uint128(uint256(packed) & ((1 << 128) - 1))));
+    │                                 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ├ note: consider disabling this lint if you're certain the cast is safe
+    │       
+    │       // casting to 'uint128' is safe because [explain why]
+    │       // forge-lint: disable-next-line(unsafe-typecast)
+    │       
+    │       
+    ╰ help: https://getfoundry.sh/forge/linting/unsafe-typecast
+
+warning[unsafe-typecast]: typecast can truncate values
+    ╭▸ src/PearlHook.sol:134:41
+    │
+134 │         amount1 = int256(int128(uint128(uint256(packed) & ((1 << 128) - 1))));
+    │                                         ━━━━━━━━━━━━━━━
+    │
+    ├ note: consider disabling this lint if you're certain the cast is safe
+    │       
+    │       // casting to 'uint256' is safe because [explain why]
+    │       // forge-lint: disable-next-line(unsafe-typecast)
+    │       
+    │       
+    ╰ help: https://getfoundry.sh/forge/linting/unsafe-typecast
+
+warning[unsafe-typecast]: typecast can truncate values
+    ╭▸ src/PearlHook.sol:145:34
+    │
+145 │         return quoteDelta >= 0 ? uint256(quoteDelta) : uint256(-quoteDelta);
+    │                                  ━━━━━━━━━━━━━━━━━━━
+    │
+    ├ note: consider disabling this lint if you're certain the cast is safe
+    │       
+    │       // casting to 'uint256' is safe because [explain why]
+    │       // forge-lint: disable-next-line(unsafe-typecast)
+    │       
+    │       
+    ╰ help: https://getfoundry.sh/forge/linting/unsafe-typecast
+
+warning[unsafe-typecast]: typecast can truncate values
+    ╭▸ src/PearlHook.sol:145:56
+    │
+145 │         return quoteDelta >= 0 ? uint256(quoteDelta) : uint256(-quoteDelta);
+    │                                                        ━━━━━━━━━━━━━━━━━━━━
+    │
+    ├ note: consider disabling this lint if you're certain the cast is safe
+    │       
+    │       // casting to 'uint256' is safe because [explain why]
+    │       // forge-lint: disable-next-line(unsafe-typecast)
+    │       
+    │       
+    ╰ help: https://getfoundry.sh/forge/linting/unsafe-typecast
+
+warning[unsafe-typecast]: typecast can truncate values
+    ╭▸ src/PearlHook.sol:197:19
+    │
+197 │                 ? uint256(-params.amountSpecified)
+    │                   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ├ note: consider disabling this lint if you're certain the cast is safe
+    │       
+    │       // casting to 'uint256' is safe because [explain why]
+    │       // forge-lint: disable-next-line(unsafe-typecast)
+    │       
+    │       
+    ╰ help: https://getfoundry.sh/forge/linting/unsafe-typecast
+
+warning[unsafe-typecast]: typecast can truncate values
+    ╭▸ src/PearlHook.sol:198:19
+    │
+198 │                 : uint256(params.amountSpecified);
+    │                   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ├ note: consider disabling this lint if you're certain the cast is safe
+    │       
+    │       // casting to 'uint256' is safe because [explain why]
+    │       // forge-lint: disable-next-line(unsafe-typecast)
+    │       
+    │       
+    ╰ help: https://getfoundry.sh/forge/linting/unsafe-typecast
+
+warning[unsafe-typecast]: typecast can truncate values
+    ╭▸ src/PearlHook.sol:222:23
+    │
+222 │                     ? uint256(-params.amountSpecified)
+    │                       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ├ note: consider disabling this lint if you're certain the cast is safe
+    │       
+    │       // casting to 'uint256' is safe because [explain why]
+    │       // forge-lint: disable-next-line(unsafe-typecast)
+    │       
+    │       
+    ╰ help: https://getfoundry.sh/forge/linting/unsafe-typecast
+
+warning[unsafe-typecast]: typecast can truncate values
+    ╭▸ src/PearlHook.sol:223:23
+    │
+223 │                     : uint256(params.amountSpecified);
+    │                       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    │
+    ├ note: consider disabling this lint if you're certain the cast is safe
+    │       
+    │       // casting to 'uint256' is safe because [explain why]
+    │       // forge-lint: disable-next-line(unsafe-typecast)
+    │       
+    │       
+    ╰ help: https://getfoundry.sh/forge/linting/unsafe-typecast
+
+warning[environment-read-across-mutation]: `block.timestamp` may be reused across `vm.warp`
+    ╭▸ test/Pearls.t.sol:384:85
+    │
+384 │         VestingVault vault = new VestingVault(IERC20(address(token)), team, 400e18, block.timestamp, 30 days, 365 days);
+    │                                                                                     ━━━━━━━━━━━━━━━
+    ‡
+390 │         vm.warp(block.timestamp + 30 days);
+    │         ────────────────────────────────── `vm.warp` changes this environment here
+    │
+    ├ help: capture it with `vm.getBlockTimestamp()` instead
+    ╰ help: https://getfoundry.sh/forge/linting/environment-read-across-mutation
+
+warning[environment-read-across-mutation]: `block.timestamp` may be reused across `vm.warp`
+    ╭▸ test/Pearls.t.sol:390:17
+    │
+390 │         vm.warp(block.timestamp + 30 days);
+    │         ────────━━━━━━━━━━━━━━━─────────── `vm.warp` changes this environment here
+    │
+    ├ help: capture it with `vm.getBlockTimestamp()` instead
+    ╰ help: https://getfoundry.sh/forge/linting/environment-read-across-mutation
+
+
+Running 11 tests for test/PearlHalmos.t.sol:PearlHalmosTest
+[32m[PASS][0m check_distributor_pays_leaf_at_most_once(uint256,address,uint256) (paths: 9, time: 0.30s, bounds: [])
+[32m[PASS][0m check_hook_immutability_and_no_admin() (paths: 1, time: 0.01s, bounds: [])
+[32m[PASS][0m check_hook_quoteFee_bounds(uint256,bool) (paths: 5, time: 0.45s, bounds: [])
+[32m[PASS][0m check_hook_stateful_gate_and_fee_bounds(uint256,uint256) (paths: 8, time: 0.67s, bounds: [])
+[32m[PASS][0m check_locker_abyssal_principal_never_leaves(uint256,address) (paths: 2, time: 0.02s, bounds: [])
+[32m[PASS][0m check_locker_dead_compounded_fees_cannot_be_collected(address) (paths: 2, time: 0.02s, bounds: [])
+[32m[PASS][0m check_locker_deposit_is_one_shot(address,address,uint256) (paths: 4, time: 0.03s, bounds: [])
+[32m[PASS][0m check_locker_timed_principal_never_leaves_before_unlock(uint256,address) (paths: 5, time: 0.09s, bounds: [])
+[32m[PASS][0m check_vesting_at_or_after_duration_yields_total(uint256,uint256) (paths: 1, time: 0.04s, bounds: [])
+[32m[PASS][0m check_vesting_before_cliff_yields_zero(uint256,uint256) (paths: 1, time: 0.04s, bounds: [])
+[32m[PASS][0m check_vesting_linear_schedule_within_window(uint256) (paths: 4, time: 0.98s, bounds: [])
+Symbolic test result: 11 passed; 0 failed; time: 2.79s

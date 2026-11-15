@@ -6,11 +6,11 @@ import {IPoolManager} from "@uniswap/v4-core/src/interfaces/IPoolManager.sol";
 import {BalanceDelta} from "@uniswap/v4-core/src/types/BalanceDelta.sol";
 import {BeforeSwapDelta} from "@uniswap/v4-core/src/types/BeforeSwapDelta.sol";
 
-import {IPearlHook} from "./IPearlHook.sol";
+import {ITCHook} from "./ITCHook.sol";
 import {PROTOCOL_FEE_BPS} from "./PearlsConstants.sol";
 
-/// @title PearlHookCore
-/// @notice ALL of the PearlHook's accounting, with none of the v4 plumbing:
+/// @title TCCore
+/// @notice ALL of the TCHook's accounting, with none of the v4 plumbing:
 ///         cumulative quote volume, the $10M volume gate, the 0.3% quote-side
 ///         fee, and the launch-window max-swap guard. One instance per pool.
 ///
@@ -18,10 +18,10 @@ import {PROTOCOL_FEE_BPS} from "./PearlsConstants.sol";
 ///      TESTABLE HALF (spec §7). The other half — resolving a raw v4 swap
 ///      into the correct `quoteAmount` across the four direction cases and
 ///      settling the fee inside the PoolManager unlock context — lives in
-///      the PearlHook adapter and is INCOMPLETE by design in this repo.
+///      the TCHook adapter and is INCOMPLETE by design in this repo.
 ///
 ///      Trust shape: the only address that can report swaps is the immutable
-///      `poolReporter`. The PearlHook adapter deploys this core in its own
+///      `poolReporter`. The TCHook adapter deploys this core in its own
 ///      constructor and names itself — so the wiring cannot be wrong, cannot
 ///      be re-pointed, and needs no setter anywhere. The certificate prints
 ///      both addresses.
@@ -36,7 +36,7 @@ import {PROTOCOL_FEE_BPS} from "./PearlsConstants.sol";
 ///        transfers are not how v4 hooks take fees (spec §7.2). The core
 ///        does track `totalFeesQuote` so the amount owed is auditable
 ///        on-chain even before settlement lands.
-contract PearlHookCore is IPearlHook {
+contract TCCore is ITCHook {
     /// @notice Protocol fee rate once the gate is crossed: 0.3%.
     uint16 public constant FEE_BPS = PROTOCOL_FEE_BPS;
     uint256 internal constant BPS_DENOMINATOR = 10_000;
@@ -49,7 +49,7 @@ contract PearlHookCore is IPearlHook {
     /// @notice Whether the quote asset is v4 currency0 for this pool.
     bool public immutable quoteIsCurrency0;
 
-    /// @inheritdoc IPearlHook
+    /// @inheritdoc ITCHook
     uint256 public immutable volumeThresholdQuote;
     /// @notice Launch block (hook deployment block) for the guard window.
     uint256 public immutable launchBlock;
@@ -124,7 +124,7 @@ contract PearlHookCore is IPearlHook {
     }
 
     // ---------------------------------------------------------------------
-    // IPearlHook accounting views
+    // ITCHook accounting views
     // ---------------------------------------------------------------------
 
     function cumulativeVolumeQuote() external view returns (uint256) {
@@ -150,8 +150,8 @@ contract PearlHookCore is IPearlHook {
     }
 
     // The v4 callback surface is NOT implemented by the core; it lives on
-    // the PearlHook adapter. These stubs exist only so the core formally
-    // satisfies IPearlHook's full surface for type-checking consumers —
+    // the TCHook adapter. These stubs exist only so the core formally
+    // satisfies ITCHook's full surface for type-checking consumers —
     // they revert unconditionally and must never be wired to a PoolManager.
     function beforeSwap(address, PoolKey calldata, IPoolManager.SwapParams calldata, bytes calldata)
         external
