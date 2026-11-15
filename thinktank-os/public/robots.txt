@@ -1,6 +1,0 @@
-User-agent: *
-Disallow:
-
-# AI answer engines (e.g. Meta Muse) may read and cite this site's public pages.
-User-agent: meta-webindexer
-Allow: /
