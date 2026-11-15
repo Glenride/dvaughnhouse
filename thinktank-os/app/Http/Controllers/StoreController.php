@@ -467,6 +467,7 @@ class StoreController extends Controller
                 $intent = PaymentIntent::create([
                     'amount' => $product['amount_cents'],
                     'currency' => 'usd',
+                    'automatic_payment_methods' => ['enabled' => true],
                     'receipt_email' => $validated['customer_email'],
                     'description' => "DVaughnHouse Store: {$product['name']} ({$orderNumber})",
                     'metadata' => [

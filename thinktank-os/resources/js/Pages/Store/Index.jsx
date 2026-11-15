@@ -168,9 +168,19 @@ export default function Index({ categories = [], stripeKey = '' }) {
         if (checkoutStep !== 'payment' || !clientSecret || !stripeKey) return undefined;
         setPaymentReady(false);
         let cancelled = false;
+        let elementReady = false;
+        const loadTimeout = setTimeout(() => {
+            if (!cancelled && !elementReady) {
+                setErrorMessage('Card payments failed to load. Please refresh and try again.');
+            }
+        }, 20000);
         loadStripeJs()
             .then(() => {
-                if (cancelled || !paymentMountRef.current) return;
+                if (cancelled) return;
+                if (!paymentMountRef.current) {
+                    console.error('Stripe mount target missing.');
+                    return;
+                }
                 const stripe = window.Stripe(stripeKey);
                 stripeRef.current = stripe;
                 const elements = stripe.elements({
@@ -187,16 +197,28 @@ export default function Index({ categories = [], stripeKey = '' }) {
                 elementsRef.current = elements;
                 const paymentElement = elements.create('payment');
                 paymentElementRef.current = paymentElement;
-                paymentElement.mount(paymentMountRef.current);
                 paymentElement.on('ready', () => {
-                    if (!cancelled) setPaymentReady(true);
+                    if (cancelled) return;
+                    elementReady = true;
+                    setPaymentReady(true);
                 });
+                paymentElement.on('loaderror', (event) => {
+                    if (cancelled) return;
+                    console.error('Stripe Payment Element failed to load:', event.error);
+                    setErrorMessage(
+                        'Card form failed to load: ' + (event.error?.message || 'unknown error') + ' Please refresh and try again.'
+                    );
+                });
+                paymentElement.mount(paymentMountRef.current);
             })
-            .catch(() => {
-                if (!cancelled) setErrorMessage('Card payments failed to load. Please try again.');
+            .catch((err) => {
+                if (cancelled) return;
+                console.error('Stripe.js failed to load:', err);
+                setErrorMessage('Card payments failed to load. Please try again.');
             });
         return () => {
             cancelled = true;
+            clearTimeout(loadTimeout);
             try {
                 paymentElementRef.current?.unmount();
             } catch (e) {
