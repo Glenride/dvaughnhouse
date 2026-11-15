@@ -385,7 +385,8 @@ export const ROUTES = [
       "D'Vaughn House is an Independent AI Orchestrator in Cincinnati, Ohio, helping small businesses and independent operators adopt AI one real workflow at a time.",
     aiSummary:
       "D'Vaughn House is an Independent AI Orchestrator in Cincinnati, Ohio, and founder of Glenride. This is the gateway to his work: AI systems, Glenride research, and 11 public projects.",
-    description: SITE.shortDescription,
+    description:
+      "I help operators and decision-makers see where their critical systems break before harm hits. Founder of Glenride, an independent, AI-native think tank.",
     updated: "2026-10-21",
     section: "core",
     render: homeBody,

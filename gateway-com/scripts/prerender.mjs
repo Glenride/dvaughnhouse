@@ -14,7 +14,7 @@ const { render, routes } = await import(join(root, "dist-ssr", "entry-server.js"
 const { findRoute } = await import(join(root, "src", "lib", "md", "registry.js"));
 
 const titles = {
-  "/": "D'Vaughn House — Independent AI Orchestrator",
+  "/": "D'Vaughn House: Independent AI Orchestrator in Cincinnati",
   "/donate": "Donate — D'Vaughn House",
   "/patron": "Become a Patron — D'Vaughn House",
   "/about": "About — D'Vaughn House",
