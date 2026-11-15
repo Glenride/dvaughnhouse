@@ -758,11 +758,16 @@ export function renderRobotsTxt() {
 }
 
 // --- sitemap.xml: HTML URLs only, never .md URLs (they're noindex) ---
+// Canonical form is WITH a trailing slash: Pages redirects the bare path to
+// the slash form, and the slash forms are what Google indexes (GSC "Page
+// with redirect", Nov 2026). ROUTES paths stay bare; only the sitemap adds
+// the slash.
+const sitemapPath = (p) => (p === "/" ? p : `${p}/`);
 export function renderSitemapXml() {
   const priority = { "/": "1.0", "/about": "0.8", "/thoughts": "0.8", "/projects": "0.8", "/terms": "0.3", "/privacy": "0.3" };
   const urls = ROUTES.map(
     (r) =>
-      `  <url>\n    <loc>${absUrl(r.path)}</loc>\n    <lastmod>${r.updated}</lastmod>\n    <priority>${priority[r.path] || "0.6"}</priority>\n  </url>`,
+      `  <url>\n    <loc>${absUrl(sitemapPath(r.path))}</loc>\n    <lastmod>${r.updated}</lastmod>\n    <priority>${priority[r.path] || "0.6"}</priority>\n  </url>`,
   ).join("\n");
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
 }
