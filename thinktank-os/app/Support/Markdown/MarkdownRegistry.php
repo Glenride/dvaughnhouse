@@ -7,6 +7,10 @@ use App\Models\Manuscript;
 use App\Support\Markdown\Renderers\AttestationRenderer;
 use App\Support\Markdown\Renderers\AttestationsRenderer;
 use App\Support\Markdown\Renderers\BriefRenderer;
+use App\Support\Markdown\Renderers\DrugShortagesAshpVsFdaRenderer;
+use App\Support\Markdown\Renderers\DrugShortagesCurrentRenderer;
+use App\Support\Markdown\Renderers\DrugShortagesFdaListRenderer;
+use App\Support\Markdown\Renderers\DrugShortagesListRenderer;
 use App\Support\Markdown\Renderers\EssayRenderer;
 use App\Support\Markdown\Renderers\EssaysRenderer;
 use App\Support\Markdown\Renderers\HomeRenderer;
@@ -49,6 +53,10 @@ class MarkdownRegistry
             ['pattern' => '/store', 'renderer' => StoreRenderer::class, 'section' => 'Core pages', 'description' => 'The Glenride Store: field guides, tools, executive briefings, with prices', 'in_llms_full' => true],
             ['pattern' => '/research', 'renderer' => ResearchHubRenderer::class, 'section' => 'Research', 'description' => 'Original statistics from Glenride\'s own data', 'in_llms_full' => true],
             ['pattern' => '/research/attestations', 'renderer' => ResearchAttestationsRenderer::class, 'section' => 'Research', 'description' => 'Glenride Attestations statistics: counts, shares, methodology', 'in_llms_full' => true],
+            ['pattern' => '/drug-shortages/current', 'renderer' => DrugShortagesCurrentRenderer::class, 'section' => 'Research', 'description' => 'Current U.S. drug shortages from the latest verified weekly record', 'in_llms_full' => true],
+            ['pattern' => '/drug-shortages/list', 'renderer' => DrugShortagesListRenderer::class, 'section' => 'Research', 'description' => 'The U.S. drug shortage list, explained, with the FDA and ASHP counts side by side', 'in_llms_full' => true],
+            ['pattern' => '/drug-shortages/fda-list', 'renderer' => DrugShortagesFdaListRenderer::class, 'section' => 'Research', 'description' => 'The FDA drug shortage list, explained, with the latest verified reading', 'in_llms_full' => true],
+            ['pattern' => '/drug-shortages/ashp-vs-fda', 'renderer' => DrugShortagesAshpVsFdaRenderer::class, 'section' => 'Research', 'description' => 'Why the ASHP and FDA drug shortage lists disagree and how Glenride reads them together', 'in_llms_full' => true],
         ];
     }
 
