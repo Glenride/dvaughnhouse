@@ -1,5 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import SiteFooter from '@/Components/SiteFooter';
 import ImageBand from '@/Components/ImageBand';
 
@@ -125,20 +125,116 @@ export default function Index({ categories = [], stripeKey = '' }) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [orderReceipt, setOrderReceipt] = useState(null);
     const [errorMessage, setErrorMessage] = useState(null);
+    const [checkoutStep, setCheckoutStep] = useState('details');
+    const [pendingOrder, setPendingOrder] = useState(null);
+    const [clientSecret, setClientSecret] = useState(null);
+    const [isConfirming, setIsConfirming] = useState(false);
+    const [paymentReady, setPaymentReady] = useState(false);
+
+    const stripeRef = useRef(null);
+    const elementsRef = useRef(null);
+    const paymentElementRef = useRef(null);
+    const paymentMountRef = useRef(null);
+    const stripeJsPromiseRef = useRef(null);
+
+    const loadStripeJs = () => {
+        if (window.Stripe) return Promise.resolve();
+        if (!stripeJsPromiseRef.current) {
+            stripeJsPromiseRef.current = new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = 'https://js.stripe.com/v3';
+                script.async = true;
+                script.onload = resolve;
+                script.onerror = () => reject(new Error('Stripe.js failed to load.'));
+                document.head.appendChild(script);
+            });
+        }
+        return stripeJsPromiseRef.current;
+    };
+
+    const teardownPaymentElement = () => {
+        try {
+            paymentElementRef.current?.unmount();
+        } catch (e) {
+            // Element already gone; nothing to clean up.
+        }
+        paymentElementRef.current = null;
+        elementsRef.current = null;
+        stripeRef.current = null;
+        setPaymentReady(false);
+    };
+
+    useEffect(() => {
+        if (checkoutStep !== 'payment' || !clientSecret || !stripeKey) return undefined;
+        setPaymentReady(false);
+        let cancelled = false;
+        loadStripeJs()
+            .then(() => {
+                if (cancelled || !paymentMountRef.current) return;
+                const stripe = window.Stripe(stripeKey);
+                stripeRef.current = stripe;
+                const elements = stripe.elements({
+                    clientSecret,
+                    appearance: {
+                        theme: 'stripe',
+                        variables: {
+                            colorPrimary: '#E97451',
+                            fontFamily: 'Georgia, serif',
+                            borderRadius: '6px',
+                        },
+                    },
+                });
+                elementsRef.current = elements;
+                const paymentElement = elements.create('payment');
+                paymentElementRef.current = paymentElement;
+                paymentElement.mount(paymentMountRef.current);
+                paymentElement.on('ready', () => {
+                    if (!cancelled) setPaymentReady(true);
+                });
+            })
+            .catch(() => {
+                if (!cancelled) setErrorMessage('Card payments failed to load. Please try again.');
+            });
+        return () => {
+            cancelled = true;
+            try {
+                paymentElementRef.current?.unmount();
+            } catch (e) {
+                // Element already gone; nothing to clean up.
+            }
+            paymentElementRef.current = null;
+            elementsRef.current = null;
+        };
+    }, [checkoutStep, clientSecret, stripeKey]);
 
     const openCheckout = (product) => {
+        teardownPaymentElement();
         setSelectedProduct(product);
         setOrderReceipt(null);
         setErrorMessage(null);
+        setCheckoutStep('details');
+        setPendingOrder(null);
+        setClientSecret(null);
     };
 
     const closeCheckout = () => {
+        teardownPaymentElement();
         setSelectedProduct(null);
         setCustomerName('');
         setCustomerEmail('');
         setCustomerCompany('');
         setAttendeeNotes('');
         setIsSubmitting(false);
+        setIsConfirming(false);
+        setCheckoutStep('details');
+        setPendingOrder(null);
+        setClientSecret(null);
+    };
+
+    const backToDetails = () => {
+        teardownPaymentElement();
+        setCheckoutStep('details');
+        setErrorMessage(null);
     };
 
     const handleCheckoutSubmit = async (e) => {
@@ -157,12 +253,14 @@ export default function Index({ categories = [], stripeKey = '' }) {
 
             const { order, client_secret } = intentRes.data;
 
-            const confirmRes = await window.axios.post(route('store.confirm'), {
-                order_id: order.id,
-                payment_intent_id: client_secret.split('_secret_')[0],
-            });
+            if (!stripeKey) {
+                setErrorMessage('Card payments are not configured yet. No payment was taken.');
+                return;
+            }
 
-            setOrderReceipt(confirmRes.data.order);
+            setPendingOrder(order);
+            setClientSecret(client_secret);
+            setCheckoutStep('payment');
         } catch (err) {
             console.error('Checkout error:', err);
             setErrorMessage(
@@ -170,6 +268,45 @@ export default function Index({ categories = [], stripeKey = '' }) {
             );
         } finally {
             setIsSubmitting(false);
+        }
+    };
+
+    const handlePaymentSubmit = async (e) => {
+        e.preventDefault();
+        if (!stripeRef.current || !elementsRef.current) return;
+        setIsConfirming(true);
+        setErrorMessage(null);
+
+        try {
+            const { error, paymentIntent } = await stripeRef.current.confirmPayment({
+                elements: elementsRef.current,
+                confirmParams: { return_url: window.location.href },
+                redirect: 'if_required',
+            });
+
+            if (error) {
+                setErrorMessage(error.message || 'Payment failed. Please check your card details.');
+                return;
+            }
+
+            if (!paymentIntent || paymentIntent.status !== 'succeeded') {
+                setErrorMessage('Payment did not complete. No charge was confirmed.');
+                return;
+            }
+
+            const confirmRes = await window.axios.post(route('store.confirm'), {
+                order_id: pendingOrder.id,
+                payment_intent_id: paymentIntent.id,
+            });
+
+            setOrderReceipt(confirmRes.data.order);
+        } catch (err) {
+            console.error('Payment confirmation error:', err);
+            setErrorMessage(
+                err.response?.data?.message || 'Payment verification failed. Please contact support with your order number.'
+            );
+        } finally {
+            setIsConfirming(false);
         }
     };
 
@@ -348,7 +485,7 @@ export default function Index({ categories = [], stripeKey = '' }) {
                                 </button>
                             </div>
                         ) : (
-                            <form onSubmit={handleCheckoutSubmit} className="space-y-6">
+                            <form onSubmit={checkoutStep === 'payment' ? handlePaymentSubmit : handleCheckoutSubmit} className="space-y-6">
                                 <div>
                                     <div className="flex items-center space-x-2 text-xs font-mono text-sienna-deep dark:text-sienna uppercase tracking-wider mb-1">
                                         <span>Stripe Secure Gateway</span>
@@ -371,6 +508,7 @@ export default function Index({ categories = [], stripeKey = '' }) {
                                     </div>
                                 )}
 
+                                {checkoutStep === 'details' ? (
                                 <div className="space-y-4">
                                     <div>
                                         <label htmlFor="checkout-name" className="block text-xs font-mono uppercase tracking-wider text-ink-soft dark:text-cream-soft mb-1">
@@ -417,27 +555,70 @@ export default function Index({ categories = [], stripeKey = '' }) {
                                     </div>
 
                                     <div>
-                                        <label className="block text-xs font-mono uppercase tracking-wider text-ink-soft dark:text-cream-soft mb-1">
-                                            Payment Method
-                                        </label>
-                                        <div className="rounded-xl border border-line bg-paper-deep dark:border-line-dark dark:bg-night-deep p-3.5 flex items-center justify-between text-xs font-mono text-ink-soft dark:text-cream-soft">
-                                            <div className="flex items-center space-x-2">
-                                                <span>🔒</span>
-                                                <span className="text-ink-soft dark:text-cream-soft">•••• •••• •••• 4242</span>
-                                            </div>
-                                            <span className="text-sienna-deep dark:text-sienna font-semibold">Stripe Verified</span>
-                                        </div>
+                                        <p className="text-xs font-mono text-ink-soft dark:text-cream-soft">
+                                            Card details are entered securely on the next step. No payment is taken until you confirm the card.
+                                        </p>
                                     </div>
                                 </div>
+                                ) : (
+                                <div className="space-y-4">
+                                    <div className="rounded-2xl border border-line bg-paper-deep dark:border-line-dark dark:bg-night-deep p-5 text-left text-xs space-y-2 font-mono">
+                                        <div className="flex justify-between">
+                                            <span className="text-ink-soft dark:text-cream-soft">Item:</span>
+                                            <span className="text-ink dark:text-cream">{selectedProduct.name}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-ink-soft dark:text-cream-soft">Email:</span>
+                                            <span className="text-ink-soft dark:text-cream-soft">{customerEmail}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-ink-soft dark:text-cream-soft">Order:</span>
+                                            <span className="font-bold text-sienna-deep dark:text-sienna">{pendingOrder?.order_number}</span>
+                                        </div>
+                                    </div>
 
-                                <div className="pt-2">
-                                    <button
-                                        type="submit"
-                                        disabled={isSubmitting}
-                                        className="w-full rounded-xl bg-sienna py-3.5 text-xs font-mono font-bold uppercase tracking-wider text-ink shadow-sm hover:bg-sienna-deep hover:text-paper disabled:opacity-50 transition"
-                                    >
-                                        {isSubmitting ? 'Authorizing Payment...' : `Authorize $${parseFloat(selectedProduct.amount).toLocaleString('en-US', { minimumFractionDigits: 2 })} →`}
-                                    </button>
+                                    <div>
+                                        <label className="block text-xs font-mono uppercase tracking-wider text-ink-soft dark:text-cream-soft mb-1">
+                                            Card payment
+                                        </label>
+                                        <div ref={paymentMountRef} className="rounded-xl border border-line bg-paper px-4 py-3 dark:border-line-dark dark:bg-night-deep" />
+                                        {!paymentReady && (
+                                            <p className="mt-2 text-xs font-mono text-ink-soft dark:text-cream-soft">
+                                                Loading secure card form...
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+                                )}
+
+                                <div className="pt-2 space-y-3">
+                                    {checkoutStep === 'payment' ? (
+                                        <>
+                                            <button
+                                                type="submit"
+                                                disabled={isConfirming || !paymentReady}
+                                                className="w-full rounded-xl bg-sienna py-3.5 text-xs font-mono font-bold uppercase tracking-wider text-ink shadow-sm hover:bg-sienna-deep hover:text-paper disabled:opacity-50 transition"
+                                            >
+                                                {isConfirming ? 'Processing payment...' : `Pay $${parseFloat(selectedProduct.amount).toLocaleString('en-US', { minimumFractionDigits: 2 })} →`}
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={backToDetails}
+                                                disabled={isConfirming}
+                                                className="w-full rounded-xl border border-line py-3 text-xs font-mono font-bold uppercase tracking-wider text-ink-soft hover:text-ink disabled:opacity-50 transition dark:border-line-dark dark:text-cream-soft dark:hover:text-cream"
+                                            >
+                                                ← Back to details
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <button
+                                            type="submit"
+                                            disabled={isSubmitting}
+                                            className="w-full rounded-xl bg-sienna py-3.5 text-xs font-mono font-bold uppercase tracking-wider text-ink shadow-sm hover:bg-sienna-deep hover:text-paper disabled:opacity-50 transition"
+                                        >
+                                            {isSubmitting ? 'Creating order...' : 'Continue to payment →'}
+                                        </button>
+                                    )}
                                 </div>
                             </form>
                         )}

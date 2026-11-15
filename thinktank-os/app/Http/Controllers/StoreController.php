@@ -12,8 +12,10 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
+use Stripe\Exception\SignatureVerificationException;
 use Stripe\PaymentIntent;
 use Stripe\Stripe;
+use Stripe\Webhook;
 use Throwable;
 
 class StoreController extends Controller
@@ -571,14 +573,38 @@ class StoreController extends Controller
 
     /**
      * Handle incoming Stripe webhook notifications.
+     *
+     * The signature is verified before anything is trusted: an unsigned or
+     * mis-signed payload is rejected and no order is touched.
      */
     public function webhook(Request $request): JsonResponse
     {
-        $payload = $request->all();
-        $type = $payload['type'] ?? null;
+        $webhookSecret = Config::get('services.stripe.webhook_secret');
 
-        if ($type === 'payment_intent.succeeded') {
-            $piId = $payload['data']['object']['id'] ?? null;
+        if (! $webhookSecret) {
+            Log::warning('Stripe webhook rejected: no webhook signing secret configured.');
+
+            return response()->json([
+                'message' => 'Webhook signing secret is not configured.',
+            ], 500);
+        }
+
+        try {
+            $event = Webhook::constructEvent(
+                $request->getContent(),
+                $request->header('Stripe-Signature'),
+                $webhookSecret
+            );
+        } catch (SignatureVerificationException | \UnexpectedValueException $e) {
+            Log::warning("Stripe webhook signature verification failed: {$e->getMessage()}.");
+
+            return response()->json([
+                'message' => 'Invalid webhook signature.',
+            ], 400);
+        }
+
+        if ($event->type === 'payment_intent.succeeded') {
+            $piId = $event->data->object->id ?? null;
             if ($piId) {
                 $order = Order::where('stripe_payment_intent_id', $piId)->first();
                 if ($order) {

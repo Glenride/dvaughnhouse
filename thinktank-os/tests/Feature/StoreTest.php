@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Order;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Config;
 use Tests\TestCase;
 
 class StoreTest extends TestCase
@@ -59,8 +60,10 @@ class StoreTest extends TestCase
         $this->assertNull($order->paid_at);
     }
 
-    public function test_stripe_webhook_marks_order_succeeded(): void
+    public function test_signed_stripe_webhook_marks_order_succeeded(): void
     {
+        Config::set('services.stripe.webhook_secret', 'whsec_test_signing_secret');
+
         $order = Order::create([
             'order_number' => 'GLEN-WEBHOOK1',
             'product_type' => 'saas_license',
@@ -71,19 +74,51 @@ class StoreTest extends TestCase
             'stripe_payment_intent_id' => 'pi_test_webhook_123',
         ]);
 
-        $response = $this->postJson(route('store.webhook'), [
+        $payload = json_encode([
             'type' => 'payment_intent.succeeded',
-            'data' => [
-                'object' => [
-                    'id' => 'pi_test_webhook_123',
-                ],
-            ],
+            'data' => ['object' => ['id' => 'pi_test_webhook_123']],
         ]);
+        $timestamp = time();
+        $signature = hash_hmac('sha256', $timestamp.'.'.$payload, 'whsec_test_signing_secret');
+
+        $response = $this->call('POST', route('store.webhook'), [], [], [], [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTP_STRIPE_SIGNATURE' => "t={$timestamp},v1={$signature}",
+        ], $payload);
 
         $response->assertOk();
         $order->refresh();
         $this->assertEquals('succeeded', $order->status);
         $this->assertNotNull($order->paid_at);
+    }
+
+    public function test_unsigned_stripe_webhook_is_rejected_and_order_stays_pending(): void
+    {
+        Config::set('services.stripe.webhook_secret', 'whsec_test_signing_secret');
+
+        $order = Order::create([
+            'order_number' => 'GLEN-WEBHOOK2',
+            'product_type' => 'saas_license',
+            'customer_name' => 'Policy Director',
+            'customer_email' => 'director2@thinktank.org',
+            'amount' => 1200.00,
+            'status' => 'pending',
+            'stripe_payment_intent_id' => 'pi_test_webhook_456',
+        ]);
+
+        $response = $this->postJson(route('store.webhook'), [
+            'type' => 'payment_intent.succeeded',
+            'data' => [
+                'object' => [
+                    'id' => 'pi_test_webhook_456',
+                ],
+            ],
+        ]);
+
+        $response->assertStatus(400);
+        $order->refresh();
+        $this->assertEquals('pending', $order->status);
+        $this->assertNull($order->paid_at);
     }
 
     public function test_storefront_exposes_all_three_categories(): void
