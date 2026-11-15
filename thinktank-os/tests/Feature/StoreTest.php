@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Order;
+use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use Tests\TestCase;
@@ -19,6 +20,9 @@ class StoreTest extends TestCase
 
     public function test_intent_returns_unavailable_when_stripe_is_unconfigured(): void
     {
+        $this->withoutMiddleware(ValidateCsrfToken::class);
+        Config::set('services.stripe.secret', 'sk_test_placeholder');
+
         $response = $this->postJson(route('store.intent'), [
             'product_type' => 'executive_salon',
             'customer_name' => 'John Henderson',
@@ -27,7 +31,7 @@ class StoreTest extends TestCase
             'attendee_notes' => 'Dietary restriction: vegetarian.',
         ]);
 
-        // No Stripe secret is configured in the test environment, so checkout
+        // The Stripe secret is forced to the placeholder above, so checkout
         // must fail honestly instead of minting a mock intent and order.
         $response->assertStatus(503);
         $this->assertDatabaseMissing('orders', [
@@ -37,6 +41,9 @@ class StoreTest extends TestCase
 
     public function test_confirm_leaves_order_pending_when_payment_cannot_be_verified(): void
     {
+        $this->withoutMiddleware(ValidateCsrfToken::class);
+        Config::set('services.stripe.secret', 'sk_test_placeholder');
+
         $order = Order::create([
             'order_number' => 'GLEN-TEST1234',
             'product_type' => 'corporate_retainer',
@@ -51,7 +58,7 @@ class StoreTest extends TestCase
             'payment_intent_id' => 'pi_mock_confirmed_test',
         ]);
 
-        // No Stripe secret is configured in the test environment, so the
+        // The Stripe secret is forced to the placeholder above, so the
         // intent cannot be verified and the order must stay pending.
         $response->assertStatus(503);
         $order->refresh();
@@ -142,6 +149,9 @@ class StoreTest extends TestCase
 
     public function test_reynards_guide_intent_returns_unavailable_when_stripe_is_unconfigured(): void
     {
+        $this->withoutMiddleware(ValidateCsrfToken::class);
+        Config::set('services.stripe.secret', 'sk_test_placeholder');
+
         $response = $this->postJson(route('store.intent'), [
             'product_type' => 'ruck_reset_guide',
             'customer_name' => 'Alex Carter',
@@ -157,6 +167,8 @@ class StoreTest extends TestCase
 
     public function test_cannot_purchase_coming_soon_product(): void
     {
+        $this->withoutMiddleware(ValidateCsrfToken::class);
+
         $response = $this->postJson(route('store.intent'), [
             'product_type' => 'app_job_digest',
             'customer_name' => 'Sam Lee',
@@ -169,6 +181,8 @@ class StoreTest extends TestCase
 
     public function test_cannot_purchase_external_product(): void
     {
+        $this->withoutMiddleware(ValidateCsrfToken::class);
+
         $response = $this->postJson(route('store.intent'), [
             'product_type' => 'app_spinwave',
             'customer_name' => 'Sam Lee',
@@ -181,6 +195,8 @@ class StoreTest extends TestCase
 
     public function test_cannot_purchase_custom_setup_product(): void
     {
+        $this->withoutMiddleware(ValidateCsrfToken::class);
+
         $response = $this->postJson(route('store.intent'), [
             'product_type' => 'app_vapor_wire_bot',
             'customer_name' => 'Sam Lee',
