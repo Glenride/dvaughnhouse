@@ -3,3 +3,11 @@
 /*
   Cache-Control: no-cache
   Link: </llms.txt>; rel="describedby", </llms-full.txt>; rel="describedby", </ai.txt>; rel="describedby"
+  # CSP: the sha256 hash allowlists the single inline JSON-LD block in
+  # index.html (identical on every prerendered page). If that block changes,
+  # regenerate the hash from dist/index.html and update this line, or the
+  # structured-data block will be blocked (SEO only; page still renders).
+  # style-src keeps 'unsafe-inline': prerendered HTML carries layout-critical
+  # style attributes (max-width, object-position, honeypot hiding).
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-HdevwDxSHO7K5URVZxiH48pGZ2IW6iTIgWTXeE+ICqE='; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; connect-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
