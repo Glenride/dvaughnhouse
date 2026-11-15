@@ -16,7 +16,7 @@ class StoreTest extends TestCase
         $response->assertOk();
     }
 
-    public function test_can_create_payment_intent_and_order_record(): void
+    public function test_intent_returns_unavailable_when_stripe_is_unconfigured(): void
     {
         $response = $this->postJson(route('store.intent'), [
             'product_type' => 'executive_salon',
@@ -26,20 +26,15 @@ class StoreTest extends TestCase
             'attendee_notes' => 'Dietary restriction: vegetarian.',
         ]);
 
-        $response->assertOk();
-        $response->assertJsonPath('order.product_type', 'executive_salon');
-        $response->assertJsonPath('order.amount', '500.00');
-        $response->assertJsonPath('order.status', 'pending');
-        $this->assertNotEmpty($response->json('client_secret'));
-
-        $this->assertDatabaseHas('orders', [
+        // No Stripe secret is configured in the test environment, so checkout
+        // must fail honestly instead of minting a mock intent and order.
+        $response->assertStatus(503);
+        $this->assertDatabaseMissing('orders', [
             'customer_email' => 'esg.director@industrial.com',
-            'product_type' => 'executive_salon',
-            'status' => 'pending',
         ]);
     }
 
-    public function test_can_confirm_order_and_mark_succeeded(): void
+    public function test_confirm_leaves_order_pending_when_payment_cannot_be_verified(): void
     {
         $order = Order::create([
             'order_number' => 'GLEN-TEST1234',
@@ -55,12 +50,13 @@ class StoreTest extends TestCase
             'payment_intent_id' => 'pi_mock_confirmed_test',
         ]);
 
-        $response->assertOk();
+        // No Stripe secret is configured in the test environment, so the
+        // intent cannot be verified and the order must stay pending.
+        $response->assertStatus(503);
         $order->refresh();
 
-        $this->assertEquals('succeeded', $order->status);
-        $this->assertNotNull($order->paid_at);
-        $this->assertEquals('pi_mock_confirmed_test', $order->stripe_payment_intent_id);
+        $this->assertEquals('pending', $order->status);
+        $this->assertNull($order->paid_at);
     }
 
     public function test_stripe_webhook_marks_order_succeeded(): void
@@ -109,7 +105,7 @@ class StoreTest extends TestCase
         $this->assertCount(11, $byId['glenride']['products']);
     }
 
-    public function test_can_purchase_reynards_guide(): void
+    public function test_reynards_guide_intent_returns_unavailable_when_stripe_is_unconfigured(): void
     {
         $response = $this->postJson(route('store.intent'), [
             'product_type' => 'ruck_reset_guide',
@@ -117,13 +113,10 @@ class StoreTest extends TestCase
             'customer_email' => 'alex@example.com',
         ]);
 
-        $response->assertOk();
-        $response->assertJsonPath('order.product_type', 'ruck_reset_guide');
-        $response->assertJsonPath('order.amount', '19.00');
-        $this->assertDatabaseHas('orders', [
+        $response->assertStatus(503);
+        $this->assertDatabaseMissing('orders', [
             'customer_email' => 'alex@example.com',
             'product_type' => 'ruck_reset_guide',
-            'status' => 'pending',
         ]);
     }
 

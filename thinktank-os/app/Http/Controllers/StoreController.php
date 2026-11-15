@@ -479,14 +479,18 @@ class StoreController extends Controller
                 $clientSecret = $intent->client_secret;
                 $paymentIntentId = $intent->id;
             } catch (Throwable $e) {
-                Log::warning("Stripe PaymentIntent generation failed: {$e->getMessage()}. Using test mode mock.");
+                Log::warning("Stripe PaymentIntent generation failed: {$e->getMessage()}.");
             }
         }
 
-        // Mock fallback for testing if no live key is present
+        // No mock fallback: without a real PaymentIntent there is no checkout.
+        // An order is created only after Stripe returns a real intent.
         if (! $clientSecret) {
-            $paymentIntentId = 'pi_mock_'.strtolower(Str::random(24));
-            $clientSecret = $paymentIntentId.'_secret_'.strtolower(Str::random(16));
+            Log::warning('Store checkout unavailable: Stripe PaymentIntent could not be created (unconfigured secret or provider failure).');
+
+            return response()->json([
+                'message' => 'Payment processing is not available right now. No order was created and no payment was taken.',
+            ], 503);
         }
 
         // Persist order in database
@@ -525,6 +529,33 @@ class StoreController extends Controller
         ]);
 
         $order = Order::findOrFail($validated['order_id']);
+
+        // Verify with Stripe before marking paid: a client-supplied intent id
+        // is a claim, not proof of payment. No verification, no succeeded order.
+        $stripeSecret = Config::get('services.stripe.secret');
+
+        if (! $stripeSecret || str_starts_with($stripeSecret, 'sk_test_placeholder')) {
+            return response()->json([
+                'message' => 'Payment verification is not available right now. The order remains pending.',
+            ], 503);
+        }
+
+        try {
+            Stripe::setApiKey($stripeSecret);
+            $intent = PaymentIntent::retrieve($validated['payment_intent_id']);
+        } catch (Throwable $e) {
+            Log::warning("Stripe PaymentIntent verification failed: {$e->getMessage()}.");
+
+            return response()->json([
+                'message' => 'Payment could not be verified. The order remains pending.',
+            ], 502);
+        }
+
+        if ($intent->id !== $order->stripe_payment_intent_id || $intent->status !== 'succeeded') {
+            return response()->json([
+                'message' => 'Payment has not succeeded. The order remains pending.',
+            ], 402);
+        }
 
         $order->update([
             'status' => 'succeeded',
