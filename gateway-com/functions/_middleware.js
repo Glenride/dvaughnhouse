@@ -7,6 +7,12 @@
 // - GET /<route> with Accept: text/markdown preferred over text/html
 //   (q-values parsed; */* or a missing Accept header ALWAYS gets
 //   HTML) → markdown, Vary: Accept.
+// - Unrouted page paths (no registry route, e.g. /guide) → a real
+//   404 here, before context.next() can fall through to the
+//   `/* /index.html 200` SPA fallback in _redirects, which served
+//   the homepage shell with 200 and read as duplicate content.
+//   Direct requests for a prerendered file (/index.html,
+//   /<route>/index.html) still fall through to static serving.
 // - Everything else passes through; HTML responses get a Link header
 //   advertising /llms.txt, /llms-full.txt and /ai.txt (rel=describedby).
 // - Never applied to /api/*, /auth/*, /llms.txt, /llms-full.txt,
@@ -25,6 +31,31 @@ import {
   markdownResponse,
 } from "../src/lib/md/http.js";
 import { absUrl } from "../src/lib/md/format.js";
+
+const NOT_FOUND_HTML =
+  '<!doctype html><html lang="en"><head><meta charset="utf-8">' +
+  '<meta name="robots" content="noindex">' +
+  "<title>Page not found</title></head><body><main><h1>Page not found</h1>" +
+  '<p><a href="/">Return home</a></p></main></body></html>';
+
+// Direct request for a prerendered file: /index.html, or
+// /<route>/index.html for a registry route. Strip the suffix and
+// check the registry; anything else ending in index.html is unrouted.
+function isPrerenderedIndexHtml(path) {
+  if (!path.endsWith("index.html")) return false;
+  return findRoute(path.slice(0, -"index.html".length)) !== null;
+}
+
+function htmlNotFoundResponse(request) {
+  const headers = {
+    "Content-Type": "text/html; charset=utf-8",
+    "X-Robots-Tag": "noindex",
+    "Cache-Control": "no-cache",
+    Vary: "Accept",
+  };
+  if (request.method === "HEAD") return new Response(null, { status: 404, headers });
+  return new Response(NOT_FOUND_HTML, { status: 404, headers });
+}
 
 const DESCRIBEDBY =
   `</llms.txt>; rel="describedby", </llms-full.txt>; rel="describedby", </ai.txt>; rel="describedby"`;
@@ -72,8 +103,24 @@ export async function onRequest(context) {
       return context.next();
     }
 
-    // Content negotiation on the HTML route itself.
+    // Unrouted page path: answer 404 here instead of falling through
+    // to the SPA fallback (which would serve the homepage shell
+    // with 200). Prerendered index.html files for real routes still
+    // fall through to static serving below. Markdown-preferring
+    // clients get the same markdown 404 the .md branch returns.
     const route = findRoute(path);
+    if (!route && !isPrerenderedIndexHtml(path)) {
+      if (prefersMarkdown(request.headers.get("Accept"))) {
+        const body = markdownNotFound(normalizePath(path));
+        if (request.method === "HEAD") {
+          return markdownHeadResponse(body, absUrl("/"), null, 404);
+        }
+        return markdownResponse(body, absUrl("/"), null, 404);
+      }
+      return htmlNotFoundResponse(request);
+    }
+
+    // Content negotiation on the HTML route itself.
     if (route && request.method !== "OPTIONS") {
       if (request.method === "HEAD" && prefersMarkdown(request.headers.get("Accept"))) {
         return markdownHeadResponse(getMarkdown(route.path), absUrl(route.path), route.updated, 200, {
