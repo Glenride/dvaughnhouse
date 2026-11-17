@@ -203,9 +203,6 @@ export function Motto() {
           Understand the system. <em>Build your way out.</em>
         </h2>
         <p className="ph-motto-role reveal reveal-delay reveal-replay">Independent AI Orchestrator &middot; Cincinnati, Ohio</p>
-        <p className="mt-8 text-lg leading-relaxed">
-          <a className="underline underline-offset-4" href="https://app.dvaughnhouse.com/q/audit-intake">One repetitive task, mapped, with the first automation named. The AI Workflow Audit, $374.50. Start here.</a>
-        </p>
       </div>
     </section>
   );

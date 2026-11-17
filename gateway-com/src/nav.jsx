@@ -9,17 +9,15 @@ const AUTH_ERROR_TEXT = {
   not_configured: "Sign-in isn't configured right now. Try again in a bit.",
 };
 
-// Visible pill stays minimal: Home / Projects / Thoughts. Everything else
-// lives in the collapsed menu — Donate stands out in sienna. Mobile
-// carries everything. `base` is "" on the homepage (anchors stay local)
-// and "/" on subpages (anchors become absolute, e.g. /#contact).
-const VISIBLE = [
+// One menu: the pill carries only the Menu toggle and sign-in/out.
+// Every navigation link lives in the single expanded menu, on desktop
+// and mobile alike — Donate stands out in sienna. `base` is "" on the
+// homepage (anchors stay local) and "/" on subpages (anchors become
+// absolute, e.g. /#contact).
+const MENU = [
   { label: "Home", href: "HOME" },
   { label: "Projects", href: "/projects" },
   { label: "Thoughts", href: "/thoughts" },
-];
-
-const MENU = [
   { label: "About", href: "/about" },
   { label: "Contact", href: "#contact" },
   { label: "Donate", href: "/donate", accent: true },
@@ -81,11 +79,6 @@ export function SiteNav({ base = "" }) {
           <img src={houseMark} alt="D'Vaughn House — home" className="h-[26px] w-[26px] rounded-full" />
         </a>
         <nav className="hidden items-center gap-8 md:flex" aria-label="Primary">
-          {VISIBLE.map((item) => (
-            <a key={item.label} href={navHref(item.href)} className={linkCls}>
-              {item.label}
-            </a>
-          ))}
           <button
             type="button"
             ref={menuButtonRef}
@@ -125,18 +118,6 @@ export function SiteNav({ base = "" }) {
           aria-label="Expanded"
         >
           <ul className="space-y-3">
-            <li className="md:hidden">
-              {VISIBLE.map((item) => (
-                <a
-                  key={item.label}
-                  href={navHref(item.href)}
-                  onClick={() => setOpen(false)}
-                  className="mr-6 text-base font-medium text-ink dark:text-cream"
-                >
-                  {item.label}
-                </a>
-              ))}
-            </li>
             {MENU.map((item) => (
               <li key={item.label}>
                 <a
