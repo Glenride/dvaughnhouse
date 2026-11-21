@@ -11,13 +11,14 @@ export const DONATION_NETWORK = "Base";
 export const AUDIT_PRICE = "$374.50";
 export const AUDIT_PAY_URL = "https://buy.stripe.com/eVq4gB9eAeDdauYejnbfO04";
 
-// The First Build checkout (Stripe payment link, tax-inclusive package).
-// Founding package: $1,500 + tax = $1,605. Standard week: $2,520 + tax = $2,696.40.
-export const FIRST_BUILD_PRICE = "$1,605";
-export const FIRST_BUILD_PAY_URL = "https://buy.stripe.com/fZu6oJaiE1Qrbz2fnrbfO03";
-export const FIRST_BUILD_FOUNDING_PRICE = "$1,500";
-export const FIRST_BUILD_STANDARD_PRICE = "$2,520";
-export const FIRST_BUILD_STANDARD_TAX_INCLUSIVE = "$2,696.40";
+// The First Build — fixed-scope five-day sprint.
+// $175/hr, 15–20 hours for a standard single-role agent:
+// $2,625 at 15 hours, $3,500 hard cap at 20 hours.
+export const FIRST_BUILD_RATE = "$175";
+export const FIRST_BUILD_RANGE = "$2,500 to $3,500";
+export const FIRST_BUILD_STANDARD_EXAMPLE = "$2,625";
+export const FIRST_BUILD_CAP = "$3,500";
+export const FIRST_BUILD_HOURS = "15 to 20 hours";
 
 export const PILLARS = [
   {
@@ -85,19 +86,19 @@ export const PATRON_TIERS = [
 
 export const FIRST_BUILD_STEPS = [
   {
-    n: "Days 1–2",
-    title: "Map it",
-    body: "I sit with whoever does the work today and map the workflow as it actually runs, messiness included. We pick the one job and agree on what “done” looks like.",
+    n: "Day 1",
+    title: "Map the constraint & audit the data",
+    body: "A 30-minute intake call to isolate the single bottleneck, define the exact job role the agent is replacing, and collect 5 to 10 verified examples of completed, gold-standard outputs. No slide decks.",
   },
   {
-    n: "Days 3–4",
-    title: "Build it",
-    body: "I tighten the process first, then build the automation. Every output comes back with a checklist, so a Human verifies the checklist — not the whole output.",
+    n: "Days 2–4",
+    title: "Role engineering & build",
+    body: "I clean your reference data, engineer the agent's operating rules against your real edge cases, and wire it directly into the tools your team already uses.",
   },
   {
     n: "Day 5",
-    title: "Hand the system over",
-    body: "Working system, walkthrough with your team, and a one-page handover doc. Your team runs it from there.",
+    title: "Ship & wire the learning loop",
+    body: "Working system, live in production. We establish a simple weekly feedback loop so your team's corrections upgrade the agent's accuracy over time, then hand over the keys.",
   },
 ];
 

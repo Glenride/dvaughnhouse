@@ -150,7 +150,7 @@ export function FirstBuildBanner() {
     <div className="bg-sienna-deep pt-24 text-paper">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-1 px-6 py-3 text-left lg:px-8">
         <p className="text-sm font-semibold">
-          The First Build — one week, one workflow, one working system.
+          The First Build — one week, one constraint, one working agent.
         </p>
         <a href="/first-build" className="text-sm font-bold underline underline-offset-4 hover:text-cream">
           See how it works →

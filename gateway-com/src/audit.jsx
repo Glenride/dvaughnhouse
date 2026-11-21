@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import {
   AUDIT_PAY_URL,
   AUDIT_PRICE,
-  FIRST_BUILD_PRICE,
+  FIRST_BUILD_RANGE,
 } from "./data/site-content.js";
 
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
@@ -88,9 +88,9 @@ export function AuditPage() {
         call — no charge, no pitch.
       </p>
       <p className="mt-4 max-w-2xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-        The full version of this is the First Build: one week, one workflow,
-        {FIRST_BUILD_PRICE} tax-inclusive at the founding rate. This is the
-        two-hour door into it.
+        The full version of this is the First Build: one week, one
+        constraint, one working agent, {FIRST_BUILD_RANGE} for a five-day
+        sprint. This is the two-hour door into it.
       </p>
 
       <form onSubmit={submit} className="mt-10 space-y-5">

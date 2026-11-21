@@ -1,9 +1,11 @@
 import { useEffect } from "react";
 import { projectById } from "./data/projects.js";
 import {
-  FIRST_BUILD_PRICE,
-  FIRST_BUILD_STANDARD_PRICE,
-  FIRST_BUILD_STANDARD_TAX_INCLUSIVE,
+  FIRST_BUILD_CAP,
+  FIRST_BUILD_HOURS,
+  FIRST_BUILD_RANGE,
+  FIRST_BUILD_RATE,
+  FIRST_BUILD_STANDARD_EXAMPLE,
 } from "./data/site-content.js";
 import { AREAS, BENEFITS, STAGES, STATS } from "./data/thoughts-content.js";
 
@@ -63,21 +65,22 @@ export function ThoughtsPage() {
             The First Build
           </p>
           <h2 className="mt-3 font-display text-3xl font-bold tracking-tight text-ink dark:text-cream">
-            One week. One workflow. One working system.
+            One week. One constraint. One working agent.
           </h2>
           <p className="mt-4 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-            I take the single most repetitive job in your business — the one
-            your team does the same way every day or every week — and I build
-            the system that runs it, with a Human check at the end. You keep
-            the decision. The machine does the repetition.
+            Most businesses use AI to do the wrong things faster. We
+            don&rsquo;t. We isolate the single bottleneck holding back margin
+            or bandwidth — the repetitive role your team runs the exact same
+            way every day or every week — define the role, and deploy a
+            working AI agent inside your existing stack in five days. You
+            keep the judgment. The agent absorbs the busywork.
           </p>
           <p className="mt-4 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-            {FIRST_BUILD_PRICE} tax-inclusive for the first three clients — $75
-            per hour (founding rate). A typical week runs about 20 hours, so
-            roughly {FIRST_BUILD_STANDARD_PRICE} at the standard rate of $126
-            per hour ({FIRST_BUILD_STANDARD_TAX_INCLUSIVE} tax-inclusive).
-            Quoted up front once the fit call confirms the scope — no surprise
-            hours.
+            {FIRST_BUILD_RANGE} for a five-day sprint, billed at{" "}
+            {FIRST_BUILD_RATE} per hour. A standard single-role agent takes{" "}
+            {FIRST_BUILD_HOURS} — roughly {FIRST_BUILD_STANDARD_EXAMPLE} at
+            the standard rate ({FIRST_BUILD_CAP} hard cap). You get a fixed
+            quote in writing before we start — no surprise hours.
           </p>
           <p className="mt-6">
             <a
