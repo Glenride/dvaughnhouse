@@ -514,23 +514,26 @@ function FirstBuildPage() {
         The First Build
       </h1>
       <p className="mt-6 max-w-3xl font-display text-2xl font-bold tracking-tight text-ink sm:text-3xl dark:text-cream">
-        One week. One constraint. One working agent.
+        Build the capacity before you need it.
+      </p>
+      <p className="mt-6 max-w-3xl font-serif text-[1.0625rem] italic leading-[1.7] text-ink-soft dark:text-cream-soft">
+        An ounce of prevention is worth more than a pound of cure. (Dr. Kaul)
       </p>
       <p className="mt-6 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-        Most businesses use AI to do the wrong things faster. We don&rsquo;t.
-        Every operation has one primary bottleneck holding back margin or
-        bandwidth right now — the repetitive role your team runs the exact
-        same way every day or every week. We isolate that single constraint,
-        define the role, and deploy a working AI agent inside your existing
-        stack in five days. You keep the judgment. The agent absorbs the
-        busywork.
+        Five days. One real job. A standard you can show.
       </p>
       <p className="mt-6 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-        You get a production system built on your actual operational records
-        — routing intake, auditing compliance, triaging requests, or
-        assembling reports — trained on verified examples of what a win looks
-        like in your business. A 20-minute fit call tells us whether your
-        bottleneck is a candidate.
+        I expect every company to have the same AI tools soon. Speed will
+        stop being the edge. The edge will be how a company operates, and
+        whether a client can see it. In five days, I build the first working
+        piece of your operating system. One real job in your company, running
+        clean in the tools your team already uses, plus a standard you can
+        show a client. You keep the judgment. The system carries the routine.
+      </p>
+      <p className="mt-6 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
+        AI makes work faster. It cannot make trust faster. Trust comes from a
+        way of working that a client can see. A 20-minute fit call tells us
+        whether your job is ready for it.
       </p>
       <div className="mt-8 flex flex-wrap gap-4">
         <a
@@ -541,8 +544,8 @@ function FirstBuildPage() {
         </a>
       </div>
       <p className="mt-5 text-sm text-ink-soft dark:text-cream-soft">
-        Free, 20 minutes. If a single sprint won&rsquo;t move the needle,
-        I&rsquo;ll tell you directly.
+        Free, 20 minutes. If a single sprint won&rsquo;t help, I&rsquo;ll
+        tell you on the call.
       </p>
       <div className="mt-12 overflow-hidden rounded-2xl border border-line dark:border-line-dark">
         <picture>
@@ -557,12 +560,50 @@ function FirstBuildPage() {
       </div>
 
       <h2 className="mt-12 font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
+        Why build before the break
+      </h2>
+      <p className="mt-4 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
+        In many small companies, the founder is the glue between the inbox,
+        the spreadsheet, and the schedule. That works until the week it
+        doesn&rsquo;t. The First Build finds the one job that would cost you
+        the most if it slipped, and builds the system that holds it. Then it
+        writes down how that job is done well, so you can show it.
+      </p>
+
+      <h2 className="mt-16 font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
+        At a glance
+      </h2>
+      <dl className="mt-6 max-w-3xl divide-y divide-line rounded-2xl border border-line bg-paper px-7 dark:divide-line-dark dark:border-line-dark dark:bg-night-card">
+        <div className="flex flex-wrap justify-between gap-x-6 gap-y-1 py-3">
+          <dt className="text-sm font-semibold text-ink dark:text-cream">Price</dt>
+          <dd className="text-sm text-ink-soft dark:text-cream-soft">{FIRST_BUILD_RANGE} for a five-day sprint</dd>
+        </div>
+        <div className="flex flex-wrap justify-between gap-x-6 gap-y-1 py-3">
+          <dt className="text-sm font-semibold text-ink dark:text-cream">Rate</dt>
+          <dd className="text-sm text-ink-soft dark:text-cream-soft">{FIRST_BUILD_RATE} per hour of engineering time</dd>
+        </div>
+        <div className="flex flex-wrap justify-between gap-x-6 gap-y-1 py-3">
+          <dt className="text-sm font-semibold text-ink dark:text-cream">Typical build</dt>
+          <dd className="text-sm text-ink-soft dark:text-cream-soft">{FIRST_BUILD_HOURS}, about {FIRST_BUILD_STANDARD_EXAMPLE}, with a {FIRST_BUILD_CAP} hard cap</dd>
+        </div>
+        <div className="flex flex-wrap justify-between gap-x-6 gap-y-1 py-3">
+          <dt className="text-sm font-semibold text-ink dark:text-cream">Your team&rsquo;s time</dt>
+          <dd className="text-sm text-ink-soft dark:text-cream-soft">About 45 minutes across the week</dd>
+        </div>
+        <div className="flex flex-wrap justify-between gap-x-6 gap-y-1 py-3">
+          <dt className="text-sm font-semibold text-ink dark:text-cream">Next step</dt>
+          <dd className="text-sm text-ink-soft dark:text-cream-soft">A 20-minute fit call, free</dd>
+        </div>
+      </dl>
+
+      <h2 className="mt-16 font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
         Who the First Build is for
       </h2>
       <p className="mt-4 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-        Small businesses and independent operators whose growth is capped by
-        manual operational overhead — where a founder or senior lead is still
-        acting as human glue between tools, inboxes, and spreadsheets.
+        Owners who act before the break. You run a real company, and AI is
+        still outside how you work. You want the operation to run clean, and
+        you want the standard to show. You want a client, a future hire, or
+        the next partner to see how you work and choose it.
       </p>
 
       <h2 className="mt-16 font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
@@ -589,11 +630,14 @@ function FirstBuildPage() {
             What&rsquo;s included in the First Build
           </h2>
           <ul className="mt-4 list-disc space-y-2 pl-6 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-            <li>One production AI agent, engineered around a single operational role and live in your existing stack</li>
-            <li>Your Data Equity baseline — cleaned reference examples, decision rubrics, and edge-case rules documented as an asset you own permanently</li>
-            <li>A built-in learning loop — a structured feedback workflow so your team can flag misses and sharpen the agent&rsquo;s output week over week</li>
-            <li>A plain-English runbook — every rule, trigger, and fallback written down so your team owns the system without dependency</li>
-            <li>A 14-day calibration window after handoff to tune real-world edge cases</li>
+            <li>One working system, live in your tools and built around one real job</li>
+            <li>Your Data Equity: cleaned examples, decision rules, and edge-case rules, written down and yours to keep</li>
+            <li>A visible standard pack: one page plus a short walkthrough you can send to a client</li>
+            <li>A weekly check: a simple way for your team to flag misses and sharpen the system</li>
+            <li>A plain-English runbook: every rule, trigger, and fallback</li>
+            <li>A 14-day calibration window after handoff, to tune real edge cases</li>
+            <li>Meg Inbox Judge, included free</li>
+            <li>Optional monthly tuning, quoted separately, once your team has seen the system run</li>
           </ul>
         </div>
         <div>
@@ -601,9 +645,9 @@ function FirstBuildPage() {
             What&rsquo;s not included in the First Build
           </h2>
           <ul className="mt-4 list-disc space-y-2 pl-6 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-            <li>Multi-department rollouts or vague &ldquo;AI strategy&rdquo; decks — we solve one constraint at a time</li>
-            <li>Unstructured builds without real examples — if you cannot show what a good output looks like, we fix the process first</li>
-            <li>Uncapped ongoing management (though optional monthly Learning Loop tuning is available once your team sees the system run)</li>
+            <li>A rollout across every department at once, or a strategy deck with no working system behind it. We build one job at a time.</li>
+            <li>A build with no real examples. If you cannot show what good work looks like yet, I fix the process first.</li>
+            <li>Open-ended management.</li>
           </ul>
         </div>
       </div>
@@ -616,7 +660,7 @@ function FirstBuildPage() {
           <strong className="font-bold text-ink dark:text-cream">{FIRST_BUILD_RANGE}</strong>{" "}
           for a five-day sprint, billed at{" "}
           <strong className="font-bold text-ink dark:text-cream">{FIRST_BUILD_RATE} per hour</strong>{" "}
-          of engineering time. A standard single-role agent takes{" "}
+          of engineering time. A standard build takes{" "}
           {FIRST_BUILD_HOURS} — roughly{" "}
           <strong className="font-bold text-ink dark:text-cream">{FIRST_BUILD_STANDARD_EXAMPLE}</strong>{" "}
           at the standard rate (
@@ -625,8 +669,17 @@ function FirstBuildPage() {
           hours, no open-ended retainers.
         </p>
         <p className="mt-4 text-[1.0625rem] leading-[1.7] text-ink dark:text-cream">
-          If the 20-minute fit call shows your bottleneck isn&rsquo;t ready
-          for an agent, I will tell you on the call — no pitch, no charge.
+          You pay in two parts:{" "}
+          <strong className="font-bold text-ink dark:text-cream">$1,312.50 to start</strong>{" "}
+          and{" "}
+          <strong className="font-bold text-ink dark:text-cream">$1,312.50 on Day 5 delivery</strong>
+          . If a scope issue surfaces on Day 1, we stop and you get a full
+          refund. If the system does not run the named job on your real work
+          by Day 5, you do not pay the balance.
+        </p>
+        <p className="mt-4 text-[1.0625rem] leading-[1.7] text-ink dark:text-cream">
+          If the 20-minute fit call shows your job isn&rsquo;t ready for a
+          build, I will tell you on the call — no pitch, no charge.
         </p>
         <div className="mt-8 flex flex-wrap gap-4">
           <a
@@ -639,30 +692,42 @@ function FirstBuildPage() {
       </div>
 
       <h2 className="mt-16 font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
+        After the First Build
+      </h2>
+      <p className="mt-4 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
+        The First Build is the first piece, not the whole thing. Once your
+        first job runs clean and your standard is written down, a second job
+        can be built on top of it, in a later sprint with its own quote.
+        Over time, the way your company works becomes documented, running,
+        and something you can show. No commitment is required. The First
+        Build stands on its own.
+      </p>
+
+      <h2 className="mt-16 font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
         Why D&rsquo;Vaughn House
       </h2>
       <p className="mt-4 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-        D&rsquo;Vaughn House is an independent AI systems architect in
-        Cincinnati and founder of Glenride. He previously spent nearly 12
-        years managing clinical research operations across the University of
-        Cincinnati, AstraZeneca, and Merck — where protocols had to pass
-        audit on the first try and a bad handoff meant regulatory failure.
-        He brings that same proof-of-work discipline to small-business AI:
-        clear role boundaries, verified source data, and systems you can
-        inspect line by line.
+        D&rsquo;Vaughn House is an Independent AI Orchestrator in Cincinnati
+        and founder of Glenride. He previously spent nearly 12 years managing
+        clinical research operations across the University of Cincinnati,
+        AstraZeneca, and Merck — where protocols had to pass audit on the
+        first try and a bad handoff meant regulatory failure. He brings that
+        same proof-of-work discipline to small-business AI: clear role
+        boundaries, verified source data, and systems you can inspect line
+        by line.
       </p>
 
       <h2 className="mt-16 font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
         The next step: a 20-minute fit call
       </h2>
       <p className="mt-4 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-        A 20-minute video call to identify your primary bottleneck, check
-        whether you have the reference data to train an agent around it, and
-        confirm whether a single five-day sprint will pay for itself.
+        A 20-minute video call to name the one job that matters most, check
+        whether you have the examples to build around it, and confirm
+        whether a single five-day sprint will pay for itself.
       </p>
       <CloseSection
         heading="Book your fit call."
-        intro="Leave your name, email, and the role or bottleneck you want off your plate. I'll reply within a day."
+        intro="Leave your name, email, and the job you most want to protect. I'll reply within a day."
         defaultTopic="first-build"
       />
       <p className="mt-12 text-sm text-ink-soft dark:text-cream-soft">

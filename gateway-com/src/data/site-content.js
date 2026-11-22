@@ -87,18 +87,18 @@ export const PATRON_TIERS = [
 export const FIRST_BUILD_STEPS = [
   {
     n: "Day 1",
-    title: "Map the constraint & audit the data",
-    body: "A 30-minute intake call to isolate the single bottleneck, define the exact job role the agent is replacing, and collect 5 to 10 verified examples of completed, gold-standard outputs. No slide decks.",
+    title: "Find the job",
+    body: "A 30-minute call to isolate the one job that would cost you the most if it slipped, and to define what good looks like. We collect 5 to 10 real examples of your best work. No slide decks.",
   },
   {
     n: "Days 2–4",
-    title: "Role engineering & build",
-    body: "I clean your reference data, engineer the agent's operating rules against your real edge cases, and wire it directly into the tools your team already uses.",
+    title: "Build around the job",
+    body: "I clean your examples, write the operating rules against your real edge cases, and wire the system into the tools your team already uses.",
   },
   {
     n: "Day 5",
-    title: "Ship & wire the learning loop",
-    body: "Working system, live in production. We establish a simple weekly feedback loop so your team's corrections upgrade the agent's accuracy over time, then hand over the keys.",
+    title: "Ship and show it",
+    body: "The system goes live. You get a plain-English runbook and your standard pack. We set a simple weekly check so your team's corrections make the system sharper. Then I hand over the keys.",
   },
 ];
 

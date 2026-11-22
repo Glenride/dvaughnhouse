@@ -65,19 +65,19 @@ export function ThoughtsPage() {
             The First Build
           </p>
           <h2 className="mt-3 font-display text-3xl font-bold tracking-tight text-ink dark:text-cream">
-            One week. One constraint. One working agent.
+            Build the capacity before you need it.
           </h2>
           <p className="mt-4 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-            Most businesses use AI to do the wrong things faster. We
-            don&rsquo;t. We isolate the single bottleneck holding back margin
-            or bandwidth — the repetitive role your team runs the exact same
-            way every day or every week — define the role, and deploy a
-            working AI agent inside your existing stack in five days. You
-            keep the judgment. The agent absorbs the busywork.
+            I expect every company to have the same AI tools soon. Speed
+            will stop being the edge. The edge will be how a company
+            operates, and whether a client can see it. In five days, I build
+            the first working piece of your operating system: one real job,
+            running clean in the tools your team already uses, plus a
+            standard you can show a client.
           </p>
           <p className="mt-4 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
             {FIRST_BUILD_RANGE} for a five-day sprint, billed at{" "}
-            {FIRST_BUILD_RATE} per hour. A standard single-role agent takes{" "}
+            {FIRST_BUILD_RATE} per hour. A standard build takes{" "}
             {FIRST_BUILD_HOURS} — roughly {FIRST_BUILD_STANDARD_EXAMPLE} at
             the standard rate ({FIRST_BUILD_CAP} hard cap). You get a fixed
             quote in writing before we start — no surprise hours.
