@@ -408,31 +408,6 @@ export function WorkRooms() {
                 {room.lockup ? <img src={dquizzLockup} alt="" loading="lazy" /> : PROJECT_ICONS[room.id]}
               </div>
             </div>
-            {room.registry && (
-              <div className="ph-registry" role="table" aria-label="Attestation registry, first entry">
-                <div className="ph-stamp" aria-hidden="true">
-                  Witness
-                  <br />
-                  Attested
-                </div>
-                <div className="ph-row" role="row">
-                  <span className="ph-rk" role="cell">Attestation</span>
-                  <span className="ph-rv" role="cell">GLR-AT-2026-SN6RRF</span>
-                </div>
-                <div className="ph-row" role="row">
-                  <span className="ph-rk" role="cell">Authority</span>
-                  <span className="ph-rv" role="cell">Witness · Glenride</span>
-                </div>
-                <div className="ph-row" role="row">
-                  <span className="ph-rk" role="cell">Lifecycle</span>
-                  <span className="ph-rv" role="cell">Issue · Challenge · Revoke</span>
-                </div>
-                <div className="ph-row" role="row">
-                  <span className="ph-rk" role="cell">Record</span>
-                  <span className="ph-rv" role="cell">First attestation issued</span>
-                </div>
-              </div>
-            )}
           </div>
         </section>
       ))}

@@ -11,7 +11,7 @@
 // project has no card line, e.g. the Den), and placement flags:
 // room (homepage room), projects (/projects card), bioSystems (named
 // in the bio parenthetical), elsewhere (/thoughts Elsewhere entry),
-// registry (Witness attestation panel, homepage only), lockup
+// lockup
 // (D'Quizz lockup image instead of a line-art icon).
 //
 // btn is derived, never stored: every current button text is exactly
@@ -43,7 +43,6 @@ const RAW_PROJECTS = [
     line: "Signed proof that work happened as claimed — attestations are issued and open to challenge.",
     room: true,
     projects: true,
-    registry: true,
   },
   {
     id: "spinwave",
