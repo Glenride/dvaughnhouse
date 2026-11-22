@@ -40,7 +40,7 @@ const RAW_PROJECTS = [
     href: "https://dvaughnhouse.org/attestations",
     status: "Live — V1 shipped",
     state: "live",
-    line: "Signed proof that work happened as claimed — its first attestation, GLR-AT-2026-SN6RRF, is issued and open to challenge.",
+    line: "Signed proof that work happened as claimed — attestations are issued and open to challenge.",
     room: true,
     projects: true,
     registry: true,
