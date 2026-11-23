@@ -27,7 +27,7 @@ const RAW_PROJECTS = [
   {
     id: "thinktank",
     label: "ThinkTank OS",
-    href: "https://dvaughnhouse.org",
+    href: "https://glenride.com",
     status: "Live / In build",
     state: "in-build",
     line: "The working surface and the database behind it: manuscripts and data, stored with attestation.",
@@ -37,7 +37,7 @@ const RAW_PROJECTS = [
   {
     id: "witness",
     label: "Witness",
-    href: "https://dvaughnhouse.org/attestations",
+    href: "https://glenride.com/attestations",
     status: "Live — V1 shipped",
     state: "live",
     line: "Signed proof that work happened as claimed — attestations are issued and open to challenge.",
