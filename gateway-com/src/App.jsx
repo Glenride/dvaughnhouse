@@ -27,6 +27,7 @@ import {
   FIRST_BUILD_CAP,
   FIRST_BUILD_RANGE,
   FIRST_BUILD_RATE,
+  FIRST_BUILD_STANDARD_EXAMPLE,
   LEGAL_DOCS,
   PATRON_TIERS,
   PILLARS,
@@ -512,34 +513,10 @@ function FirstBuildPage() {
       <p className="mt-6 max-w-3xl font-display text-2xl font-bold tracking-tight text-ink sm:text-3xl dark:text-cream">
         Build the capacity before you need it.
       </p>
-      <p className="mt-6 max-w-3xl font-serif text-[1.0625rem] italic leading-[1.7] text-ink-soft dark:text-cream-soft">
-        An ounce of prevention is worth more than a pound of cure. (Dr. Kaul)
-      </p>
       <p className="mt-6 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-        Five days. One real job. A standard you can show.
-      </p>
-      <p className="mt-6 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-        Your company doesn&rsquo;t want AI tools. It wants the work done
-        right, every time, without you holding it together. Software as a
-        service gave you another login and the same work. The First Build
-        flips it. I rebuild one real job inside your company, in the tools
-        your team already uses, and you keep the outcome.
-      </p>
-      <p className="mt-6 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-        I expect every company to have the same AI tools soon. Speed will
-        stop being the edge. The edge will be how a company operates, and
-        whether a client can see it.
-      </p>
-      <p className="mt-6 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-        <strong className="font-bold text-ink dark:text-cream">
-          If the system does not run your job on your real work by Day 5, you
-          do not pay the balance.
-        </strong>
-      </p>
-      <p className="mt-6 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-        AI makes work faster. It cannot make trust faster. Trust comes from a
-        way of working that a client can see. A 20-minute fit call tells us
-        whether your job is ready for it.
+        You&rsquo;re the one holding it together. In five days, one real job
+        in your company stops depending on you, and you get a standard you
+        can show a client.
       </p>
       <div className="mt-8 flex flex-wrap gap-4">
         <a
@@ -550,8 +527,7 @@ function FirstBuildPage() {
         </a>
       </div>
       <p className="mt-5 text-sm text-ink-soft dark:text-cream-soft">
-        Free, 20 minutes. If a single sprint won&rsquo;t help, I&rsquo;ll
-        tell you on the call.
+        Free, 20 minutes.
       </p>
       <div className="mt-12 overflow-hidden rounded-2xl border border-line dark:border-line-dark">
         <picture>
@@ -566,65 +542,96 @@ function FirstBuildPage() {
       </div>
 
       <h2 className="mt-16 font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
-        What your company looks like after
+        You might recognize this
       </h2>
-      <ul className="mt-6 max-w-3xl list-disc space-y-2 pl-6 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-        <li>
-          <strong className="font-bold text-ink dark:text-cream">Operational:</strong>{" "}
-          one job that used to depend on you now runs without you in the
-          middle of it.
-        </li>
-        <li>
-          <strong className="font-bold text-ink dark:text-cream">Capacity:</strong>{" "}
-          you can take on something you couldn&rsquo;t before, a new client, a
-          new hire, or a new offer, without the job slipping.
-        </li>
-        <li>
-          <strong className="font-bold text-ink dark:text-cream">Visible:</strong>{" "}
-          you can show a client how you work, in one page.
-        </li>
-      </ul>
-      <p className="mt-8 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-        An example:
+      <p className="mt-4 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
+        Every week, you&rsquo;re the glue between the inbox, the spreadsheet,
+        and the schedule. It works, until the week it doesn&rsquo;t. Growing
+        makes it worse, because every new client adds to what only you can
+        hold.
       </p>
       <p className="mt-4 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-        <strong className="font-bold text-ink dark:text-cream">Before:</strong>{" "}
-        Every Monday you spend two hours sorting last week&rsquo;s inbox into
-        what&rsquo;s urgent, what&rsquo;s a client, and what can wait.
-      </p>
-      <p className="mt-4 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-        <strong className="font-bold text-ink dark:text-cream">After:</strong>{" "}
-        By Monday morning it&rsquo;s sorted, with the three things that need
-        you at the top. You open your day instead of digging out of it.
+        An ounce of prevention is worth more than a pound of cure. (Dr. Kaul)
+        You can build the capacity before the break.
       </p>
 
       <h2 className="mt-16 font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
-        How you know it worked
+        What changes in five days
+      </h2>
+      <ul className="mt-6 max-w-3xl list-disc space-y-2 pl-6 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
+        <li>
+          <strong className="font-bold text-ink dark:text-cream">
+            One job runs without you in the middle of it.
+          </strong>{" "}
+          The one that would cost you most if it slipped.
+        </li>
+        <li>
+          <strong className="font-bold text-ink dark:text-cream">
+            You can say yes to more.
+          </strong>{" "}
+          A new client or a new hire doesn&rsquo;t mean the job slips.
+        </li>
+        <li>
+          <strong className="font-bold text-ink dark:text-cream">
+            You can show how you work.
+          </strong>{" "}
+          A one page standard you can send a prospect before they ask.
+        </li>
+      </ul>
+
+      <h2 className="mt-16 font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
+        What you do, and what you risk
       </h2>
       <p className="mt-4 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-        Day 1, we name the job and record where it stands. Day 5, it runs on
-        your real work. Day 14, we check it again.
+        You give about 45 minutes across the week and bring 5 to 10 examples
+        of your best work. That&rsquo;s all.
+      </p>
+      <p className="mt-4 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
+        If the job isn&rsquo;t a fit on Day 1, you get a full refund before
+        any building starts. If the system doesn&rsquo;t run your real work
+        by Day 5, you don&rsquo;t pay the balance.
+      </p>
+
+      <h2 className="mt-16 font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
+        This is for you if
+      </h2>
+      <p className="mt-4 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
+        You run a real company and act before things break. You want your
+        work to hold up as you grow, and you want clients to see how you
+        operate.
+      </p>
+      <p className="mt-4 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
+        <strong className="font-bold text-ink dark:text-cream">Not yet if</strong>{" "}
+        you have no examples of good work to build from. We&rsquo;d fix the
+        process first, and I&rsquo;ll tell you that on the fit call.
+      </p>
+
+      <h2 className="mt-16 font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
+        What you get
+      </h2>
+      <p className="mt-4 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
+        One working system in your tools, your examples and rules written
+        down and yours to keep, a one page standard you can send to clients,
+        a plain English runbook written so someone on your team can follow
+        it, and 14 days of tuning after handoff.
       </p>
 
       <div className="mt-16 rounded-2xl border border-line bg-paper-deep p-8 sm:p-10 dark:border-line-dark dark:bg-night-card">
         <h2 className="font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
-          Price, fixed scope, quoted up front
+          What it costs
         </h2>
         <p className="mt-4 text-[1.0625rem] leading-[1.7] text-ink dark:text-cream">
-          <strong className="font-bold text-ink dark:text-cream">{FIRST_BUILD_RANGE}</strong>{" "}
-          for a five-day sprint, at{" "}
+          <strong className="font-bold text-ink dark:text-cream">{FIRST_BUILD_RANGE}</strong>
+          , at{" "}
           <strong className="font-bold text-ink dark:text-cream">{FIRST_BUILD_RATE} per hour</strong>
+          . A typical build is about{" "}
+          <strong className="font-bold text-ink dark:text-cream">{FIRST_BUILD_STANDARD_EXAMPLE}</strong>
           , with a{" "}
           <strong className="font-bold text-ink dark:text-cream">{FIRST_BUILD_CAP} hard cap</strong>
-          . You pay{" "}
-          <strong className="font-bold text-ink dark:text-cream">$1,312.50 to start</strong>{" "}
-          and{" "}
-          <strong className="font-bold text-ink dark:text-cream">$1,312.50 on Day 5</strong>
-          . If the system does not run your job on your real work by Day 5,
-          you do not pay the balance. If a scope issue surfaces on Day 1, we
-          stop and you get a full refund. If the fit call shows your job
-          isn&rsquo;t ready, I will tell you on the call. No pitch, no
-          charge.
+          , quoted in writing before you pay anything. Two payments:{" "}
+          <strong className="font-bold text-ink dark:text-cream">$1,312.50 to start</strong>
+          ,{" "}
+          <strong className="font-bold text-ink dark:text-cream">$1,312.50 on Day 5</strong>.
         </p>
         <div className="mt-8 flex flex-wrap gap-4">
           <a
@@ -637,64 +644,18 @@ function FirstBuildPage() {
       </div>
 
       <h2 className="mt-16 font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
-        What happens in the week
-      </h2>
-      <ul className="mt-6 max-w-3xl list-disc space-y-2 pl-6 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-        <li>
-          <strong className="font-bold text-ink dark:text-cream">Day 1.</strong>{" "}
-          By Tuesday, you know which job is costing you most.
-        </li>
-        <li>
-          <strong className="font-bold text-ink dark:text-cream">Days 2 to 4.</strong>{" "}
-          The system is built around your real examples, in the tools your
-          team already uses.
-        </li>
-        <li>
-          <strong className="font-bold text-ink dark:text-cream">Day 5.</strong>{" "}
-          You watch it run your job on your real work.
-        </li>
-      </ul>
-      <p className="mt-8 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-        Your time across the week: about 45 minutes.
-      </p>
-
-      <h2 className="mt-16 font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
-        What you leave with
-      </h2>
-      <ul className="mt-6 max-w-3xl list-disc space-y-2 pl-6 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-        <li>The job runs whether or not you&rsquo;re at your desk.</li>
-        <li>A one page document you can send a prospect before they ask.</li>
-        <li>
-          A plain-English runbook, written so someone else can follow it.
-        </li>
-        <li>The first two weeks of real use fix the edge cases, not you.</li>
-        <li>
-          Your examples, decision rules, and edge cases, written down and
-          yours to keep.
-        </li>
-        <li>Meg Inbox Judge comes with it, free.</li>
-        <li>Optional monthly tuning, quoted separately.</li>
-      </ul>
-
-      <h2 className="mt-16 font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
-        Why D&rsquo;Vaughn House
+        Who you&rsquo;d be working with
       </h2>
       <p className="mt-4 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-        I spent nearly 12 years in clinical research operations, where work
-        had to pass audit the first time. That&rsquo;s the standard your
-        system is built to.
+        D&rsquo;Vaughn House spent nearly 12 years in clinical research
+        operations at the University of Cincinnati, AstraZeneca, and Merck,
+        where work had to pass audit the first time. That&rsquo;s the
+        standard your system is built to.
       </p>
 
-      <h2 className="mt-16 font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
-        The next step: a 20-minute fit call
-      </h2>
-      <p className="mt-4 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-        A 20-minute video call to name the one job that matters most and
-        check whether a single five-day sprint will pay for itself.
-      </p>
       <CloseSection
-        heading="Book your fit call."
-        intro="Leave your name, email, and the job you most want to protect. I'll reply within a day."
+        heading="Start with one question"
+        intro="Which job would cost you the most if it slipped? Tell me, and I'll reply within a day."
         defaultTopic="first-build"
       />
       <p className="mt-12 text-sm text-ink-soft dark:text-cream-soft">
