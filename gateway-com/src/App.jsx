@@ -531,9 +531,10 @@ function FirstBuildPage() {
         whether a client can see it.
       </p>
       <p className="mt-6 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-        You get one job running clean, a standard you can show a client, and
-        a way of working your team can follow. You keep the judgment. The
-        system carries the routine. Meg Inbox Judge comes with it, free.
+        <strong className="font-bold text-ink dark:text-cream">
+          If the system does not run your job on your real work by Day 5, you
+          do not pay the balance.
+        </strong>
       </p>
       <p className="mt-6 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
         AI makes work faster. It cannot make trust faster. Trust comes from a
@@ -563,11 +564,46 @@ function FirstBuildPage() {
           />
         </picture>
       </div>
-      <p className="mt-12 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-        Nearly 12 years managing clinical research operations across the
-        University of Cincinnati, AstraZeneca, and Merck, where work had to
-        pass audit the first time. I bring the same discipline to one job in
-        your company.
+
+      <h2 className="mt-16 font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
+        What your company looks like after
+      </h2>
+      <ul className="mt-6 max-w-3xl list-disc space-y-2 pl-6 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
+        <li>
+          <strong className="font-bold text-ink dark:text-cream">Operational:</strong>{" "}
+          one job that used to depend on you now runs without you in the
+          middle of it.
+        </li>
+        <li>
+          <strong className="font-bold text-ink dark:text-cream">Capacity:</strong>{" "}
+          you can take on something you couldn&rsquo;t before, a new client, a
+          new hire, or a new offer, without the job slipping.
+        </li>
+        <li>
+          <strong className="font-bold text-ink dark:text-cream">Visible:</strong>{" "}
+          you can show a client how you work, in one page.
+        </li>
+      </ul>
+      <p className="mt-8 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
+        An example:
+      </p>
+      <p className="mt-4 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
+        <strong className="font-bold text-ink dark:text-cream">Before:</strong>{" "}
+        Every Monday you spend two hours sorting last week&rsquo;s inbox into
+        what&rsquo;s urgent, what&rsquo;s a client, and what can wait.
+      </p>
+      <p className="mt-4 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
+        <strong className="font-bold text-ink dark:text-cream">After:</strong>{" "}
+        By Monday morning it&rsquo;s sorted, with the three things that need
+        you at the top. You open your day instead of digging out of it.
+      </p>
+
+      <h2 className="mt-16 font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
+        How you know it worked
+      </h2>
+      <p className="mt-4 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
+        Day 1, we name the job and record where it stands. Day 5, it runs on
+        your real work. Day 14, we check it again.
       </p>
 
       <div className="mt-16 rounded-2xl border border-line bg-paper-deep p-8 sm:p-10 dark:border-line-dark dark:bg-night-card">
@@ -599,6 +635,55 @@ function FirstBuildPage() {
           </a>
         </div>
       </div>
+
+      <h2 className="mt-16 font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
+        What happens in the week
+      </h2>
+      <ul className="mt-6 max-w-3xl list-disc space-y-2 pl-6 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
+        <li>
+          <strong className="font-bold text-ink dark:text-cream">Day 1.</strong>{" "}
+          By Tuesday, you know which job is costing you most.
+        </li>
+        <li>
+          <strong className="font-bold text-ink dark:text-cream">Days 2 to 4.</strong>{" "}
+          The system is built around your real examples, in the tools your
+          team already uses.
+        </li>
+        <li>
+          <strong className="font-bold text-ink dark:text-cream">Day 5.</strong>{" "}
+          You watch it run your job on your real work.
+        </li>
+      </ul>
+      <p className="mt-8 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
+        Your time across the week: about 45 minutes.
+      </p>
+
+      <h2 className="mt-16 font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
+        What you leave with
+      </h2>
+      <ul className="mt-6 max-w-3xl list-disc space-y-2 pl-6 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
+        <li>The job runs whether or not you&rsquo;re at your desk.</li>
+        <li>A one page document you can send a prospect before they ask.</li>
+        <li>
+          A plain-English runbook, written so someone else can follow it.
+        </li>
+        <li>The first two weeks of real use fix the edge cases, not you.</li>
+        <li>
+          Your examples, decision rules, and edge cases, written down and
+          yours to keep.
+        </li>
+        <li>Meg Inbox Judge comes with it, free.</li>
+        <li>Optional monthly tuning, quoted separately.</li>
+      </ul>
+
+      <h2 className="mt-16 font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
+        Why D&rsquo;Vaughn House
+      </h2>
+      <p className="mt-4 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
+        I spent nearly 12 years in clinical research operations, where work
+        had to pass audit the first time. That&rsquo;s the standard your
+        system is built to.
+      </p>
 
       <h2 className="mt-16 font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
         The next step: a 20-minute fit call
