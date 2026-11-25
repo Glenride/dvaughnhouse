@@ -130,7 +130,16 @@ const RAW_PROJECTS = [
     href: "https://glenride-catalog.pages.dev",
     status: "Live",
     state: "live",
-    line: "Public directory of everything Glenride has shipped — 65 entries, search + filters.",
+    line: "Public directory of everything Glenride has shipped — 66 entries, search + filters.",
+    projects: true,
+  },
+  {
+    id: "robert",
+    label: "Robert",
+    href: "https://jobs.dvaughnhouse.com",
+    status: "Live — since November 25, 2026",
+    state: "live",
+    line: "Startup job board ranked by freshness — postings from the boards the big sites miss, free for 3 results, then $7/mo.",
     projects: true,
   },
   {
