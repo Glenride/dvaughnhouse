@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import houseMark from "./assets/house-mark.png";
+import houseMark from "./assets/house-mark.webp";
 
 const AUTH_ERROR_TEXT = {
   workos_rejected: "The sign-in was declined. Try again.",

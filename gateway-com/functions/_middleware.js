@@ -32,21 +32,47 @@ import {
 } from "../src/lib/md/http.js";
 import { absUrl } from "../src/lib/md/format.js";
 
+// Fallback 404 body, used only if the prerendered /404 page cannot be
+// read from the static asset store (e.g. the ASSETS binding is
+// unavailable). Same links as the React NotFoundPage in src/App.jsx —
+// keep the two in sync. Standalone: no external CSS/JS, so it renders
+// even if the asset pipeline is down.
 const NOT_FOUND_HTML =
   '<!doctype html><html lang="en"><head><meta charset="utf-8">' +
+  '<meta name="viewport" content="width=device-width, initial-scale=1.0">' +
   '<meta name="robots" content="noindex">' +
-  "<title>Page not found</title></head><body><main><h1>Page not found</h1>" +
-  '<p><a href="/">Return home</a></p></main></body></html>';
+  "<title>Page not found — D'Vaughn House</title>" +
+  "<style>body{margin:0;background:#FAF5EC;color:#221D18;font-family:Georgia,serif}" +
+  "main{max-width:48rem;margin:0 auto;padding:4rem 1.5rem}" +
+  "h1{font-size:2.5rem;line-height:1.1;margin:0 0 1.5rem}" +
+  "p{font-size:1.0625rem;line-height:1.7;color:#57504A}" +
+  "a{color:#B84A2B;font-weight:600}" +
+  "ul{margin:2rem 0;padding:0;list-style:none}" +
+  "li{margin:.75rem 0}</style></head><body><main><h1>Page not found.</h1>" +
+  "<p>That page doesn&rsquo;t exist here &mdash; it may have moved, or the link may be wrong. The work is still here:</p>" +
+  "<ul>" +
+  '<li><a href="/">Home</a></li>' +
+  '<li><a href="/about">About</a></li>' +
+  '<li><a href="/projects">Projects</a></li>' +
+  '<li><a href="/thoughts">Thoughts</a></li>' +
+  '<li><a href="/first-build">The First Build</a></li>' +
+  '<li><a href="/donate">Donate</a></li>' +
+  "</ul>" +
+  '<p>Looking for something else? <a href="/#contact">Send a message through the contact form</a>.</p>' +
+  "</main></body></html>";
 
 // Direct request for a prerendered file: /index.html, or
-// /<route>/index.html for a registry route. Strip the suffix and
-// check the registry; anything else ending in index.html is unrouted.
+// /<route>/index.html for a registry route, or /404/index.html.
+// Strip the suffix and check the registry; anything else ending in
+// index.html is unrouted.
 function isPrerenderedIndexHtml(path) {
   if (!path.endsWith("index.html")) return false;
+  if (path === "/404/index.html") return true;
   return findRoute(path.slice(0, -"index.html".length)) !== null;
 }
 
-function htmlNotFoundResponse(request) {
+async function htmlNotFoundResponse(context) {
+  const { request } = context;
   const headers = {
     "Content-Type": "text/html; charset=utf-8",
     "X-Robots-Tag": "noindex",
@@ -54,6 +80,19 @@ function htmlNotFoundResponse(request) {
     Vary: "Accept",
   };
   if (request.method === "HEAD") return new Response(null, { status: 404, headers });
+  // Serve the real prerendered 404 page (dist/404/index.html) with a 404
+  // status, so the error page carries the site header/footer/nav.
+  const assets = context.env && context.env.ASSETS;
+  if (assets) {
+    try {
+      const res = await assets.fetch(new Request(new URL("/404/", request.url)));
+      if (res.ok) {
+        return new Response(await res.text(), { status: 404, headers });
+      }
+    } catch {
+      // Fall through to the inline page below.
+    }
+  }
   return new Response(NOT_FOUND_HTML, { status: 404, headers });
 }
 
@@ -81,6 +120,10 @@ export async function onRequest(context) {
     /\.(js|css|png|jpg|jpeg|webp|svg|ico|woff2?|ttf|map|json)$/i.test(path);
 
   if (!isAsset) {
+    // The prerendered 404 page itself: fall through to static serving
+    // (dist/404/index.html) instead of answering 404 here.
+    if (path === "/404" || path === "/404/") return context.next();
+
     // .md suffix: /pricing.md style, /index.md for the homepage.
     if (path.endsWith(".md")) {
       const htmlPath = path === "/index.md" ? "/" : normalizePath(path.slice(0, -3));
@@ -117,7 +160,7 @@ export async function onRequest(context) {
         }
         return markdownResponse(body, absUrl("/"), null, 404);
       }
-      return htmlNotFoundResponse(request);
+      return htmlNotFoundResponse(context);
     }
 
     // Content negotiation on the HTML route itself.

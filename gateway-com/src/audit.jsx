@@ -130,8 +130,12 @@ export function AuditPage() {
           <label htmlFor="audit-task" className="mb-2 block text-sm font-medium text-ink dark:text-cream">
             Your most repetitive task
           </label>
+          {/* maxLength 1700, not 2000: submit() composes business + task +
+              day into one /api/contact message, which the server caps at
+              2000 chars. A 2000-char task plus the labels overran it and
+              the server rejected the whole submission. */}
           <textarea
-            id="audit-task" required maxLength={2000} rows={4}
+            id="audit-task" required maxLength={1700} rows={4}
             value={form.task} onChange={set("task")} className={inputCls}
             placeholder="The job your team does the same way every day or every week"
           />

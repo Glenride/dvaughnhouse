@@ -16,6 +16,7 @@ empty theme.extend — every token is a utility class at the call site).
   - Radii: rounded-lg/xl/2xl mixed. Shadows: shadow-lg + colored shadow-orange-500/20.
 - **Structure:** sticky header (logo text + About/Work/Contact + gradient Donate button, mobile menu) → hero (photo, kicker pill, H1, two paragraphs, 3 mini-cards, 2 CTAs) → "What an independent AI orchestrator does" → "By the numbers" → Work cards (Glenride / SpinWave / Store, work-*.webp) → About → Contact (Pages Function POST /api/contact) → footer.
 - **Assets present:** glenride-logo.png (authoritative mark), hero-supply-network.webp, hero-collab.jpg, hero-donate.jpg, work-research/ai-systems/advisory/store .webp.
+  - Note (2026-11-24 refactor): hero-supply-network.webp, hero-collab.jpg, hero.png, work-research/ai-systems/advisory/store .webp, flash-sale-audit.webp, react.svg, vite.svg, and media-generation-work-store-1791685184.json were unimported dead assets and were removed from src/assets. hero-donate.jpg, dvaughn-house-logo.png, glenride-logo.png, and house-mark.png were converted to WebP (same filenames, .webp) — see the Nov 24 refactor commit.
 - **Build/deploy:** Vite + SSR prerender (`npm run build`), Cloudflare Pages project dvaughnhouse-gateway, wrangler.toml in repo, functions/ for the contact API.
 
 ## Detector findings on the live page (2026-10-21)

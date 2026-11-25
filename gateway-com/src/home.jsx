@@ -7,7 +7,7 @@ import { ARROW, PROJECT_ICONS } from "./data/projectIcons.jsx";
 import heroLight from "./assets/hero-network-light.webp";
 import heroDark from "./assets/hero-network-dark.webp";
 import workThumb from "./assets/work-thumb.webp";
-import houseMark from "./assets/house-mark.png";
+import houseMark from "./assets/house-mark.webp";
 import dquizzLockup from "./assets/dquizz-lockup.webp";
 import film0 from "./assets/film-0.webp";
 import film1 from "./assets/film-1.webp";

@@ -25,6 +25,26 @@ const titles = {
   "/audit": "Claim an audit slot — D'Vaughn House",
   "/thoughts": "Thoughts — D'Vaughn House",
   "/projects": "Projects — D'Vaughn House",
+  "/404": "Page not found — D'Vaughn House",
+};
+
+// og:type per route. Every route is "website": /thoughts is an index of
+// essays, not a single article, so og:type=article would be inaccurate
+// there. The map exists so a future single-article route can opt in
+// honestly without touching the loop below.
+const ogTypes = {
+  "/": "website",
+  "/donate": "website",
+  "/patron": "website",
+  "/about": "website",
+  "/first-build": "website",
+  "/terms": "website",
+  "/privacy": "website",
+  "/testimonials": "website",
+  "/audit": "website",
+  "/thoughts": "website",
+  "/projects": "website",
+  "/404": "website",
 };
 
 const template = readFileSync(join(dist, "index.html"), "utf8");
@@ -55,6 +75,36 @@ for (const route of routes) {
     html = html.replace(
       /<meta property="og:url" content="[^"]*" \/>/,
       () => `<meta property="og:url" content="${pageUrl}" />`,
+    );
+    // Canonical: one per route, never the homepage's. og:type follows the
+    // per-route map above (website everywhere today).
+    html = html.replace(
+      "</head>",
+      `<link rel="canonical" href="${pageUrl}" />\n  </head>`,
+    );
+    html = html.replace(
+      /<meta property="og:type" content="[^"]*" \/>/,
+      () => `<meta property="og:type" content="${ogTypes[route] || "website"}" />`,
+    );
+  }
+  // The 404 page has no registry entry, so it gets its own description
+  // and a noindex here instead of in the mdRoute block below.
+  if (route === "/404") {
+    html = html.replace(
+      /<meta name="description" content="[^"]*" \/>/,
+      `<meta name="description" content="Page not found — D'Vaughn House." />`,
+    );
+    html = html.replace(
+      /<meta property="og:description" content="[^"]*" \/>/,
+      `<meta property="og:description" content="Page not found — D'Vaughn House." />`,
+    );
+    html = html.replace(
+      /<meta name="twitter:description" content="[^"]*" \/>/,
+      `<meta name="twitter:description" content="Page not found — D'Vaughn House." />`,
+    );
+    html = html.replace(
+      "</head>",
+      `<meta name="robots" content="noindex" />\n  </head>`,
     );
   }
   // Head signals for AI agents (invisible in the rendered page):

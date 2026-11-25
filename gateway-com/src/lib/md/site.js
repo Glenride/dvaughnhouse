@@ -21,5 +21,5 @@ export const SITE = {
   // sameAs is intentionally empty — never invent one.
   sameAs: [],
   // Last content update shown in the site footer.
-  contentUpdated: "2026-10-25",
+  contentUpdated: "2026-11-23",
 };

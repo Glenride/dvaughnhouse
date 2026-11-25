@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import heroDonate from "./assets/hero-donate.jpg";
+import heroDonate from "./assets/hero-donate.webp";
 import heroNetworkLight from "./assets/hero-network-light.webp";
 import heroNetworkDark from "./assets/hero-network-dark.webp";
-import glenrideLogo from "./assets/glenride-logo.png";
-import brandLogo from "./assets/dvaughn-house-logo.png";
+import glenrideLogo from "./assets/glenride-logo.webp";
+import brandLogo from "./assets/dvaughn-house-logo.webp";
 import { CursorTrail, Parallax, useRevealOnScroll } from "./motion.jsx";
 import { SiteNav } from "./nav.jsx";
 import { ThoughtsPage } from "./thoughts.jsx";
@@ -33,6 +33,61 @@ import {
   PILLARS,
 } from "./data/site-content.js";
 
+function NotFoundPage() {
+  useEffect(() => {
+    document.title = "Page not found — D'Vaughn House";
+    window.scrollTo(0, 0);
+  }, []);
+
+  // The real 404 page: same header/footer/nav as every other page, so a
+  // visitor who lands on a dead link can get back to the work. Served with
+  // HTTP 404 by functions/_middleware.js (prerendered to dist/404/) and
+  // rendered client-side for any path that matches no known route.
+  const links = [
+    { label: "Home", href: "/" },
+    { label: "About", href: "/about" },
+    { label: "Projects", href: "/projects" },
+    { label: "Thoughts", href: "/thoughts" },
+    { label: "The First Build", href: "/first-build" },
+    { label: "Donate", href: "/donate" },
+  ];
+  return (
+    <div className="mx-auto max-w-3xl px-6 py-16 sm:py-20 lg:px-8">
+      <h1 className="font-display text-5xl font-extrabold tracking-tight text-ink sm:text-6xl dark:text-cream">
+        Page not found.
+      </h1>
+      <p className="mt-6 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
+        That page doesn&rsquo;t exist here — it may have moved, or the link
+        may be wrong. The work is still here:
+      </p>
+      <nav aria-label="Page not found" className="mt-8">
+        <ul className="space-y-3">
+          {links.map((item) => (
+            <li key={item.href}>
+              <a
+                href={item.href}
+                className="font-semibold text-sienna-deep underline underline-offset-4 transition-colors hover:text-ink dark:text-sienna dark:hover:text-cream"
+              >
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      <p className="mt-10 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
+        Looking for something else?{" "}
+        <a
+          href="/#contact"
+          className="font-semibold text-sienna-deep underline underline-offset-4 transition-colors hover:text-ink dark:text-sienna dark:hover:text-cream"
+        >
+          Send a message through the contact form
+        </a>
+        .
+      </p>
+    </div>
+  );
+}
+
 function AboutPage() {
   return (
     <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20 lg:px-8">
@@ -61,6 +116,7 @@ function AboutPage() {
           src={glenrideLogo}
           alt="Glenride think tank logo"
           className="h-28 w-28 shrink-0 rounded-2xl"
+          loading="lazy"
         />
         <div>
           <p className="font-mono text-xs uppercase tracking-widest text-sienna-deep dark:text-sienna">
@@ -724,7 +780,7 @@ function Footer() {
           Token and market content is educational only.
         </p>
         <p className="mt-2 text-[11px] leading-relaxed text-ink-soft dark:text-cream-soft">
-          Content updated: November 12, 2026.
+          Content updated: November 23, 2026.
         </p>
       </div>
     </footer>
@@ -745,6 +801,19 @@ export default function App({ path: propPath } = {}) {
   const isProjects = path.startsWith("/projects");
   const isTestimonials = path.startsWith("/testimonials");
   const isAudit = path.startsWith("/audit");
+  const isNotFound = path === "/404" || path === "/404/";
+  if (isNotFound) {
+    return (
+      <div className="min-h-screen bg-paper font-serif text-ink antialiased dark:bg-night dark:text-cream">
+        <CursorTrail />
+        <SiteNav base="/" />
+        <main className="pt-24">
+          <NotFoundPage />
+        </main>
+        <Footer base="/" />
+      </div>
+    );
+  }
   if (isDonate) {
     return (
       <div className="min-h-screen bg-paper font-serif text-ink antialiased dark:bg-night dark:text-cream">
@@ -848,6 +917,22 @@ export default function App({ path: propPath } = {}) {
         <SiteNav base="/" />
         <main className="pt-24">
           <LegalPage doc={isTerms ? LEGAL_DOCS.terms : LEGAL_DOCS.privacy} />
+        </main>
+        <Footer base="/" />
+      </div>
+    );
+  }
+  // Any path that matches no known route renders the 404 page, matching
+  // the server-side behaviour in functions/_middleware.js (which answers
+  // 404 before the SPA fallback). The homepage is only "/" itself.
+  const isHome = path === "/" || path === "/index" || path === "/index.html";
+  if (!isHome) {
+    return (
+      <div className="min-h-screen bg-paper font-serif text-ink antialiased dark:bg-night dark:text-cream">
+        <CursorTrail />
+        <SiteNav base="/" />
+        <main className="pt-24">
+          <NotFoundPage />
         </main>
         <Footer base="/" />
       </div>

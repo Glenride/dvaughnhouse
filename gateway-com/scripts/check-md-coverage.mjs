@@ -16,9 +16,11 @@ if (!match) throw new Error("check-md-coverage: could not parse routes from src/
 const appRoutes = [...match[1].matchAll(/"([^"]+)"/g)].map((m) => m[1]);
 
 // Explicit skips: public routes with no markdown renderer, and why.
-// Empty today — every public route is covered. Add entries here (never
-// silently) if a future public route must stay out of markdown.
-const SKIP = {};
+// "/404" is the error page: it must never appear in the sitemap,
+// llms.txt, or markdown — a crawler must never be pointed at it.
+const SKIP = {
+  "/404": "error page, never indexed or listed",
+};
 
 const { listMarkdownRoutes } = await import(join(root, "src", "lib", "md", "registry.js"));
 const mdRoutes = new Set(listMarkdownRoutes().map((r) => r.path));

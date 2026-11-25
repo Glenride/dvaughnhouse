@@ -366,7 +366,7 @@ export const ROUTES = [
       "D'Vaughn House is an Independent AI Orchestrator in Cincinnati, Ohio, and founder of Glenride. This is the gateway to his work: AI systems, Glenride research, and 11 public projects.",
     description:
       "I help operators and decision-makers see where their critical systems break before harm hits. Founder of Glenride, an independent, AI-native think tank.",
-    updated: "2026-10-21",
+    updated: "2026-11-23",
     section: "core",
     render: homeBody,
   },
@@ -447,7 +447,7 @@ export const ROUTES = [
     summary: `What I'm building: ${PROJECT_CARD_PROJECTS.length} public projects, from ThinkTank OS and Witness to SpinWave, InspireWrite, D'Quizz, and The Den.`,
     aiSummary: `Projects: ${PROJECT_CARD_PROJECTS.length} public projects by D'Vaughn House, each with its status and a one-line description, linking out to the live project sites.`,
     description: `All ${PROJECT_CARD_PROJECTS.length} public projects, with status and one-line descriptions.`,
-    updated: "2026-11-02",
+    updated: "2026-11-23",
     section: "core",
     render: projectsBody,
   },
