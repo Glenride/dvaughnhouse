@@ -18,7 +18,7 @@ const titles = {
   "/donate": "Donate — D'Vaughn House",
   "/patron": "Become a Patron — D'Vaughn House",
   "/about": "About — D'Vaughn House",
-  "/first-build": "The First Build — D'Vaughn House",
+  "/first-build": "AI Workflow Automation Services | D'Vaughn House",
   "/terms": "Terms of Service — D'Vaughn House",
   "/privacy": "Privacy Policy — D'Vaughn House",
   "/testimonials": "Share your experience — D'Vaughn House",
@@ -45,6 +45,37 @@ const ogTypes = {
   "/thoughts": "website",
   "/projects": "website",
   "/404": "website",
+};
+
+// Page-specific JSON-LD, injected per route. The site-wide graph
+// (Person / Organization / WebSite) lives in index.html; routes
+// listed here get one additional schema block in their head.
+const jsonLd = {
+  "/first-build": {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "AI Workflow Automation Services | The First Build",
+    serviceType: "AI workflow automation",
+    provider: {
+      "@type": "Person",
+      name: "D'Vaughn House",
+      url: "https://dvaughnhouse.com",
+    },
+    areaServed: [
+      { "@type": "Country", name: "United States" },
+      { "@type": "City", name: "Cincinnati", addressRegion: "OH", addressCountry: "US" },
+    ],
+    description:
+      "AI workflow automation services: one workflow automated end to end in one week, with a human check on every output. Fixed quote in writing before work starts.",
+    offers: {
+      "@type": "AggregateOffer",
+      priceCurrency: "USD",
+      lowPrice: 2500,
+      highPrice: 3500,
+      description:
+        "One week delivery. $175 per hour, $3,500 hard cap. Fit call free.",
+    },
+  },
 };
 
 const template = readFileSync(join(dist, "index.html"), "utf8");
@@ -131,6 +162,12 @@ for (const route of routes) {
       `<meta name="ai-summary" content="${esc(mdRoute.aiSummary)}" />
     <link rel="alternate" type="text/markdown" href="${mdRoute.mdPath}" />
   </head>`,
+    );
+  }
+  if (jsonLd[route]) {
+    html = html.replace(
+      "</head>",
+      `<script type="application/ld+json">\n${JSON.stringify(jsonLd[route], null, 2)}\n    </script>\n  </head>`,
     );
   }
   const outDir = route === "/" ? dist : join(dist, route.slice(1));

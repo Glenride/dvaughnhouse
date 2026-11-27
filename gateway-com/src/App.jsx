@@ -563,16 +563,19 @@ function LegalPage({ doc }) {
 function FirstBuildPage() {
   return (
     <div className="mx-auto max-w-6xl px-6 py-16 sm:py-20 lg:px-8">
-      <h1 className="font-display text-5xl font-extrabold tracking-tight text-ink sm:text-6xl dark:text-cream">
+      <p className="font-mono text-xs uppercase tracking-widest text-sienna-deep dark:text-sienna">
         The First Build
+      </p>
+      <h1 className="mt-4 font-display text-5xl font-extrabold tracking-tight text-ink sm:text-6xl dark:text-cream">
+        AI workflow automation services
       </h1>
       <p className="mt-6 max-w-3xl font-display text-2xl font-bold tracking-tight text-ink sm:text-3xl dark:text-cream">
-        Build the capacity before you need it.
+        One week. One workflow. One working system.
       </p>
       <p className="mt-6 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
-        You&rsquo;re the one holding it together. In five days, one real job
-        in your company stops depending on you, and you get a standard you
-        can show a client.
+        Build the capacity before you need it. You&rsquo;re the one holding
+        it together. In five days, one real job in your company stops
+        depending on you, and you get a standard you can show a client.
       </p>
       <div className="mt-8 flex flex-wrap gap-4">
         <a
@@ -583,7 +586,8 @@ function FirstBuildPage() {
         </a>
       </div>
       <p className="mt-5 text-sm text-ink-soft dark:text-cream-soft">
-        Free, 20 minutes.
+        Free, 20 minutes. The build runs {FIRST_BUILD_RANGE}, fixed quote
+        in writing before you pay anything.
       </p>
       <div className="mt-12 overflow-hidden rounded-2xl border border-line dark:border-line-dark">
         <picture>
@@ -612,7 +616,7 @@ function FirstBuildPage() {
       </p>
 
       <h2 className="mt-16 font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
-        What changes in five days
+        What happens in your automation week
       </h2>
       <ul className="mt-6 max-w-3xl list-disc space-y-2 pl-6 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
         <li>
@@ -649,7 +653,7 @@ function FirstBuildPage() {
       </p>
 
       <h2 className="mt-16 font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
-        This is for you if
+        Who AI workflow automation is for
       </h2>
       <p className="mt-4 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
         You run a real company and act before things break. You want your
@@ -663,7 +667,7 @@ function FirstBuildPage() {
       </p>
 
       <h2 className="mt-16 font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
-        What you get
+        What&rsquo;s included
       </h2>
       <p className="mt-4 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
         One working system in your tools, your examples and rules written
@@ -700,6 +704,61 @@ function FirstBuildPage() {
       </div>
 
       <h2 className="mt-16 font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
+        Questions
+      </h2>
+      <div className="mt-6 max-w-3xl space-y-3">
+        <details className="rounded-2xl border border-line bg-paper-deep px-6 py-4 dark:border-line-dark dark:bg-night-card">
+          <summary className="cursor-pointer font-display text-lg font-bold text-ink dark:text-cream">
+            How much does AI workflow automation cost?
+          </summary>
+          <p className="mt-3 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
+            The First Build is {FIRST_BUILD_RANGE} for a one week build, at{" "}
+            {FIRST_BUILD_RATE} per hour. A typical build is about{" "}
+            {FIRST_BUILD_STANDARD_EXAMPLE}, with a {FIRST_BUILD_CAP} hard
+            cap. You get the fixed quote in writing before you pay anything.
+          </p>
+        </details>
+        <details className="rounded-2xl border border-line bg-paper-deep px-6 py-4 dark:border-line-dark dark:bg-night-card">
+          <summary className="cursor-pointer font-display text-lg font-bold text-ink dark:text-cream">
+            How long does it take?
+          </summary>
+          <p className="mt-3 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
+            One week. Five days from fit call to one real job running clean
+            in your tools, plus 14 days of tuning after handoff.
+          </p>
+        </details>
+        <details className="rounded-2xl border border-line bg-paper-deep px-6 py-4 dark:border-line-dark dark:bg-night-card">
+          <summary className="cursor-pointer font-display text-lg font-bold text-ink dark:text-cream">
+            Who owns the system?
+          </summary>
+          <p className="mt-3 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
+            You do. It is built on your tools, and you keep the runbook, the
+            standard, and your examples and rules written down.
+          </p>
+        </details>
+        <details className="rounded-2xl border border-line bg-paper-deep px-6 py-4 dark:border-line-dark dark:bg-night-card">
+          <summary className="cursor-pointer font-display text-lg font-bold text-ink dark:text-cream">
+            What if the fit call says no?
+          </summary>
+          <p className="mt-3 text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
+            No engagement, no charge. The fit call is free. If the job is
+            not a fit on Day 1, you get a full refund before any building
+            starts.
+          </p>
+        </details>
+      </div>
+      <p className="mt-6 max-w-3xl text-sm text-ink-soft dark:text-cream-soft">
+        Worked with me already?{" "}
+        <a
+          href="/testimonials"
+          className="font-semibold text-ink underline-offset-4 transition-colors hover:text-sienna-deep hover:underline dark:text-cream dark:hover:text-sienna"
+        >
+          Share your experience
+        </a>
+        .
+      </p>
+
+      <h2 className="mt-16 font-display text-4xl font-bold tracking-tight text-ink dark:text-cream">
         Who you&rsquo;d be working with
       </h2>
       <p className="mt-4 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
@@ -707,6 +766,10 @@ function FirstBuildPage() {
         operations at the University of Cincinnati, AstraZeneca, and Merck,
         where work had to pass audit the first time. That&rsquo;s the
         standard your system is built to.
+      </p>
+      <p className="mt-4 max-w-3xl text-[1.0625rem] leading-[1.7] text-ink-soft dark:text-cream-soft">
+        Built in Cincinnati, Ohio. In person across the Tri-State, remote
+        anywhere.
       </p>
 
       <CloseSection
